@@ -1,0 +1,24 @@
+!**/src/main/**
+!**/src/test/**
+
+# ignore all stuff in private folder
+.private/
+
+# ignore all stuff in target, build and out folder
+target/
+build/
+out/
+
+# ignore IntelliJ IDEA files
+.idea/
+.idea/compiler.xml
+.idea/misc.xml
+*.iws
+*.iml
+*.ipr
+
+# ignore all logs
+*.log
+
+# Project exclude paths
+/.gradle/
