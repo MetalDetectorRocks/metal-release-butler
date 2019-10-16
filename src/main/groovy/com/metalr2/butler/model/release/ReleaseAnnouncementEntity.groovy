@@ -2,6 +2,7 @@ package com.metalr2.butler.model.release
 
 import com.metalr2.butler.model.BaseEntity
 import groovy.transform.EqualsAndHashCode
+import groovy.transform.builder.Builder
 
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -10,7 +11,8 @@ import javax.persistence.Enumerated
 
 @Entity(name = "release_announcements")
 @EqualsAndHashCode(callSuper = true)
-class ReleaseAnnouncement extends BaseEntity {
+@Builder
+class ReleaseAnnouncementEntity extends BaseEntity {
 
   @Column(name = "artist", nullable = false)
   String artist

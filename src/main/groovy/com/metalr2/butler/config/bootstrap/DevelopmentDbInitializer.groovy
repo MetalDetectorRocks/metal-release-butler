@@ -1,5 +1,7 @@
 package com.metalr2.butler.config.bootstrap
 
+import com.metalr2.butler.model.release.ReleaseAnnouncementEntity
+import com.metalr2.butler.model.release.ReleaseType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -25,7 +27,33 @@ class DevelopmentDbInitializer implements ApplicationRunner {
   @Override
   @Transactional
   void run(ApplicationArguments args) throws Exception {
-    // ToDo DanielW: implement
+    ReleaseAnnouncementEntity alcest = ReleaseAnnouncementEntity.builder()
+            .artist("Alcest")
+            .albumTitle("Spiritual Instinct")
+            .releaseTime("2019-10-25")
+            .genre("Black Metal (early), Post-Metal/Shoegaze (later)")
+            .type(ReleaseType.FULL_LENGTH)
+            .build()
+
+    ReleaseAnnouncementEntity cradleOfFilth = ReleaseAnnouncementEntity.builder()
+            .artist("Cradle of Filth")
+            .albumTitle("Cruelty and the Beast: Re-Mistressed")
+            .releaseTime("2019-11-01")
+            .genre("Death Metal (early), Symphonic Black Metal (mid), Extreme Gothic Metal (later)")
+            .type(ReleaseType.FULL_LENGTH)
+            .build()
+
+    ReleaseAnnouncementEntity eluveitie = ReleaseAnnouncementEntity.builder()
+            .artist("Eluveitie")
+            .albumTitle("Live at Masters of Rock")
+            .releaseTime("2019-10-25")
+            .genre("Folk/Melodic Death Metal, Folk")
+            .type(ReleaseType.LIVE_ALBUM)
+            .build()
+
+    entityManager.persist(alcest)
+    entityManager.persist(cradleOfFilth)
+    entityManager.persist(eluveitie)
   }
 
 }

@@ -9,6 +9,7 @@ enum ReleaseType {
   BOXED_SET("Boxed set"),
   SINGLE("Single"),
   SPLIT("Split"),
+  LIVE_ALBUM("Live album"),
   VIDEO("Video"),
   OTHER("Other");
 

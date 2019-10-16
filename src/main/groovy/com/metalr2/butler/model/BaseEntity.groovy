@@ -28,9 +28,10 @@ abstract class BaseEntity {
   @Column(name = "last_modified_date")
   Date lastModifiedDateTime
 
-  boolean isNew() {
-    return id == null
-  }
+  // ToDo DanielW: currently we have an exception on startup due to this method. this needs investigation
+//  boolean isNew() {
+//    return id == null
+//  }
 
   LocalDateTime getCreatedDateTime() {
     return createdDateTime != null ? createdDateTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() : null
