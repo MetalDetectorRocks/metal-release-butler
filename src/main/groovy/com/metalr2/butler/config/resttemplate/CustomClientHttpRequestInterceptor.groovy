@@ -10,12 +10,15 @@ import org.springframework.http.client.ClientHttpResponse
 
 class CustomClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
+  // ToDo DanielW: Inject from properties
+  static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36"
+
   final Logger LOG = LoggerFactory.getLogger(CustomClientErrorHandler.class)
 
   @Override
   ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
     request.getHeaders().setAccept(List.of(MediaType.APPLICATION_JSON))
-    request.getHeaders().set("User-Agent", "") // ToDo DanielW: set user agent
+    request.getHeaders().set("User-Agent", USER_AGENT)
 
     LOG.info("URI: {}", request.getURI())
     LOG.info("Headers: {}", request.getHeaders())

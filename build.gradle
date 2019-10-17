@@ -8,6 +8,8 @@ group = 'com.metalr2'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.11'
 
+def junitVersion = '5.3.2'
+
 configurations {
 	developmentOnly
 	runtimeClasspath {
@@ -31,5 +33,16 @@ dependencies {
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'mysql:mysql-connector-java'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'junit', module: 'junit'
+	}
+	testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+	testCompile("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+	testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+}
+
+test {
+	useJUnit()
+	testLogging.showStandardStreams(true)
 }

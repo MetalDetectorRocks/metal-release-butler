@@ -9,10 +9,10 @@ import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
 
-@Entity(name = "release_announcements")
+@Entity(name = "releases")
 @EqualsAndHashCode(callSuper = true)
 @Builder
-class ReleaseAnnouncementEntity extends BaseEntity {
+class ReleaseEntity extends BaseEntity {
 
   @Column(name = "artist", nullable = false)
   String artist
@@ -29,5 +29,11 @@ class ReleaseAnnouncementEntity extends BaseEntity {
   @Column(name = "type", nullable = true)
   @Enumerated(EnumType.STRING)
   ReleaseType type
+
+  @Column(name = "metal_archives_artist_url", nullable = true)
+  String metalArchivesArtistUrl
+
+  @Column(name = "metal_archives_album_url", nullable = true)
+  String metalArchivesAlbumUrl
 
 }

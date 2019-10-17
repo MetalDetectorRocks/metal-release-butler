@@ -40,7 +40,7 @@ class ApacheHttpClientConfig {
     poolingConnectionManager.defaultMaxPerRoute = MAX_ROUTE_CONNECTIONS
 
     // increase the amounts of connections if host is localhost
-    HttpHost localhost = new HttpHost("http://localhost", 8095) // ToDo DanielW: port is static
+    HttpHost localhost = new HttpHost("http://localhost", 8095) // ToDo DanielW: inject from properties
     poolingConnectionManager.setMaxPerRoute(new HttpRoute(localhost), MAX_LOCALHOST_CONNECTIONS)
 
     return poolingConnectionManager
