@@ -7,7 +7,7 @@ import org.springframework.web.client.ResponseErrorHandler
 
 class CustomClientErrorHandler implements ResponseErrorHandler {
 
-  final Logger LOG = LoggerFactory.getLogger(CustomClientErrorHandler.class)
+  final Logger LOG = LoggerFactory.getLogger(CustomClientErrorHandler)
 
   @Override
   boolean hasError(ClientHttpResponse response) throws IOException {

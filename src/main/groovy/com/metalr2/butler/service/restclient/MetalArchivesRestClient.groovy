@@ -1,7 +1,11 @@
 package com.metalr2.butler.service.restclient
 
+import com.metalr2.butler.service.parser.ReleaseDtoParser
 import com.metalr2.butler.web.dto.ReleaseDto
 import com.metalr2.butler.web.dto.UpcomingReleasesResponseDto
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -12,11 +16,16 @@ class MetalArchivesRestClient {
 
   static final String UPCOMING_RELEASES_URL = "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart={startOfRange}"
 
+  final Logger LOG = LoggerFactory.getLogger(MetalArchivesRestClient)
+
   final RestTemplate restTemplate
+  final ReleaseDtoParser parser
   final List<String[]> rawResponse = []
 
-  MetalArchivesRestClient(RestTemplate restTemplate) {
+  @Autowired
+  MetalArchivesRestClient(RestTemplate restTemplate, ReleaseDtoParser parser) {
     this.restTemplate = restTemplate
+    this.parser = parser
   }
 
   List<ReleaseDto> requestReleases() {
@@ -51,19 +60,14 @@ class MetalArchivesRestClient {
       }
     }
 
-    List<ReleaseDto> results = parseRawResponse()
-    return results
-  }
-
-  private List<ReleaseDto> parseRawResponse() {
     List<ReleaseDto> results = []
-    rawResponse.each {
-      results << new ReleaseDto(it[0], it[1], it[2], it[3], it[4])
-//      println "Band: ${it[0]}"
-//      println "Album title: ${it[1]}"
-//      println "Type: ${it[2]}"
-//      println "Genre: ${it[3]}"
-//      println "Release time: ${it[4]}"
+    rawResponse.each { rawData ->
+      try {
+        results << parser.parse(rawData.toList())
+      }
+      catch (Exception e) { // ToDo DanielW: MayBe ParseException later
+        LOG.error("Could not parse the following data: {}. Reason was: {}", rawData, e.getMessage())
+      }
     }
 
     return results

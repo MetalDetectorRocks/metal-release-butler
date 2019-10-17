@@ -27,7 +27,7 @@ import static com.metalr2.butler.config.resttemplate.HttpClientConfigConstants.*
 @Configuration
 class ApacheHttpClientConfig {
 
-  final Logger LOG = LoggerFactory.getLogger(ApacheHttpClientConfig.class)
+  final Logger LOG = LoggerFactory.getLogger(ApacheHttpClientConfig)
 
   @Bean
   PoolingHttpClientConnectionManager poolingConnectionManager() {
