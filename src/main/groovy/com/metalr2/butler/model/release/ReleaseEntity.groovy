@@ -36,4 +36,7 @@ class ReleaseEntity extends BaseEntity {
   @Column(name = "metal_archives_album_url", nullable = true)
   String metalArchivesAlbumUrl
 
+  // ToDo DanielW: Quelle (Metal Archives, Metal Hammer, Loudwire etc.)
+  // ToDo DanielW: Additional Artists
+
 }

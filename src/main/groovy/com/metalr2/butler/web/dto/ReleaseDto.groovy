@@ -9,6 +9,7 @@ class ReleaseDto {
 
   String artist
   URL artistUrl
+  List<String> additionalArtists = []
   String albumTitle
   URL albumUrl
   String type

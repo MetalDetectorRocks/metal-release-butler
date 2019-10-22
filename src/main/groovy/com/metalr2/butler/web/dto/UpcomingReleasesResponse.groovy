@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import groovy.transform.Canonical
 
 @Canonical
-class UpcomingReleasesResponseDto {
+class UpcomingReleasesResponse {
 
   @JsonProperty("iTotalRecords")
   long totalRecords

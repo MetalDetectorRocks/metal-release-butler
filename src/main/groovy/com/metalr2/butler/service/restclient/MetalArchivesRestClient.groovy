@@ -1,8 +1,8 @@
 package com.metalr2.butler.service.restclient
 
-import com.metalr2.butler.service.parser.ReleaseDtoParser
+import com.metalr2.butler.service.parser.ReleaseDtoConverter
 import com.metalr2.butler.web.dto.ReleaseDto
-import com.metalr2.butler.web.dto.UpcomingReleasesResponseDto
+import com.metalr2.butler.web.dto.UpcomingReleasesResponse
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,13 +19,12 @@ class MetalArchivesRestClient {
   final Logger LOG = LoggerFactory.getLogger(MetalArchivesRestClient)
 
   final RestTemplate restTemplate
-  final ReleaseDtoParser parser
-  final List<String[]> rawResponse = []
+  final ReleaseDtoConverter converter
 
   @Autowired
-  MetalArchivesRestClient(RestTemplate restTemplate, ReleaseDtoParser parser) {
+  MetalArchivesRestClient(RestTemplate restTemplate, ReleaseDtoConverter converter) {
     this.restTemplate = restTemplate
-    this.parser = parser
+    this.converter = converter
   }
 
   List<ReleaseDto> requestReleases() {
@@ -33,17 +32,18 @@ class MetalArchivesRestClient {
      * The REST-interface of metal-archives.com responses a maximum of 100 records per request.
      * Therefore we have to request 100 records each until we don't get any more results.
      */
+    List<String[]> rawResponse = []
     def dataAvailable = true
     def startOfRange = 0
 
     while (dataAvailable) {
       // (1) request
-      ResponseEntity<UpcomingReleasesResponseDto> responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL
-              , UpcomingReleasesResponseDto.class
+      ResponseEntity<UpcomingReleasesResponse> responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL
+              , UpcomingReleasesResponse.class
               , startOfRange)
 
       // (2) check http status and response body
-      UpcomingReleasesResponseDto responseBody = responseEntity.body
+      UpcomingReleasesResponse responseBody = responseEntity.body
       if (responseEntity.statusCode != HttpStatus.OK || responseBody == null) {
         break
       }
@@ -60,13 +60,17 @@ class MetalArchivesRestClient {
       }
     }
 
+    return convertResults(rawResponse)
+  }
+
+  private List<ReleaseDto> convertResults(List<String[]> rawResponse) {
     List<ReleaseDto> results = []
-    rawResponse.each { rawData ->
+    rawResponse.each {
       try {
-        results << parser.parse(rawData.toList())
+        results.addAll(converter.convert(it))
       }
       catch (Exception e) { // ToDo DanielW: MayBe ParseException later
-        LOG.error("Could not parse the following data: {}. Reason was: {}", rawData, e.getMessage())
+        LOG.error("Could not parse the following data: {}. Reason was: {}", it, e.getMessage())
       }
     }
 
