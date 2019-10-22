@@ -1,6 +1,8 @@
 package com.metalr2.butler.service.parser
 
 import com.metalr2.butler.web.dto.ReleaseDto
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 import java.time.LocalDate
@@ -11,6 +13,7 @@ class ReleaseDtoConverter {
 
   static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.US)
 
+  final Logger log = LoggerFactory.getLogger(ReleaseDtoConverter)
   final XmlSlurper xmlSlurper
 
   ReleaseDtoConverter() {
@@ -18,6 +21,15 @@ class ReleaseDtoConverter {
   }
 
   List<ReleaseDto> convert(String[] rawData) {
+    try {
+      doConvert(rawData)
+    }
+    catch (Exception e) {
+      log.error("Could not parse the following data: {}. Reason was: {}", rawData, e.getMessage())
+    }
+  }
+
+  List<ReleaseDto> doConvert(String[] rawData) {
     def releaseDtoList = []
     def artistRawData  = prepareXml(rawData[0]) // Can contain multiple artists
     def albumRawData   = prepareXml(rawData[1])
@@ -32,7 +44,7 @@ class ReleaseDtoConverter {
       def releaseDate = parseReleaseDate(rawData[4])
 
       releaseDtoList << new ReleaseDto(artist: artistName, artistUrl: artistUrl, albumTitle: albumTitle, albumUrl: albumUrl,
-                                       type: type, genre: genre, releaseDate: releaseDate)
+              type: type, genre: genre, releaseDate: releaseDate)
     }
 
     addAdditionalArtistInfo(releaseDtoList)

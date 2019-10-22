@@ -3,8 +3,6 @@ package com.metalr2.butler.service.restclient
 import com.metalr2.butler.service.parser.ReleaseDtoConverter
 import com.metalr2.butler.web.dto.ReleaseDto
 import com.metalr2.butler.web.dto.UpcomingReleasesResponse
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,8 +13,6 @@ import org.springframework.web.client.RestTemplate
 class MetalArchivesRestClient {
 
   static final String UPCOMING_RELEASES_URL = "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart={startOfRange}"
-
-  final Logger LOG = LoggerFactory.getLogger(MetalArchivesRestClient)
 
   final RestTemplate restTemplate
   final ReleaseDtoConverter converter
@@ -65,14 +61,7 @@ class MetalArchivesRestClient {
 
   private List<ReleaseDto> convertResults(List<String[]> rawResponse) {
     List<ReleaseDto> results = []
-    rawResponse.each {
-      try {
-        results.addAll(converter.convert(it))
-      }
-      catch (Exception e) { // ToDo DanielW: MayBe ParseException later
-        LOG.error("Could not parse the following data: {}. Reason was: {}", it, e.getMessage())
-      }
-    }
+    rawResponse.each { results.addAll(converter.convert(it)) }
 
     return results
   }

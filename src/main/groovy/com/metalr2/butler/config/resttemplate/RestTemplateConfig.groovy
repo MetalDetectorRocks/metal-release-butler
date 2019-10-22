@@ -2,6 +2,7 @@ package com.metalr2.butler.config.resttemplate
 
 import org.apache.http.impl.client.CloseableHttpClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -12,10 +13,12 @@ import org.springframework.web.client.RestTemplate
 class RestTemplateConfig {
 
   final CloseableHttpClient httpClient
+  final String userAgent
 
   @Autowired
-  RestTemplateConfig(CloseableHttpClient httpClient) {
+  RestTemplateConfig(CloseableHttpClient httpClient, @Value('${httpclient.useragent}') String userAgent) {
     this.httpClient = httpClient
+    this.userAgent = userAgent
   }
 
   @Bean
@@ -30,7 +33,7 @@ class RestTemplateConfig {
     return new RestTemplateBuilder()
             .requestFactory({ -> clientHttpRequestFactory() })
             .errorHandler(new CustomClientErrorHandler())
-            .interceptors(new CustomClientHttpRequestInterceptor())
+            .interceptors(new CustomClientHttpRequestInterceptor(userAgent))
             .build()
   }
 }

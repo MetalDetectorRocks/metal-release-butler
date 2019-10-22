@@ -2,6 +2,7 @@ package com.metalr2.butler.config.bootstrap
 
 
 import com.metalr2.butler.model.release.ReleaseEntity
+import com.metalr2.butler.model.release.ReleaseSource
 import com.metalr2.butler.model.release.ReleaseType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
+import java.time.LocalDate
 
 @Component
 @Profile("dev")
@@ -31,30 +33,55 @@ class DevelopmentDbInitializer implements ApplicationRunner {
     ReleaseEntity alcest = ReleaseEntity.builder()
             .artist("Alcest")
             .albumTitle("Spiritual Instinct")
-            .releaseTime("2019-10-25")
+            .releaseDate(LocalDate.of(2019, 10, 25))
             .genre("Black Metal (early), Post-Metal/Shoegaze (later)")
             .type(ReleaseType.FULL_LENGTH)
+            .releaseSource(ReleaseSource.METAL_ARCHIVES)
             .build()
 
     ReleaseEntity cradleOfFilth = ReleaseEntity.builder()
             .artist("Cradle of Filth")
             .albumTitle("Cruelty and the Beast: Re-Mistressed")
-            .releaseTime("2019-11-01")
+            .releaseDate(LocalDate.of(2019, 11, 1))
             .genre("Death Metal (early), Symphonic Black Metal (mid), Extreme Gothic Metal (later)")
             .type(ReleaseType.FULL_LENGTH)
+            .releaseSource(ReleaseSource.METAL_ARCHIVES)
             .build()
 
-    ReleaseEntity eluveitie = ReleaseEntity.builder()
-            .artist("Eluveitie")
-            .albumTitle("Live at Masters of Rock")
-            .releaseTime("2019-10-25")
-            .genre("Folk/Melodic Death Metal, Folk")
-            .type(ReleaseType.LIVE_ALBUM)
+    ReleaseEntity caronte = ReleaseEntity.builder()
+            .artist("Caronte")
+            .albumTitle("Wolves of Thelema")
+            .estimatedReleaseDate("Winter")
+            .genre("Death Metal")
+            .type(ReleaseType.FULL_LENGTH)
+            .releaseSource(ReleaseSource.METAL_HAMMER_DE)
+            .build()
+
+    ReleaseEntity grond = ReleaseEntity.builder()
+            .artist("Grond")
+            .albumTitle("Endless Spiral of Terror")
+            .releaseDate(LocalDate.of(2019, 10, 30))
+            .genre("Death Metal")
+            .type(ReleaseType.SPLIT)
+            .releaseSource(ReleaseSource.METAL_ARCHIVES)
+            .additionalArtists("Graceless")
+            .build()
+
+    ReleaseEntity graceless = ReleaseEntity.builder()
+            .artist("Graceless")
+            .albumTitle("Endless Spiral of Terror")
+            .releaseDate(LocalDate.of(2019, 10, 30))
+            .genre("Death Metal")
+            .type(ReleaseType.SPLIT)
+            .releaseSource(ReleaseSource.METAL_ARCHIVES)
+            .additionalArtists("Grond")
             .build()
 
     entityManager.persist(alcest)
     entityManager.persist(cradleOfFilth)
-    entityManager.persist(eluveitie)
+    entityManager.persist(caronte)
+    entityManager.persist(grond)
+    entityManager.persist(graceless)
   }
 
 }

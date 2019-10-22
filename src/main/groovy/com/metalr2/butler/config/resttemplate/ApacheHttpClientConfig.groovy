@@ -14,6 +14,7 @@ import org.apache.http.message.BasicHeaderElementIterator
 import org.apache.http.protocol.HTTP
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.TaskScheduler
@@ -27,7 +28,12 @@ import static com.metalr2.butler.config.resttemplate.HttpClientConfigConstants.*
 @Configuration
 class ApacheHttpClientConfig {
 
-  final Logger LOG = LoggerFactory.getLogger(ApacheHttpClientConfig)
+  final Logger log = LoggerFactory.getLogger(ApacheHttpClientConfig)
+  final int port
+
+  ApacheHttpClientConfig(@Value(value = '${server.port}') int port) {
+    this.port = port
+  }
 
   @Bean
   PoolingHttpClientConnectionManager poolingConnectionManager() {
@@ -40,7 +46,7 @@ class ApacheHttpClientConfig {
     poolingConnectionManager.defaultMaxPerRoute = MAX_ROUTE_CONNECTIONS
 
     // increase the amounts of connections if host is localhost
-    HttpHost localhost = new HttpHost("http://localhost", 8095) // ToDo DanielW: inject from properties
+    HttpHost localhost = new HttpHost("http://localhost", port)
     poolingConnectionManager.setMaxPerRoute(new HttpRoute(localhost), MAX_LOCALHOST_CONNECTIONS)
 
     return poolingConnectionManager
@@ -76,7 +82,7 @@ class ApacheHttpClientConfig {
           pool.closeExpiredConnections()
           pool.closeIdleConnections(IDLE_CONNECTION_WAIT_TIME, TimeUnit.MILLISECONDS)
 
-          LOG.info("Idle connection monitor: Closing expired and idle connections")
+          log.info("Idle connection monitor: Closing expired and idle connections")
         }
       }
     }

@@ -8,10 +8,11 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
+import java.time.LocalDate
 
 @Entity(name = "releases")
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@Builder(excludes = "new") // because there is method isNew in super class
 class ReleaseEntity extends BaseEntity {
 
   @Column(name = "artist", nullable = false)
@@ -20,8 +21,11 @@ class ReleaseEntity extends BaseEntity {
   @Column(name = "album_title", nullable = false)
   String albumTitle
 
-  @Column(name = "release_date", nullable = false)
-  String releaseTime
+  @Column(name = "release_date", nullable = true)
+  LocalDate releaseDate
+
+  @Column(name = "estimated_release_date", nullable = true)
+  String estimatedReleaseDate
 
   @Column(name = "genre", nullable = true)
   String genre
@@ -31,12 +35,20 @@ class ReleaseEntity extends BaseEntity {
   ReleaseType type
 
   @Column(name = "metal_archives_artist_url", nullable = true)
-  String metalArchivesArtistUrl
+  URL metalArchivesArtistUrl
 
   @Column(name = "metal_archives_album_url", nullable = true)
-  String metalArchivesAlbumUrl
+  URL metalArchivesAlbumUrl
 
-  // ToDo DanielW: Quelle (Metal Archives, Metal Hammer, Loudwire etc.)
-  // ToDo DanielW: Additional Artists
+  @Column(name = "", nullable = true)
+  @Enumerated(EnumType.STRING)
+  ReleaseSource releaseSource
+
+  @Column(name = "", nullable = true)
+  String additionalArtists
+
+  List<String> getAdditionalArtists() {
+    additionalArtists.split(", ").collect()
+  }
 
 }
