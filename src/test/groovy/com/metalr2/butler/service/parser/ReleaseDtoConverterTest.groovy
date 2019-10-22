@@ -83,17 +83,23 @@ class ReleaseDtoConverterTest implements WithAssertions {
 
     // then
     assertThat(conversionResult).hasSize(2)
+
     assertThat(conversionResult[0].getArtist()).isEqualTo("The 1st Band")
     assertThat(conversionResult[0].getArtistUrl()).isEqualTo(new URL("https://www.dummy.com/artists/band-name/123456789"))
-    assertThat(conversionResult[0].getAdditionalArtists()).isEqualTo("The 2nd Band")
-    assertThat(conversionResult[0].getAlbumTitle()).isEqualTo("The Album")
-    assertThat(conversionResult[0].getAlbumUrl()).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
-    assertThat(conversionResult[0].getType()).isEqualTo("Full-Length")
-    assertThat(conversionResult[0].getGenre()).isEqualTo("Heavy Metal")
-    assertThat(conversionResult[0].getReleaseDate()).isEqualTo(LocalDate.of(2019, 10, 3))
-    assertThat(conversionResult[0].getEstimatedReleaseDate()).isNull()
+    assertThat(conversionResult[0].getAdditionalArtists()).isEqualTo(["The 2nd Band"])
 
-    // ToDo DanielW: assert conversionResult[1]
+    assertThat(conversionResult[1].getArtist()).isEqualTo("The 2nd Band")
+    assertThat(conversionResult[1].getArtistUrl()).isEqualTo(new URL("https://www.dummy.com/artists/band-name/1234567810"))
+    assertThat(conversionResult[1].getAdditionalArtists()).isEqualTo(["The 1st Band"])
+
+    for (int index in 0..(conversionResult.size() - 1)) {
+      assertThat(conversionResult[index].getAlbumTitle()).isEqualTo("The Album")
+      assertThat(conversionResult[index].getAlbumUrl()).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
+      assertThat(conversionResult[index].getType()).isEqualTo("Full-Length")
+      assertThat(conversionResult[index].getGenre()).isEqualTo("Heavy Metal")
+      assertThat(conversionResult[index].getReleaseDate()).isEqualTo(LocalDate.of(2019, 10, 3))
+      assertThat(conversionResult[index].getEstimatedReleaseDate()).isNull()
+    }
   }
 
   @Test
@@ -117,18 +123,27 @@ class ReleaseDtoConverterTest implements WithAssertions {
 
     // then
     assertThat(conversionResult).hasSize(3)
+
     assertThat(conversionResult[0].getArtist()).isEqualTo("The 1st Band")
     assertThat(conversionResult[0].getArtistUrl()).isEqualTo(new URL("https://www.dummy.com/artists/band-name/123456789"))
-    assertThat(conversionResult[0].getAdditionalArtists()).isEqualTo("The 2nd Band, The 3rd Band")
-    assertThat(conversionResult[0].getAlbumTitle()).isEqualTo("The Album")
-    assertThat(conversionResult[0].getAlbumUrl()).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
-    assertThat(conversionResult[0].getType()).isEqualTo("Full-Length")
-    assertThat(conversionResult[0].getGenre()).isEqualTo("Heavy Metal")
-    assertThat(conversionResult[0].getReleaseDate()).isEqualTo(LocalDate.of(2019, 10, 4))
-    assertThat(conversionResult[0].getEstimatedReleaseDate()).isNull()
+    assertThat(conversionResult[0].getAdditionalArtists()).isEqualTo(["The 2nd Band", "The 3rd Band"])
 
-    // ToDo DanielW: assert conversionResult[1]
-    // ToDo DanielW: assert conversionResult[2]
+    assertThat(conversionResult[1].getArtist()).isEqualTo("The 2nd Band")
+    assertThat(conversionResult[1].getArtistUrl()).isEqualTo(new URL("https://www.dummy.com/artists/band-name/1234567810"))
+    assertThat(conversionResult[1].getAdditionalArtists()).isEqualTo(["The 1st Band", "The 3rd Band"])
+
+    assertThat(conversionResult[2].getArtist()).isEqualTo("The 3rd Band")
+    assertThat(conversionResult[2].getArtistUrl()).isEqualTo(new URL("https://www.dummy.com/artists/band-name/1234567811"))
+    assertThat(conversionResult[2].getAdditionalArtists()).isEqualTo(["The 1st Band", "The 2nd Band"])
+
+    for (int index in 0..(conversionResult.size() - 1)) {
+      assertThat(conversionResult[0].getAlbumTitle()).isEqualTo("The Album")
+      assertThat(conversionResult[0].getAlbumUrl()).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
+      assertThat(conversionResult[0].getType()).isEqualTo("Full-Length")
+      assertThat(conversionResult[0].getGenre()).isEqualTo("Heavy Metal")
+      assertThat(conversionResult[0].getReleaseDate()).isEqualTo(LocalDate.of(2019, 10, 4))
+      assertThat(conversionResult[0].getEstimatedReleaseDate()).isNull()
+    }
   }
 
 }

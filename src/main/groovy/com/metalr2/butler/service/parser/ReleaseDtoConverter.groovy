@@ -18,19 +18,26 @@ class ReleaseDtoConverter {
   }
 
   List<ReleaseDto> convert(String[] rawData) {
-    def artistInfo = prepareXml(rawData[0])
-    def albumInfo  = prepareXml(rawData[1])
+    def releaseDtoList = []
+    def artistRawData  = prepareXml(rawData[0]) // Can contain multiple artists
+    def albumRawData   = prepareXml(rawData[1])
 
-    def artistName = parseAnchorName(artistInfo)
-    def artistUrl = parseAnchorHref(artistInfo)
-    def albumTitle = parseAnchorName(albumInfo)
-    def albumUrl = parseAnchorHref(albumInfo)
-    def type = rawData[2]
-    def genre = rawData[3]
-    def releaseDate = parseReleaseDate(rawData[4])
+    for (String artistInfo in splitArtistRawData(artistRawData)) {
+      def artistName  = parseAnchorName(artistInfo)
+      def artistUrl   = parseAnchorHref(artistInfo)
+      def albumTitle  = parseAnchorName(albumRawData)
+      def albumUrl    = parseAnchorHref(albumRawData)
+      def type        = rawData[2]
+      def genre       = rawData[3]
+      def releaseDate = parseReleaseDate(rawData[4])
 
-    return [new ReleaseDto(artist: artistName, artistUrl: artistUrl, albumTitle: albumTitle, albumUrl: albumUrl,
-                          type: type, genre: genre, releaseDate: releaseDate)]
+      releaseDtoList << new ReleaseDto(artist: artistName, artistUrl: artistUrl, albumTitle: albumTitle, albumUrl: albumUrl,
+                                       type: type, genre: genre, releaseDate: releaseDate)
+    }
+
+    addAdditionalArtistInfo(releaseDtoList)
+
+    return releaseDtoList
   }
 
   private String prepareXml(String text) {
@@ -51,6 +58,20 @@ class ReleaseDtoConverter {
    */
   private String encodeSpecialCharacters(String text) {
     return text.replaceAll("&", "&amp;")
+  }
+
+  /*
+   * If an album comes from several artists, they are listed in the form
+   * <a href="#">Band 1</a> / <a href="#">Band 2</a>.
+   */
+  private List<String> splitArtistRawData(String artistRawData) {
+    artistRawData.split("</a> /").collect {
+      it = it.trim()
+      if (! it.endsWith("</a>")) {
+        return it + "</a>"
+      }
+      return it
+    }
   }
 
   private String parseAnchorName(String text) {
@@ -79,6 +100,14 @@ class ReleaseDtoConverter {
     def rawDateParts = rawDate.split(" ")
     rawDateParts[1] = rawDateParts[1].replaceAll("(th)|(nd)|(rd)|(st)*", "")
     return rawDateParts.join(" ")
+  }
+
+  private List<ReleaseDto> addAdditionalArtistInfo(List<ReleaseDto> releaseDtoList) {
+    def artistNames = releaseDtoList.collect { it.getArtist() }
+    releaseDtoList.each {
+      def additionalArtistNames = artistNames - it.artist
+      it.additionalArtists = additionalArtistNames
+    }
   }
 
 }
