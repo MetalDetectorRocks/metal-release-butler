@@ -1,6 +1,9 @@
 package com.metalr2.butler.service.converter
 
-import com.metalr2.butler.web.dto.ReleaseDto
+import com.metalr2.butler.model.release.ReleaseEntity
+import com.metalr2.butler.model.release.ReleaseEntityRecordState
+import com.metalr2.butler.model.release.ReleaseSource
+import com.metalr2.butler.model.release.ReleaseType
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
@@ -9,30 +12,31 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Component
-class ReleaseDtoConverter implements Converter<String[], List<ReleaseDto>> {
+class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>> {
 
   static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.US)
 
-  final Logger log = LoggerFactory.getLogger(ReleaseDtoConverter)
+  final Logger log = LoggerFactory.getLogger(ReleaseEntityConverter)
   final XmlSlurper xmlSlurper
 
-  ReleaseDtoConverter() {
+  ReleaseEntityConverter() {
     xmlSlurper = new XmlSlurper()
   }
 
-  List<ReleaseDto> convert(String[] rawData) {
+  List<ReleaseEntity> convert(String[] rawData) {
     try {
       doConvert(rawData)
     }
     catch (Exception e) {
       log.error("Could not parse the following data: {}. Reason was: {}", rawData, e.getMessage())
+      return []
     }
   }
 
-  List<ReleaseDto> doConvert(String[] rawData) {
-    def releaseDtoList = []
-    def artistRawData  = prepareXml(rawData[0]) // Can contain multiple artists
-    def albumRawData   = prepareXml(rawData[1])
+  List<ReleaseEntity> doConvert(String[] rawData) {
+    def releaseEntities = []
+    def artistRawData   = prepareXml(rawData[0]) // Can contain multiple artists
+    def albumRawData    = prepareXml(rawData[1])
 
     for (String artistInfo in splitArtistRawData(artistRawData)) {
       def artistName  = parseAnchorName(artistInfo)
@@ -43,13 +47,24 @@ class ReleaseDtoConverter implements Converter<String[], List<ReleaseDto>> {
       def genre       = rawData[3]
       def releaseDate = parseReleaseDate(rawData[4])
 
-      releaseDtoList << new ReleaseDto(artist: artistName, artistUrl: artistUrl, albumTitle: albumTitle, albumUrl: albumUrl,
-              type: type, genre: genre, releaseDate: releaseDate)
+      def releaseEntity = ReleaseEntity.builder()
+                                       .artist(artistName)
+                                       .metalArchivesArtistUrl(artistUrl)
+                                       .albumTitle(albumTitle)
+                                       .metalArchivesAlbumUrl(albumUrl)
+                                       .type(ReleaseType.convertFrom(type))
+                                       .genre(genre)
+                                       .releaseDate(releaseDate)
+                                       .releaseSource(ReleaseSource.METAL_ARCHIVES)
+                                       .state(ReleaseEntityRecordState.NOT_SET)
+                                       .build()
+
+      releaseEntities << releaseEntity
     }
 
-    addAdditionalArtistInfo(releaseDtoList)
+    addAdditionalArtistInfo(releaseEntities)
 
-    return releaseDtoList
+    return releaseEntities
   }
 
   private String prepareXml(String text) {
@@ -114,11 +129,13 @@ class ReleaseDtoConverter implements Converter<String[], List<ReleaseDto>> {
     return rawDateParts.join(" ")
   }
 
-  private List<ReleaseDto> addAdditionalArtistInfo(List<ReleaseDto> releaseDtoList) {
-    def artistNames = releaseDtoList.collect { it.getArtist() }
-    releaseDtoList.each {
-      def additionalArtistNames = artistNames - it.artist
-      it.additionalArtists = additionalArtistNames
+  private void addAdditionalArtistInfo(List<ReleaseEntity> releaseEntities) {
+    def artistNames = releaseEntities.collect { it.artist }
+    releaseEntities.each {
+      def additionalArtists = artistNames - it.artist
+      if (! additionalArtists.isEmpty()) {
+        it.additionalArtists = additionalArtists.join(", ")
+      }
     }
   }
 

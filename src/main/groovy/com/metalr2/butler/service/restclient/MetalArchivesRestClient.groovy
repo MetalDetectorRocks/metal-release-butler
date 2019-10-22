@@ -1,7 +1,5 @@
 package com.metalr2.butler.service.restclient
 
-import com.metalr2.butler.service.converter.Converter
-import com.metalr2.butler.web.dto.ReleaseDto
 import com.metalr2.butler.web.dto.UpcomingReleasesResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -15,15 +13,13 @@ class MetalArchivesRestClient {
   static final String UPCOMING_RELEASES_URL = "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart={startOfRange}"
 
   final RestTemplate restTemplate
-  final Converter<String[], List<ReleaseDto>> converter
 
   @Autowired
-  MetalArchivesRestClient(RestTemplate restTemplate, Converter<String[], List<ReleaseDto>> converter) {
+  MetalArchivesRestClient(RestTemplate restTemplate) {
     this.restTemplate = restTemplate
-    this.converter = converter
   }
 
-  List<ReleaseDto> requestReleases() {
+  List<String[]> requestReleases() {
     /*
      * The REST-interface of metal-archives.com responses a maximum of 100 records per request.
      * Therefore we have to request 100 records each until we don't get any more results.
@@ -56,14 +52,7 @@ class MetalArchivesRestClient {
       }
     }
 
-    return convertResults(rawResponse)
-  }
-
-  private List<ReleaseDto> convertResults(List<String[]> rawResponse) {
-    List<ReleaseDto> results = []
-    rawResponse.each { results.addAll(converter.convert(it)) }
-
-    return results
+    return rawResponse
   }
 
 }

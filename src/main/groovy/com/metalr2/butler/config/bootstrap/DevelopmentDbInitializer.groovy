@@ -1,7 +1,7 @@
 package com.metalr2.butler.config.bootstrap
 
-
 import com.metalr2.butler.model.release.ReleaseEntity
+import com.metalr2.butler.model.release.ReleaseEntityRecordState
 import com.metalr2.butler.model.release.ReleaseSource
 import com.metalr2.butler.model.release.ReleaseType
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,6 +37,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .genre("Black Metal (early), Post-Metal/Shoegaze (later)")
             .type(ReleaseType.FULL_LENGTH)
             .releaseSource(ReleaseSource.METAL_ARCHIVES)
+            .state(ReleaseEntityRecordState.DEMO)
             .build()
 
     ReleaseEntity cradleOfFilth = ReleaseEntity.builder()
@@ -46,6 +47,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .genre("Death Metal (early), Symphonic Black Metal (mid), Extreme Gothic Metal (later)")
             .type(ReleaseType.FULL_LENGTH)
             .releaseSource(ReleaseSource.METAL_ARCHIVES)
+            .state(ReleaseEntityRecordState.DEMO)
             .build()
 
     ReleaseEntity caronte = ReleaseEntity.builder()
@@ -55,6 +57,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .genre("Death Metal")
             .type(ReleaseType.FULL_LENGTH)
             .releaseSource(ReleaseSource.METAL_HAMMER_DE)
+            .state(ReleaseEntityRecordState.DEMO)
             .build()
 
     ReleaseEntity grond = ReleaseEntity.builder()
@@ -65,6 +68,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .type(ReleaseType.SPLIT)
             .releaseSource(ReleaseSource.METAL_ARCHIVES)
             .additionalArtists("Graceless")
+            .state(ReleaseEntityRecordState.DEMO)
             .build()
 
     ReleaseEntity graceless = ReleaseEntity.builder()
@@ -75,6 +79,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .type(ReleaseType.SPLIT)
             .releaseSource(ReleaseSource.METAL_ARCHIVES)
             .additionalArtists("Grond")
+            .state(ReleaseEntityRecordState.DEMO)
             .build()
 
     entityManager.persist(alcest)

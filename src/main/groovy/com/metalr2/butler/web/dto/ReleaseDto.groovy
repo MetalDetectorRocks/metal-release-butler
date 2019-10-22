@@ -15,8 +15,6 @@ class ReleaseDto {
   String type
   String genre
   LocalDate releaseDate
-
-  // for inaccurate data such as "Summer 2020"
   String estimatedReleaseDate
 
 }
