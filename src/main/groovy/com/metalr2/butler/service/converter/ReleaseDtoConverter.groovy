@@ -1,4 +1,4 @@
-package com.metalr2.butler.service.parser
+package com.metalr2.butler.service.converter
 
 import com.metalr2.butler.web.dto.ReleaseDto
 import org.slf4j.Logger
@@ -9,7 +9,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Component
-class ReleaseDtoConverter {
+class ReleaseDtoConverter implements Converter<String[], List<ReleaseDto>> {
 
   static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.US)
 

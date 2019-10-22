@@ -1,4 +1,4 @@
-package com.metalr2.butler.service.parser
+package com.metalr2.butler.service.converter
 
 import com.metalr2.butler.web.dto.ReleaseDto
 import org.assertj.core.api.WithAssertions

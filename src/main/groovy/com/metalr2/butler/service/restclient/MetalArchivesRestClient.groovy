@@ -1,6 +1,6 @@
 package com.metalr2.butler.service.restclient
 
-import com.metalr2.butler.service.parser.ReleaseDtoConverter
+import com.metalr2.butler.service.converter.Converter
 import com.metalr2.butler.web.dto.ReleaseDto
 import com.metalr2.butler.web.dto.UpcomingReleasesResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,10 +15,10 @@ class MetalArchivesRestClient {
   static final String UPCOMING_RELEASES_URL = "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart={startOfRange}"
 
   final RestTemplate restTemplate
-  final ReleaseDtoConverter converter
+  final Converter<String[], List<ReleaseDto>> converter
 
   @Autowired
-  MetalArchivesRestClient(RestTemplate restTemplate, ReleaseDtoConverter converter) {
+  MetalArchivesRestClient(RestTemplate restTemplate, Converter<String[], List<ReleaseDto>> converter) {
     this.restTemplate = restTemplate
     this.converter = converter
   }
