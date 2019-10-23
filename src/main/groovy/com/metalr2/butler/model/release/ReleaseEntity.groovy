@@ -40,10 +40,10 @@ class ReleaseEntity extends BaseEntity {
   @Column(name = "metal_archives_album_url", nullable = true)
   URL metalArchivesAlbumUrl
 
-  @Column(name = "release_source", nullable = true)
+  @Column(name = "source", nullable = true)
   @Enumerated(EnumType.STRING)
   // for inaccurate data such as "Summer 2020"
-  ReleaseSource releaseSource
+  ReleaseSource source
 
   @Column(name = "additional_artists", nullable = true, columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci")
   String additionalArtists
@@ -53,7 +53,7 @@ class ReleaseEntity extends BaseEntity {
   ReleaseEntityRecordState state
 
   List<String> getAdditionalArtists() {
-    return additionalArtists ? additionalArtists.split(", ")?.toList() : []
+    return additionalArtists ? additionalArtists.tokenize(",")*.trim() : []
   }
 
 }

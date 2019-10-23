@@ -37,7 +37,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.of(2019, 10, 25).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
             .genre("Black Metal (early), Post-Metal/Shoegaze (later)")
             .type(ReleaseType.FULL_LENGTH)
-            .releaseSource(ReleaseSource.METAL_ARCHIVES)
+            .source(ReleaseSource.METAL_ARCHIVES)
             .state(ReleaseEntityRecordState.DEMO)
             .build()
 
@@ -47,7 +47,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.of(2019, 11, 1).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
             .genre("Death Metal (early), Symphonic Black Metal (mid), Extreme Gothic Metal (later)")
             .type(ReleaseType.FULL_LENGTH)
-            .releaseSource(ReleaseSource.METAL_ARCHIVES)
+            .source(ReleaseSource.METAL_ARCHIVES)
             .state(ReleaseEntityRecordState.DEMO)
             .build()
 
@@ -57,7 +57,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .estimatedReleaseDate("Winter")
             .genre("Death Metal")
             .type(ReleaseType.FULL_LENGTH)
-            .releaseSource(ReleaseSource.METAL_HAMMER_DE)
+            .source(ReleaseSource.METAL_HAMMER_DE)
             .state(ReleaseEntityRecordState.DEMO)
             .build()
 
@@ -67,7 +67,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.of(2019, 10, 23).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
             .genre("Symphonic/Folk Black Metal")
             .type(ReleaseType.COMPILATION)
-            .releaseSource(ReleaseSource.METAL_ARCHIVES)
+            .source(ReleaseSource.METAL_ARCHIVES)
             .state(ReleaseEntityRecordState.DEMO)
             .build()
 
@@ -77,7 +77,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.of(2019, 10, 30).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
             .genre("Death Metal")
             .type(ReleaseType.SPLIT)
-            .releaseSource(ReleaseSource.METAL_ARCHIVES)
+            .source(ReleaseSource.METAL_ARCHIVES)
             .additionalArtists("Graceless")
             .state(ReleaseEntityRecordState.DEMO)
             .build()
@@ -88,7 +88,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.of(2019, 10, 30).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
             .genre("Death Metal")
             .type(ReleaseType.SPLIT)
-            .releaseSource(ReleaseSource.METAL_ARCHIVES)
+            .source(ReleaseSource.METAL_ARCHIVES)
             .additionalArtists("Grond")
             .state(ReleaseEntityRecordState.DEMO)
             .build()

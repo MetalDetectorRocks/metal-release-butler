@@ -37,7 +37,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
     assertThat(conversionResult[0].genre).isEqualTo("Depressive Black Metal")
     assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 8, 26).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
     assertThat(conversionResult[0].estimatedReleaseDate).isNull()
-    assertThat(conversionResult[0].releaseSource.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
+    assertThat(conversionResult[0].source.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
   }
 
   @Test
@@ -65,7 +65,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
     assertThat(conversionResult[0].genre).isEqualTo("Heavy Metal")
     assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 10, 1).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
     assertThat(conversionResult[0].estimatedReleaseDate).isNull()
-    assertThat(conversionResult[0].releaseSource.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
+    assertThat(conversionResult[0].source.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
   }
 
   @Test
@@ -103,7 +103,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
       assertThat(it.genre).isEqualTo("Heavy Metal")
       assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 3).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
       assertThat(it.estimatedReleaseDate).isNull()
-      assertThat(it.releaseSource.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
+      assertThat(it.source.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
     }
   }
 
@@ -147,7 +147,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
       assertThat(it.genre).isEqualTo("Heavy Metal")
       assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 4).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
       assertThat(it.estimatedReleaseDate).isNull()
-      assertThat(it.releaseSource.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
+      assertThat(it.source.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
     }
   }
 

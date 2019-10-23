@@ -23,6 +23,11 @@ class ReleaseServiceImpl implements ReleaseService {
     List<ReleaseEntity> releaseEntities = []
     upcomingReleasesRawData.each { releaseEntities.addAll(converter.convert(it)) }
 
+    // remove duplicates
+    releaseEntities.unique { release1, release2 ->
+      release1.artist <=> release2.artist ?: release1.albumTitle <=> release2.albumTitle ?: release1.releaseDate <=> release2.releaseDate
+    }
+
     releaseRepository.saveAll(releaseEntities)
   }
 }

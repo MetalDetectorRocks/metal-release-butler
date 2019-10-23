@@ -57,7 +57,7 @@ class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>>
                                        .type(ReleaseType.convertFrom(type))
                                        .genre(genre)
                                        .releaseDate(releaseDate)
-                                       .releaseSource(ReleaseSource.METAL_ARCHIVES)
+                                       .source(ReleaseSource.METAL_ARCHIVES)
                                        .state(ReleaseEntityRecordState.NOT_SET)
                                        .build()
 
