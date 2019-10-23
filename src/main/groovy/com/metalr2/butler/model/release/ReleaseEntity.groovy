@@ -8,21 +8,21 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
-import java.time.LocalDate
+import java.time.OffsetDateTime
 
 @Entity(name = "releases")
 @EqualsAndHashCode(callSuper = true)
 @Builder(excludes = "new") // because there is method isNew in super class
 class ReleaseEntity extends BaseEntity {
 
-  @Column(name = "artist", nullable = false)
+  @Column(name = "artist", nullable = false, columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci")
   String artist
 
-  @Column(name = "album_title", nullable = false)
+  @Column(name = "album_title", nullable = false, columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci")
   String albumTitle
 
-  @Column(name = "release_date", nullable = true)
-  LocalDate releaseDate
+  @Column(name = "release_date", nullable = true, columnDefinition = "DATE")
+  OffsetDateTime releaseDate
 
   @Column(name = "estimated_release_date", nullable = true)
   String estimatedReleaseDate
@@ -45,7 +45,7 @@ class ReleaseEntity extends BaseEntity {
   // for inaccurate data such as "Summer 2020"
   ReleaseSource releaseSource
 
-  @Column(name = "additional_artists", nullable = true)
+  @Column(name = "additional_artists", nullable = true, columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci")
   String additionalArtists
 
   @Column(name = "state", nullable = false)

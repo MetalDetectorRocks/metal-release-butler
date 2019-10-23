@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Component
@@ -113,9 +115,9 @@ class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>>
     return new URL(xml.@href.text())
   }
 
-  private LocalDate parseReleaseDate(String rawDate) {
+  private OffsetDateTime parseReleaseDate(String rawDate) {
     rawDate = replaceDateSuffix(rawDate)
-    return LocalDate.parse(rawDate, FORMATTER)
+    return LocalDate.parse(rawDate, FORMATTER).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime()
   }
 
   /*
@@ -125,7 +127,7 @@ class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>>
    */
   private String replaceDateSuffix(String rawDate) {
     def rawDateParts = rawDate.split(" ")
-    rawDateParts[1] = rawDateParts[1].replaceAll("(th)|(nd)|(rd)|(st)*", "")
+    rawDateParts[1] = rawDateParts[1].replaceAll("(th)|(nd)|(rd)|(st)", "")
     return rawDateParts.join(" ")
   }
 

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 import java.time.LocalDate
+import java.time.ZoneId
 
 class ReleaseEntityConverterTest implements WithAssertions {
 
@@ -34,7 +35,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
     assertThat(conversionResult[0].metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
     assertThat(conversionResult[0].type.name()).isEqualTo(ReleaseType.FULL_LENGTH.name())
     assertThat(conversionResult[0].genre).isEqualTo("Depressive Black Metal")
-    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 8, 26))
+    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 8, 26).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
     assertThat(conversionResult[0].estimatedReleaseDate).isNull()
     assertThat(conversionResult[0].releaseSource.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
   }
@@ -62,7 +63,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
     assertThat(conversionResult[0].metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
     assertThat(conversionResult[0].type.name()).isEqualTo(ReleaseType.EP.name())
     assertThat(conversionResult[0].genre).isEqualTo("Heavy Metal")
-    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 10, 1))
+    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 10, 1).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
     assertThat(conversionResult[0].estimatedReleaseDate).isNull()
     assertThat(conversionResult[0].releaseSource.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
   }
@@ -70,7 +71,6 @@ class ReleaseEntityConverterTest implements WithAssertions {
   @Test
   @DisplayName("Converting raw data with two bands (so called 'Split Album') should work")
   void convert_raw_data_with_two_bands() {
-    // <a href="https://www.metal-archives.com/bands/Grond/68353">Grond</a> / <a href="https://www.metal-archives.com/bands/Graceless/3540429440">Graceless</a>, <a href="https://www.metal-archives.com/albums/Grond_-_Graceless/Endless_Spiral_of_Terror/795963">Endless Spiral of Terror</a>, Split, Death Metal | Death/Doom Metal, October 30th, 2019]. Reason was: Content ist nicht zulässig in angehängtem Abschnitt.
     // given
     def artist = """
       <a href=\\\"https://www.dummy.com/artists/band-name/123456789\\\">The 1st Band</a> / 
@@ -101,7 +101,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
       assertThat(it.metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
       assertThat(it.type.name()).isEqualTo(ReleaseType.FULL_LENGTH.name())
       assertThat(it.genre).isEqualTo("Heavy Metal")
-      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 3))
+      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 3).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
       assertThat(it.estimatedReleaseDate).isNull()
       assertThat(it.releaseSource.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
     }
@@ -145,7 +145,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
       assertThat(it.metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
       assertThat(it.type.name()).isEqualTo(ReleaseType.FULL_LENGTH.name())
       assertThat(it.genre).isEqualTo("Heavy Metal")
-      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 4))
+      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 4).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
       assertThat(it.estimatedReleaseDate).isNull()
       assertThat(it.releaseSource.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
     }
