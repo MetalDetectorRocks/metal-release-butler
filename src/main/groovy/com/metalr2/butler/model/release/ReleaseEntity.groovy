@@ -13,7 +13,7 @@ import java.time.OffsetDateTime
 @Entity(name = "releases")
 @EqualsAndHashCode(callSuper = true)
 @Builder(excludes = "new") // because there is method isNew in super class
-class ReleaseEntity extends BaseEntity {
+class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
 
   @Column(name = "artist", nullable = false, columnDefinition = "VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci")
   String artist
@@ -54,6 +54,11 @@ class ReleaseEntity extends BaseEntity {
 
   List<String> getAdditionalArtists() {
     return additionalArtists ? additionalArtists.tokenize(",")*.trim() : []
+  }
+
+  @Override
+  int compareTo(ReleaseEntity other) {
+    this.releaseDate <=> other.releaseDate ?: this.artist <=> other.artist ?: this.albumTitle <=> other.albumTitle
   }
 
 }

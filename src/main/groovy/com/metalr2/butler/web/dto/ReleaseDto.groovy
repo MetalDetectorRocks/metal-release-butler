@@ -8,12 +8,8 @@ import java.time.LocalDate
 class ReleaseDto {
 
   String artist
-  URL artistUrl
   List<String> additionalArtists = []
   String albumTitle
-  URL albumUrl
-  String type
-  String genre
   LocalDate releaseDate
   String estimatedReleaseDate
 

@@ -1,7 +1,7 @@
 package com.metalr2.butler.web.rest
 
 import com.metalr2.butler.service.ReleaseService
-import com.metalr2.butler.service.restclient.MetalArchivesRestClient
+import com.metalr2.butler.supplier.metalarchives.MetalArchivesRestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping

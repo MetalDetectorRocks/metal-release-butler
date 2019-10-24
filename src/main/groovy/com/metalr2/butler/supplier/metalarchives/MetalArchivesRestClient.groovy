@@ -1,6 +1,5 @@
-package com.metalr2.butler.service.restclient
+package com.metalr2.butler.supplier.metalarchives
 
-import com.metalr2.butler.web.dto.UpcomingReleasesResponse
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -30,12 +29,12 @@ class MetalArchivesRestClient {
 
     while (dataAvailable) {
       // (1) request
-      ResponseEntity<UpcomingReleasesResponse> responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL
-              , UpcomingReleasesResponse.class
+      ResponseEntity<MetalArchivesResponse> responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL
+              , MetalArchivesResponse.class
               , startOfRange)
 
       // (2) check http status and response body
-      UpcomingReleasesResponse responseBody = responseEntity.body
+      MetalArchivesResponse responseBody = responseEntity.body
       if (responseEntity.statusCode != HttpStatus.OK || responseBody == null) {
         break
       }
