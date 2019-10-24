@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*
 
 import java.time.LocalDate
 
-// ToDo DanielW: Endpunkte in Klasse Endpoints
-
 @RestController
 @RequestMapping("/rest/v1/releases")
 class UpcomingReleasesRestController {
@@ -33,11 +31,11 @@ class UpcomingReleasesRestController {
       releases = releaseService.findAllUpcomingReleases(page, size)
     }
     else if (from != null || to != null) {
-      totalReleases = 1 // ToDo DanielW: richtige Anzahl ermitteln
+      totalReleases = releaseService.totalCountAllReleasesInTimeRange(from, to)
       releases = releaseService.findAllReleasesInTimeRange(from, to, page, size)
     }
 
-    // ToDo DanielW: totalPages bei verschiedenen Szenarien prüfen
+    // ToDo DanielW: totalPages bei verschiedenen Szenarien prüfen (Bsp. 11 releases, size = 10)
     def response = new UpcomingReleasesResponse(currentPage: page, size: size, totalPages: Math.max(1, (totalReleases / size) as int),
                                                 totalReleases: totalReleases, releases: releases)
     return ResponseEntity.ok(response)

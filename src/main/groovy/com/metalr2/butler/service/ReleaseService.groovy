@@ -18,7 +18,7 @@ interface ReleaseService {
 
   long totalCountAllUpcomingReleases()
 
-  long totalCountAllReleasesInTimeRange()
+  long totalCountAllReleasesInTimeRange(LocalDate from, LocalDate to)
 
   long totalCountAllUpcomingReleasesForArtists()
 

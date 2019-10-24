@@ -7,18 +7,20 @@ import com.metalr2.butler.web.dto.ReleaseDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.time.ZoneId
 
 @Service
 class ReleaseServiceImpl implements ReleaseService {
 
-  static final YESTERDAY = LocalDate.now().minusDays(1).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime()
+  static final YESTERDAY = toOffsetDateTime(LocalDate.now() - 1)
 
   final Logger log = LoggerFactory.getLogger(ReleaseServiceImpl)
   final ReleaseRepository releaseRepository
@@ -62,8 +64,20 @@ class ReleaseServiceImpl implements ReleaseService {
   @Override
   @Transactional(readOnly = true)
   List<ReleaseDto> findAllReleasesInTimeRange(LocalDate from, LocalDate to, int page, int size) {
-    // ToDo DanielW: implement
-    return []
+    Pageable pageable = PageRequest.of(page - 1, size) // page is index-based
+    Page<ReleaseEntity> pageResult
+
+    if (from != null && to != null) {
+      pageResult = releaseRepository.findAllByReleaseDateIsBetween(toOffsetDateTime(from), toOffsetDateTime(to), pageable)
+    }
+    else if (from != null) {
+      pageResult = releaseRepository.findAllByReleaseDateIsAfter(toOffsetDateTime(from - 1), pageable)
+    }
+    else { // only 'to' has a value
+      pageResult = releaseRepository.findAllByReleaseDateIsBefore(toOffsetDateTime(to), pageable)
+    }
+
+    return pageResult.sort().collect { convertToDto(it) }
   }
 
   @Override
@@ -86,9 +100,20 @@ class ReleaseServiceImpl implements ReleaseService {
   }
 
   @Override
-  long totalCountAllReleasesInTimeRange() {
-    // ToDo DanielW: implement
-    return 0
+  long totalCountAllReleasesInTimeRange(LocalDate from, LocalDate to) {
+    def count
+
+    if (from != null && to != null) {
+      count = releaseRepository.countByReleaseDateIsBetween(toOffsetDateTime(from), toOffsetDateTime(to))
+    }
+    else if (from != null) {
+      count = releaseRepository.countByReleaseDateIsAfter(toOffsetDateTime(from - 1))
+    }
+    else { // only 'to' has a value
+      count = releaseRepository.countByReleaseDateIsBefore(toOffsetDateTime(to))
+    }
+
+    return count
   }
 
   @Override
@@ -107,6 +132,10 @@ class ReleaseServiceImpl implements ReleaseService {
     return new ReleaseDto(artist: releaseEntity.artist, additionalArtists: releaseEntity.additionalArtists,
                           albumTitle: releaseEntity.albumTitle, releaseDate: releaseEntity.releaseDate?.toLocalDate(),
                           estimatedReleaseDate: releaseEntity.estimatedReleaseDate)
+  }
+
+  private static OffsetDateTime toOffsetDateTime(LocalDate date) {
+    return date.atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime()
   }
 
 }
