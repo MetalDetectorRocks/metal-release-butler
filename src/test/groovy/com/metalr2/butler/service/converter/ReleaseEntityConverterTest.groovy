@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 import java.time.LocalDate
-import java.time.ZoneId
 
 class ReleaseEntityConverterTest implements WithAssertions {
 
@@ -35,7 +34,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
     assertThat(conversionResult[0].metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
     assertThat(conversionResult[0].type.name()).isEqualTo(ReleaseType.FULL_LENGTH.name())
     assertThat(conversionResult[0].genre).isEqualTo("Depressive Black Metal")
-    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 8, 26).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
+    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 8, 26))
     assertThat(conversionResult[0].estimatedReleaseDate).isNull()
     assertThat(conversionResult[0].source.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
   }
@@ -63,7 +62,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
     assertThat(conversionResult[0].metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
     assertThat(conversionResult[0].type.name()).isEqualTo(ReleaseType.EP.name())
     assertThat(conversionResult[0].genre).isEqualTo("Heavy Metal")
-    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 10, 1).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
+    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 10, 1))
     assertThat(conversionResult[0].estimatedReleaseDate).isNull()
     assertThat(conversionResult[0].source.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
   }
@@ -101,7 +100,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
       assertThat(it.metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
       assertThat(it.type.name()).isEqualTo(ReleaseType.FULL_LENGTH.name())
       assertThat(it.genre).isEqualTo("Heavy Metal")
-      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 3).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
+      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 3))
       assertThat(it.estimatedReleaseDate).isNull()
       assertThat(it.source.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
     }
@@ -145,7 +144,7 @@ class ReleaseEntityConverterTest implements WithAssertions {
       assertThat(it.metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
       assertThat(it.type.name()).isEqualTo(ReleaseType.FULL_LENGTH.name())
       assertThat(it.genre).isEqualTo("Heavy Metal")
-      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 4).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
+      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 4))
       assertThat(it.estimatedReleaseDate).isNull()
       assertThat(it.source.name()).isEqualTo(ReleaseSource.METAL_ARCHIVES.name())
     }

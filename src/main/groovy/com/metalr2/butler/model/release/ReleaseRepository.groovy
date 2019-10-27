@@ -4,18 +4,18 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
-import java.time.OffsetDateTime
+import java.time.LocalDate
 
 interface ReleaseRepository extends JpaRepository<ReleaseEntity, Long> {
 
-  Page<ReleaseEntity> findAllByReleaseDateIsAfter(OffsetDateTime offsetDateTime, Pageable pageable)
+  Page<ReleaseEntity> findAllByReleaseDateIsAfter(LocalDate date, Pageable pageable)
 
-  Page<ReleaseEntity> findAllByReleaseDateIsBetween(OffsetDateTime from, OffsetDateTime to, Pageable pageable)
+  Page<ReleaseEntity> findAllByReleaseDateIsBetween(LocalDate from, LocalDate to, Pageable pageable)
 
-  long countByReleaseDateIsAfter(OffsetDateTime offsetDateTime)
+  long countByReleaseDateIsAfter(LocalDate date)
 
-  long countByReleaseDateIsBetween(OffsetDateTime from, OffsetDateTime to)
+  long countByReleaseDateIsBetween(LocalDate from, LocalDate to)
 
-  int deleteByReleaseDateIsAfter(OffsetDateTime offsetDateTime)
+  int deleteByReleaseDateIsAfter(LocalDate date)
 
 }

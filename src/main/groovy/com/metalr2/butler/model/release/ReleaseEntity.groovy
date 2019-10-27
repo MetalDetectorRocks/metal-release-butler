@@ -8,7 +8,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated
-import java.time.OffsetDateTime
+import java.time.LocalDate
 
 @Entity(name = "releases")
 @EqualsAndHashCode(callSuper = true)
@@ -22,7 +22,7 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
   String albumTitle
 
   @Column(name = "release_date", nullable = true, columnDefinition = "DATE")
-  OffsetDateTime releaseDate
+  LocalDate releaseDate
 
   @Column(name = "estimated_release_date", nullable = true)
   String estimatedReleaseDate

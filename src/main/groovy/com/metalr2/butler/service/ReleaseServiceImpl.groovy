@@ -13,13 +13,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.ZoneId
 
 @Service
 class ReleaseServiceImpl implements ReleaseService {
 
-  static final YESTERDAY = toOffsetDateTime(LocalDate.now() - 1)
+  static final YESTERDAY = LocalDate.now() - 1
 
   final Logger log = LoggerFactory.getLogger(ReleaseServiceImpl)
   final ReleaseRepository releaseRepository
@@ -66,7 +64,7 @@ class ReleaseServiceImpl implements ReleaseService {
   @Transactional(readOnly = true)
   List<ReleaseDto> findAllReleasesInTimeRange(LocalDate from, LocalDate to, int page, int size) {
     Pageable pageable = PageRequest.of(page - 1, size) // page is index-based
-    return releaseRepository.findAllByReleaseDateIsBetween(toOffsetDateTime(from), toOffsetDateTime(to), pageable)
+    return releaseRepository.findAllByReleaseDateIsBetween(from, to, pageable)
                             .sort()
                             .collect { convertToDto(it) }
   }
@@ -92,7 +90,7 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   long totalCountAllReleasesInTimeRange(LocalDate from, LocalDate to) {
-    return releaseRepository.countByReleaseDateIsBetween(toOffsetDateTime(from), toOffsetDateTime(to))
+    return releaseRepository.countByReleaseDateIsBetween(from, to)
   }
 
   @Override
@@ -109,12 +107,8 @@ class ReleaseServiceImpl implements ReleaseService {
 
   private ReleaseDto convertToDto(ReleaseEntity releaseEntity) {
     return new ReleaseDto(artist: releaseEntity.artist, additionalArtists: releaseEntity.additionalArtists,
-                          albumTitle: releaseEntity.albumTitle, releaseDate: releaseEntity.releaseDate?.toLocalDate(),
+                          albumTitle: releaseEntity.albumTitle, releaseDate: releaseEntity.releaseDate,
                           estimatedReleaseDate: releaseEntity.estimatedReleaseDate)
-  }
-
-  private static OffsetDateTime toOffsetDateTime(LocalDate date) {
-    return date.atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime()
   }
 
 }

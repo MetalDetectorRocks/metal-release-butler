@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import java.time.LocalDate
-import java.time.ZoneId
 
 @Component
 @Profile("dev")
@@ -34,7 +33,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
     ReleaseEntity alcest = ReleaseEntity.builder()
             .artist("Alcest")
             .albumTitle("Spiritual Instinct")
-            .releaseDate(LocalDate.of(2019, 11, 25).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
+            .releaseDate(LocalDate.of(2019, 11, 25))
             .genre("Black Metal (early), Post-Metal/Shoegaze (later)")
             .type(ReleaseType.FULL_LENGTH)
             .source(ReleaseSource.METAL_ARCHIVES)
@@ -44,7 +43,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
     ReleaseEntity cradleOfFilth = ReleaseEntity.builder()
             .artist("Cradle of Filth")
             .albumTitle("Cruelty and the Beast: Re-Mistressed")
-            .releaseDate(LocalDate.of(2019, 11, 1).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
+            .releaseDate(LocalDate.of(2019, 11, 1))
             .genre("Death Metal (early), Symphonic Black Metal (mid), Extreme Gothic Metal (later)")
             .type(ReleaseType.FULL_LENGTH)
             .source(ReleaseSource.METAL_ARCHIVES)
@@ -64,7 +63,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
     ReleaseEntity voland = ReleaseEntity.builder()
             .artist("平衡世界的意志")
             .albumTitle("Bоланд")
-            .releaseDate(LocalDate.of(2019, 11, 23).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
+            .releaseDate(LocalDate.of(2019, 11, 23))
             .genre("Symphonic/Folk Black Metal")
             .type(ReleaseType.COMPILATION)
             .source(ReleaseSource.METAL_ARCHIVES)
@@ -74,7 +73,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
     ReleaseEntity grond = ReleaseEntity.builder()
             .artist("Grond")
             .albumTitle("Endless Spiral of Terror")
-            .releaseDate(LocalDate.of(2019, 11, 30).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
+            .releaseDate(LocalDate.of(2019, 11, 30))
             .genre("Death Metal")
             .type(ReleaseType.SPLIT)
             .source(ReleaseSource.METAL_ARCHIVES)
@@ -85,7 +84,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
     ReleaseEntity graceless = ReleaseEntity.builder()
             .artist("Graceless")
             .albumTitle("Endless Spiral of Terror")
-            .releaseDate(LocalDate.of(2019, 11, 30).atStartOfDay(ZoneId.of("UTC")).toOffsetDateTime())
+            .releaseDate(LocalDate.of(2019, 11, 30))
             .genre("Death Metal")
             .type(ReleaseType.SPLIT)
             .source(ReleaseSource.METAL_ARCHIVES)
