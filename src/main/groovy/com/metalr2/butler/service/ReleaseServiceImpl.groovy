@@ -7,7 +7,6 @@ import com.metalr2.butler.web.dto.ReleaseDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -58,26 +57,18 @@ class ReleaseServiceImpl implements ReleaseService {
   @Transactional(readOnly = true)
   List<ReleaseDto> findAllUpcomingReleases(int page, int size) {
     Pageable pageable = PageRequest.of(page - 1, size) // page is index-based
-    return releaseRepository.findAllByReleaseDateIsAfter(YESTERDAY, pageable).sort().collect { convertToDto(it) }
+    return releaseRepository.findAllByReleaseDateIsAfter(YESTERDAY, pageable)
+                            .sort()
+                            .collect { convertToDto(it) }
   }
 
   @Override
   @Transactional(readOnly = true)
   List<ReleaseDto> findAllReleasesInTimeRange(LocalDate from, LocalDate to, int page, int size) {
     Pageable pageable = PageRequest.of(page - 1, size) // page is index-based
-    Page<ReleaseEntity> pageResult
-
-    if (from != null && to != null) {
-      pageResult = releaseRepository.findAllByReleaseDateIsBetween(toOffsetDateTime(from), toOffsetDateTime(to), pageable)
-    }
-    else if (from != null) {
-      pageResult = releaseRepository.findAllByReleaseDateIsAfter(toOffsetDateTime(from - 1), pageable)
-    }
-    else { // only 'to' has a value
-      pageResult = releaseRepository.findAllByReleaseDateIsBefore(toOffsetDateTime(to), pageable)
-    }
-
-    return pageResult.sort().collect { convertToDto(it) }
+    return releaseRepository.findAllByReleaseDateIsBetween(toOffsetDateTime(from), toOffsetDateTime(to), pageable)
+                            .sort()
+                            .collect { convertToDto(it) }
   }
 
   @Override
@@ -101,19 +92,7 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   long totalCountAllReleasesInTimeRange(LocalDate from, LocalDate to) {
-    def count
-
-    if (from != null && to != null) {
-      count = releaseRepository.countByReleaseDateIsBetween(toOffsetDateTime(from), toOffsetDateTime(to))
-    }
-    else if (from != null) {
-      count = releaseRepository.countByReleaseDateIsAfter(toOffsetDateTime(from - 1))
-    }
-    else { // only 'to' has a value
-      count = releaseRepository.countByReleaseDateIsBefore(toOffsetDateTime(to))
-    }
-
-    return count
+    return releaseRepository.countByReleaseDateIsBetween(toOffsetDateTime(from), toOffsetDateTime(to))
   }
 
   @Override

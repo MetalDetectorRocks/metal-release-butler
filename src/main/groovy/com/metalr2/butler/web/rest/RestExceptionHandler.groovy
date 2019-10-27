@@ -14,15 +14,21 @@ class RestExceptionHandler {
 
   final Logger log = LoggerFactory.getLogger(RestExceptionHandler)
 
-  @ExceptionHandler(value = TypeMismatchException.class)
+  @ExceptionHandler(value = TypeMismatchException)
   ResponseEntity<ErrorResponse> handleTypeMismatchException(TypeMismatchException exception) {
     log.warn(exception.getMessage())
     return ResponseEntity.badRequest().body(createTypeMismatchErrorResponse(exception))
   }
 
   // ToDo DanielW: Handle negative values for page and size
+  @ExceptionHandler(value = IllegalArgumentException)
+  ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
+    log.warn(exception.getMessage())
+    def messages = [exception.message]
+    return ResponseEntity.badRequest().body(new ErrorResponse(messages, HttpStatus.BAD_REQUEST.value()))
+  }
 
-  @ExceptionHandler(value = Exception.class)
+  @ExceptionHandler(value = Exception)
   ResponseEntity<ErrorResponse> handleAllOtherExceptions(Exception exception) {
     log.warn(exception.getMessage())
     def response = new ErrorResponse(["Unhandled server error"], HttpStatus.INTERNAL_SERVER_ERROR.value())

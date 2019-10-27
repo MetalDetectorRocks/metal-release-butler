@@ -30,9 +30,13 @@ class UpcomingReleasesRestController {
       totalReleases = releaseService.totalCountAllUpcomingReleases()
       releases = releaseService.findAllUpcomingReleases(page, size)
     }
-    else if (from != null || to != null) {
+    else if (from != null && to != null) {
+      // ToDo DanielW: Testen!
       totalReleases = releaseService.totalCountAllReleasesInTimeRange(from, to)
       releases = releaseService.findAllReleasesInTimeRange(from, to, page, size)
+    }
+    else {
+      throw new IllegalArgumentException("The parameters 'from' and 'to' must both have a valid date value in the format YYYY-MM-DD.")
     }
 
     // ToDo DanielW: totalPages bei verschiedenen Szenarien prüfen (Bsp. 11 releases, size = 10)
@@ -41,7 +45,7 @@ class UpcomingReleasesRestController {
     return ResponseEntity.ok(response)
   }
 
-  @PostMapping(path = "/for-artists", produces = [MediaType.APPLICATION_JSON_VALUE])
+  @PostMapping(path = "/my-artists", produces = [MediaType.APPLICATION_JSON_VALUE])
   ResponseEntity<UpcomingReleasesResponse> getAllUpcomingReleasesForArtists(@RequestParam(name = "page", defaultValue = "1") int page,
                                                                             @RequestParam(name = "size", defaultValue = "1") int size,
                                                                             @RequestParam(name = "from", required = false) LocalDate from,
