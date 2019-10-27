@@ -8,7 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -22,6 +22,10 @@ class ReleaseServiceImpl implements ReleaseService {
   final Logger log = LoggerFactory.getLogger(ReleaseServiceImpl)
   final ReleaseRepository releaseRepository
   final Converter<String[], List<ReleaseEntity>> converter
+  final Closure<PageRequest> pageableSupplier = { int page, int size ->
+    // Since the page is index-based we decrement the value by 1
+    return PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle"))
+  }
 
   @Autowired
   ReleaseServiceImpl(ReleaseRepository releaseRepository, Converter<String[], List<ReleaseEntity>> converter) {
@@ -37,7 +41,7 @@ class ReleaseServiceImpl implements ReleaseService {
     upcomingReleasesRawData.each { releaseEntities.addAll(converter.convert(it)) }
 
     // remove any record that has a release date today or later
-    def affectedRows = releaseRepository.deleteByReleaseDateIsAfter(YESTERDAY)
+    def affectedRows = releaseRepository.deleteByReleaseDateAfter(YESTERDAY)
     log.info("{} records were deleted", affectedRows)
 
     // insert releases
@@ -48,55 +52,45 @@ class ReleaseServiceImpl implements ReleaseService {
   @Override
   @Transactional(readOnly = true)
   List<ReleaseDto> findAllUpcomingReleases(int page, int size) {
-    Pageable pageable = PageRequest.of(page - 1, size) // page is index-based
-    return releaseRepository.findAllByReleaseDateIsAfter(YESTERDAY, pageable)
-                            .sort()
-                            .collect { convertToDto(it) }
+    return releaseRepository.findAllByReleaseDateAfter(YESTERDAY, pageableSupplier(page, size)).collect { convertToDto(it) }
   }
 
   @Override
   @Transactional(readOnly = true)
   List<ReleaseDto> findAllReleasesInTimeRange(LocalDate from, LocalDate to, int page, int size) {
-    Pageable pageable = PageRequest.of(page - 1, size) // page is index-based
-    return releaseRepository.findAllByReleaseDateIsBetween(from, to, pageable)
-                            .sort()
-                            .collect { convertToDto(it) }
+    return releaseRepository.findAllByReleaseDateBetween(from, to, pageableSupplier(page, size)).collect { convertToDto(it) }
   }
 
   @Override
   @Transactional(readOnly = true)
-  List<ReleaseDto> findAllUpcomingReleasesForArtists(List<String> artistNames, int page, int size) {
-    // ToDo DanielW: implement
-    return []
+  List<ReleaseDto> findAllUpcomingReleasesForArtists(Iterable<String> artistNames, int page, int size) {
+    return releaseRepository.findAllByArtistIn(artistNames, pageableSupplier(page, size)).collect { convertToDto(it) }
   }
 
   @Override
   @Transactional(readOnly = true)
-  List<ReleaseDto> findAllReleasesInTimeRangeForArtists(List<String> artistNames, LocalDate from, LocalDate to, int page, int size) {
-    // ToDo DanielW: implement
-    return []
+  List<ReleaseDto> findAllReleasesInTimeRangeForArtists(Iterable<String> artistNames, LocalDate from, LocalDate to, int page, int size) {
+    return releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, from, to, pageableSupplier(page, size)).collect { convertToDto(it) }
   }
 
   @Override
   long totalCountAllUpcomingReleases() {
-    return releaseRepository.countByReleaseDateIsAfter(YESTERDAY)
+    return releaseRepository.countByReleaseDateAfter(YESTERDAY)
   }
 
   @Override
   long totalCountAllReleasesInTimeRange(LocalDate from, LocalDate to) {
-    return releaseRepository.countByReleaseDateIsBetween(from, to)
+    return releaseRepository.countByReleaseDateBetween(from, to)
   }
 
   @Override
-  long totalCountAllUpcomingReleasesForArtists() {
-    // ToDo DanielW: implement
-    return 0
+  long totalCountAllUpcomingReleasesForArtists(Iterable<String> artistNames) {
+    return releaseRepository.countByArtistIn(artistNames)
   }
 
   @Override
-  long totalCountAllReleasesInTimeRangeForArtists() {
-    // ToDo DanielW: implement
-    return 0
+  long totalCountAllReleasesInTimeRangeForArtists(Iterable<String> artistNames, LocalDate from, LocalDate to) {
+    return releaseRepository.countByArtistInAndReleaseDateBetween(artistNames, from, to)
   }
 
   private ReleaseDto convertToDto(ReleaseEntity releaseEntity) {

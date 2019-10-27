@@ -28,8 +28,12 @@ class DevelopmentDbInitializer implements ApplicationRunner {
   }
 
   @Override
-  @Transactional
+  @Transactional(readOnly = false)
   void run(ApplicationArguments args) throws Exception {
+    // addExampleReleases()
+  }
+
+  private void addExampleReleases() {
     ReleaseEntity alcest = ReleaseEntity.builder()
             .artist("Alcest")
             .albumTitle("Spiritual Instinct")
@@ -99,5 +103,4 @@ class DevelopmentDbInitializer implements ApplicationRunner {
     entityManager.persist(grond)
     entityManager.persist(graceless)
   }
-
 }

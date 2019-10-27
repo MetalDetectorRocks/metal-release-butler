@@ -12,16 +12,16 @@ interface ReleaseService {
 
   List<ReleaseDto> findAllReleasesInTimeRange(LocalDate from, LocalDate to, int page, int size)
 
-  List<ReleaseDto> findAllUpcomingReleasesForArtists(List<String> artistNames, int page, int size)
+  List<ReleaseDto> findAllUpcomingReleasesForArtists(Iterable<String> artistNames, int page, int size)
 
-  List<ReleaseDto> findAllReleasesInTimeRangeForArtists(List<String> artistNames, LocalDate from, LocalDate to, int page, int size)
+  List<ReleaseDto> findAllReleasesInTimeRangeForArtists(Iterable<String> artistNames, LocalDate from, LocalDate to, int page, int size)
 
   long totalCountAllUpcomingReleases()
 
   long totalCountAllReleasesInTimeRange(LocalDate from, LocalDate to)
 
-  long totalCountAllUpcomingReleasesForArtists()
+  long totalCountAllUpcomingReleasesForArtists(Iterable<String> artistNames)
 
-  long totalCountAllReleasesInTimeRangeForArtists()
+  long totalCountAllReleasesInTimeRangeForArtists(Iterable<String> artistNames, LocalDate from, LocalDate to)
 
 }

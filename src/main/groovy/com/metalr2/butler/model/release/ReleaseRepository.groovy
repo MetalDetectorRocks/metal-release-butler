@@ -8,14 +8,22 @@ import java.time.LocalDate
 
 interface ReleaseRepository extends JpaRepository<ReleaseEntity, Long> {
 
-  Page<ReleaseEntity> findAllByReleaseDateIsAfter(LocalDate date, Pageable pageable)
+  Page<ReleaseEntity> findAllByReleaseDateAfter(LocalDate date, Pageable pageable)
 
-  Page<ReleaseEntity> findAllByReleaseDateIsBetween(LocalDate from, LocalDate to, Pageable pageable)
+  Page<ReleaseEntity> findAllByReleaseDateBetween(LocalDate from, LocalDate to, Pageable pageable)
 
-  long countByReleaseDateIsAfter(LocalDate date)
+  Page<ReleaseEntity> findAllByArtistIn(Iterable<String> artistNames, Pageable pageable)
 
-  long countByReleaseDateIsBetween(LocalDate from, LocalDate to)
+  Page<ReleaseEntity> findAllByArtistInAndReleaseDateBetween(Iterable<String> artistNames, LocalDate from, LocalDate to, Pageable pageable)
 
-  int deleteByReleaseDateIsAfter(LocalDate date)
+  long countByReleaseDateAfter(LocalDate date)
+
+  long countByReleaseDateBetween(LocalDate from, LocalDate to)
+
+  long countByArtistIn(Iterable<String> artistNames)
+
+  long countByArtistInAndReleaseDateBetween(Iterable<String> artistNames, LocalDate from, LocalDate to)
+
+  int deleteByReleaseDateAfter(LocalDate date)
 
 }

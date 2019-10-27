@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.TypeMismatchException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 
@@ -24,6 +25,13 @@ class RestExceptionHandler {
   ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
     log.warn(exception.getMessage())
     def messages = [exception.message]
+    return ResponseEntity.badRequest().body(new ErrorResponse(messages, HttpStatus.BAD_REQUEST.value()))
+  }
+
+  @ExceptionHandler(value = HttpMessageNotReadableException)
+  ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
+    log.warn(exception.getMessage())
+    def messages = [exception.message.split(": ")[0]]
     return ResponseEntity.badRequest().body(new ErrorResponse(messages, HttpStatus.BAD_REQUEST.value()))
   }
 
