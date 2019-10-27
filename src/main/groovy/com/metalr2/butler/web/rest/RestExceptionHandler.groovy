@@ -20,7 +20,6 @@ class RestExceptionHandler {
     return ResponseEntity.badRequest().body(createTypeMismatchErrorResponse(exception))
   }
 
-  // ToDo DanielW: Handle negative values for page and size
   @ExceptionHandler(value = IllegalArgumentException)
   ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException exception) {
     log.warn(exception.getMessage())

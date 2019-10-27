@@ -36,18 +36,12 @@ class ReleaseServiceImpl implements ReleaseService {
     List<ReleaseEntity> releaseEntities = []
     upcomingReleasesRawData.each { releaseEntities.addAll(converter.convert(it)) }
 
-    // remove duplicates
-    releaseEntities.unique { release1, release2 ->
-      // ToDo DanielW: braucht man das noch? Eigentschlich entspricht das der Comparable-Implementierung von ReleaseEntity (wenn auch andere Reihenfolge)
-      release1.artist <=> release2.artist ?: release1.albumTitle <=> release2.albumTitle ?: release1.releaseDate <=> release2.releaseDate
-    }
-
     // remove any record that has a release date today or later
     def affectedRows = releaseRepository.deleteByReleaseDateIsAfter(YESTERDAY)
     log.info("{} records were deleted", affectedRows)
 
     // insert releases
-    def inserted = releaseRepository.saveAll(releaseEntities)
+    def inserted = releaseRepository.saveAll(releaseEntities.unique())
     log.info("{} records were inserted", inserted.size())
   }
 
