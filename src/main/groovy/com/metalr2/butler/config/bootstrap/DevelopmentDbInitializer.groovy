@@ -30,7 +30,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
   @Override
   @Transactional(readOnly = false)
   void run(ApplicationArguments args) throws Exception {
-    // addExampleReleases()
+    addExampleReleases()
   }
 
   private void addExampleReleases() {

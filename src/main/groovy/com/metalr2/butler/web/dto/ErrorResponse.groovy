@@ -8,13 +8,15 @@ import java.time.Instant
 class ErrorResponse {
 
   final Instant timestamp
-  final int httpStatus
-  final List<String> messages
+  final int status
+  final String error
+  final String message
 
-  ErrorResponse(List<String> messages, int httpStatus) {
+  ErrorResponse(int status, String error, String message) {
     this.timestamp = Instant.now()
-    this.httpStatus = httpStatus
-    this.messages  = messages
+    this.status = status
+    this.error = error
+    this.message = message
   }
 
 }

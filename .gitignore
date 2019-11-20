@@ -22,3 +22,6 @@ out/
 
 # Project exclude paths
 /.gradle/
+
+# docker env file
+docker/env.txt

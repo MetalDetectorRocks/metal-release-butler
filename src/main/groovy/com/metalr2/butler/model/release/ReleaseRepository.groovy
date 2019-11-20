@@ -12,15 +12,15 @@ interface ReleaseRepository extends JpaRepository<ReleaseEntity, Long> {
 
   Page<ReleaseEntity> findAllByReleaseDateBetween(LocalDate from, LocalDate to, Pageable pageable)
 
-  Page<ReleaseEntity> findAllByArtistIn(Iterable<String> artistNames, Pageable pageable)
+  Page<ReleaseEntity> findAllByReleaseDateAfterAndArtistIn(LocalDate date, Iterable<String> artistNames, Pageable pageable)
 
   Page<ReleaseEntity> findAllByArtistInAndReleaseDateBetween(Iterable<String> artistNames, LocalDate from, LocalDate to, Pageable pageable)
 
   long countByReleaseDateAfter(LocalDate date)
 
-  long countByReleaseDateBetween(LocalDate from, LocalDate to)
+  long countByArtistInAndReleaseDateAfter(Iterable<String> artistNames, LocalDate date)
 
-  long countByArtistIn(Iterable<String> artistNames)
+  long countByReleaseDateBetween(LocalDate from, LocalDate to)
 
   long countByArtistInAndReleaseDateBetween(Iterable<String> artistNames, LocalDate from, LocalDate to)
 

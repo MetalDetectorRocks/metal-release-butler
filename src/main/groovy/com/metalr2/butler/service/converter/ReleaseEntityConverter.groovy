@@ -23,6 +23,10 @@ class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>>
     xmlSlurper = new XmlSlurper()
   }
 
+  /*
+   * Returns a list of ReleaseEntity, since a split album from Metal Archives
+   * is converted to a ReleaseEntity per each involved artist.
+   */
   List<ReleaseEntity> convert(String[] rawData) {
     try {
       doConvert(rawData)

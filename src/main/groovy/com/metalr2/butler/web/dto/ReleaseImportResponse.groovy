@@ -3,8 +3,9 @@ package com.metalr2.butler.web.dto
 import groovy.transform.Canonical
 
 @Canonical
-class UpcomingReleasesRequest {
+class ReleaseImportResponse {
 
-  Collection<String> artistNames
+  int totalCountRequested
+  int totalCountImported
 
 }
