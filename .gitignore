@@ -4,6 +4,9 @@
 # ignore all stuff in private folder
 .private/
 
+# ignore all stuff in secrets folder
+.secrets/
+
 # ignore all stuff in target, build and out folder
 target/
 build/

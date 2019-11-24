@@ -3,7 +3,7 @@ FROM openjdk:8-alpine
 ARG BUILD_DATE
 LABEL org.label-schema.build-date=$BUILD_DATE
 
-ADD build/libs/metal-release-butler-0.0.1-SNAPSHOT.jar metal-release-butler.jar
+COPY build/libs/metal-release-butler-0.0.1-SNAPSHOT.jar metal-release-butler.jar
 
 RUN sh -c 'touch /metal-release-butler.jar'
 
