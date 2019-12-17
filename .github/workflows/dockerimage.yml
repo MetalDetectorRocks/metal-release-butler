@@ -17,6 +17,13 @@ jobs:
           args: bootJar
       - name: Build the Docker image
         run: docker build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t metalreleaseradar/metal-release-butler:latest .
+      - name: Publish to DockerHub (with tag_name true)
+        uses: elgohr/Publish-Docker-Github-Action@2.10
+        with:
+          name: metalreleaseradar/metal-release-butler
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password:  ${{ secrets.DOCKERHUB_PASSWORD }}
+          tag_names: true
       - name: Publish to DockerHub
         uses: elgohr/Publish-Docker-Github-Action@2.10
         with:
