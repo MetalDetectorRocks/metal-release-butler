@@ -18,8 +18,8 @@ jobs:
       - name: Build the Docker image
         run: docker build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t metalreleaseradar/metal-release-butler:latest .
       - name: Publish to DockerHub
-        uses: zenato/docker-action@v1.0.0
+        uses: elgohr/Publish-Docker-Github-Action@2.10
         with:
+          name: metalreleaseradar/metal-release-butler
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password:  ${{ secrets.DOCKERHUB_PASSWORD }}
-          repository: metalreleaseradar/metal-release-butler
