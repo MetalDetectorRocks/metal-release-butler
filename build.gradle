@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.metalr2'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = JavaVersion.VERSION_1_8
 
 def swaggerVersion = '2.9.2'
 def junitVersion = '5.3.2'
@@ -48,6 +48,6 @@ dependencies {
 }
 
 test {
-	useJUnit()
+	useJUnitPlatform()
 	testLogging.showStandardStreams(true)
 }
