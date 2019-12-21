@@ -3,7 +3,7 @@ name: Build Metal Release Butler Docker Image
 on:
   push:
     branches: 
-      - github-docker-action
+      - master
 
 jobs:
   docker-image-build:
