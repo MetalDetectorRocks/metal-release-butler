@@ -5,10 +5,16 @@ import com.metalr2.butler.model.TimeRange
 import com.metalr2.butler.service.ReleaseService
 import com.metalr2.butler.web.dto.ReleaseImportResponse
 import com.metalr2.butler.web.dto.ReleasesRequest
+import com.metalr2.butler.web.dto.ReleasesRequestPaginated
 import com.metalr2.butler.web.dto.ReleasesResponse
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 import javax.validation.Valid
 
@@ -36,7 +42,29 @@ class ReleasesRestController {
   }
 
   @PostMapping(path = ["", "/"], consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  ResponseEntity<ReleasesResponse> getReleases(@Valid @RequestBody ReleasesRequest request) {
+  ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request) {
+    ReleasesResponse response = mapReleases(request)
+    return ResponseEntity.ok(response)
+  }
+
+  @PostMapping(path = "all", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request) {
+    def totalReleases = 0
+
+    if (request.dateFrom == null && request.dateTo == null) {
+      totalReleases = releaseService.totalCountAllUpcomingReleases(request.artists)
+    }
+    else if (request.dateFrom != null && request.dateTo != null) {
+      totalReleases = releaseService.totalCountAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo))
+    }
+
+    ReleasesRequestPaginated requestPaginated = new ReleasesRequestPaginated(page: 1, size: (int) totalReleases, dateFrom: request.dateFrom,
+                                                                             dateTo: request.dateTo, artists: request.artists)
+    ReleasesResponse response = mapReleases(requestPaginated)
+    return ResponseEntity.ok(response)
+  }
+
+  private def mapReleases(ReleasesRequestPaginated request) {
     def totalReleases
     def releases
 
@@ -55,8 +83,7 @@ class ReleasesRestController {
     def response = new ReleasesResponse(currentPage: request.getPage(), size: request.getSize(),
                                         totalPages: Math.ceil(totalReleases / request.getSize()),
                                         totalReleases: totalReleases, releases: releases)
-
-    return ResponseEntity.ok(response)
+    return response
   }
 
 }
