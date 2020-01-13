@@ -93,6 +93,32 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional(readOnly = true)
+  List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames) {
+    if (artistNames.isEmpty()) {
+      return releaseRepository.findAllByReleaseDateAfter(YESTERDAY)
+          .collect { convertToDto(it) }
+    }
+    else {
+      return releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
+          .collect { convertToDto(it) }
+    }
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  List<ReleaseDto> findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange) {
+    if (artistNames.isEmpty()) {
+      return releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to)
+          .collect { convertToDto(it) }
+    }
+    else {
+      return releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
+          .collect { convertToDto(it) }
+    }
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   long totalCountAllUpcomingReleases(Iterable<String> artistNames) {
     if (artistNames.isEmpty()) {
       return releaseRepository.countByReleaseDateAfter(YESTERDAY)

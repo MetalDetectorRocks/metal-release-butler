@@ -41,39 +41,14 @@ class ReleasesRestController {
     }
   }
 
-  @PostMapping(path = ["", "/"], consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = ["paginated"], consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request) {
-    ReleasesResponse response = mapReleases(request)
-    return ResponseEntity.ok(response)
-  }
-
-  @PostMapping(path = "all", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request) {
-    def totalReleases = 0
-
-    if (request.dateFrom == null && request.dateTo == null) {
-      totalReleases = releaseService.totalCountAllUpcomingReleases(request.artists)
-    }
-    else if (request.dateFrom != null && request.dateTo != null) {
-      totalReleases = releaseService.totalCountAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo))
-    }
-
-    ReleasesRequestPaginated requestPaginated = new ReleasesRequestPaginated(page: 1, size: (int) totalReleases, dateFrom: request.dateFrom,
-                                                                             dateTo: request.dateTo, artists: request.artists)
-    ReleasesResponse response = mapReleases(requestPaginated)
-    return ResponseEntity.ok(response)
-  }
-
-  private def mapReleases(ReleasesRequestPaginated request) {
-    def totalReleases
     def releases
 
     if (request.dateFrom == null && request.dateTo == null) {
-      totalReleases = releaseService.totalCountAllUpcomingReleases(request.artists)
       releases = releaseService.findAllUpcomingReleases(request.artists, request.page, request.size)
     }
     else if (request.dateFrom != null && request.dateTo != null) {
-      totalReleases = releaseService.totalCountAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo))
       releases = releaseService.findAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo), request.page, request.size)
     }
     else {
@@ -81,9 +56,29 @@ class ReleasesRestController {
     }
 
     def response = new ReleasesResponse(currentPage: request.getPage(), size: request.getSize(),
-                                        totalPages: Math.ceil(totalReleases / request.getSize()),
-                                        totalReleases: totalReleases, releases: releases)
-    return response
+                                        totalPages: Math.ceil(releases.size() / request.getSize()),
+                                        totalReleases: releases.size(), releases: releases)
+    return ResponseEntity.ok(response)
+  }
+
+  @PostMapping(path = ["","/"], consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request) {
+    def releases
+
+    if (request.dateFrom == null && request.dateTo == null) {
+      releases = releaseService.findAllUpcomingReleases(request.artists)
+    }
+    else if (request.dateFrom != null && request.dateTo != null) {
+      releases = releaseService.findAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo))
+    }
+    else {
+      throw new IllegalArgumentException("The parameters 'dateFrom' and 'dateTo' must both have a valid date value in the format YYYY-MM-DD.")
+    }
+
+    def response = new ReleasesResponse(currentPage: 1, size: releases.size(),
+                                        totalPages: 1,
+                                        totalReleases: releases.size(), releases: releases)
+    return ResponseEntity.ok(response)
   }
 
 }
