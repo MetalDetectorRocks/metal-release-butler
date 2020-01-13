@@ -11,7 +11,7 @@ import javax.persistence.Enumerated
 import java.time.LocalDate
 
 @Entity(name = "releases")
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Builder(excludes = "new") // because there is method isNew in super class
 class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
 
