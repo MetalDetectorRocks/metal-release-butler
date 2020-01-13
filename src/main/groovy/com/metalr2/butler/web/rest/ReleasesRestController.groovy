@@ -44,11 +44,14 @@ class ReleasesRestController {
   @PostMapping(path = ["paginated"], consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request) {
     def releases
+    def totalReleases
 
     if (request.dateFrom == null && request.dateTo == null) {
+      totalReleases = releaseService.totalCountAllUpcomingReleases(request.artists)
       releases = releaseService.findAllUpcomingReleases(request.artists, request.page, request.size)
     }
     else if (request.dateFrom != null && request.dateTo != null) {
+      totalReleases = releaseService.totalCountAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo))
       releases = releaseService.findAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo), request.page, request.size)
     }
     else {
@@ -57,7 +60,7 @@ class ReleasesRestController {
 
     def response = new ReleasesResponse(currentPage: request.getPage(), size: request.getSize(),
                                         totalPages: Math.ceil(releases.size() / request.getSize()),
-                                        totalReleases: releases.size(), releases: releases)
+                                        totalReleases: totalReleases, releases: releases)
     return ResponseEntity.ok(response)
   }
 
