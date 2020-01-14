@@ -38,7 +38,7 @@ class ReleaseRepositoryIT extends Specification {
     List<ReleaseEntity> results = underTest.findAllByReleaseDateAfter(date)
 
     then:
-    results.containsAll(expectedReleases)
+    results == expectedReleases
 
     where:
     date                       | expectedReleases
@@ -54,7 +54,7 @@ class ReleaseRepositoryIT extends Specification {
     List<ReleaseEntity> results = underTest.findAllByReleaseDateBetween(from, to)
 
     then:
-    results.containsAll(expectedReleases)
+    results == expectedReleases
 
     where:
     from                       | to                       | expectedReleases
@@ -69,7 +69,7 @@ class ReleaseRepositoryIT extends Specification {
     List<ReleaseEntity> results = underTest.findAllByReleaseDateAfterAndArtistIn(date, artists)
 
     then:
-    results.containsAll(expectedReleases)
+    results == expectedReleases
 
     where:
     date                       | artists            | expectedReleases
@@ -81,15 +81,14 @@ class ReleaseRepositoryIT extends Specification {
   @Unroll
   def "Find all between #from and #to and artist in #artists"() {
     when:
-    List<ReleaseEntity> results = underTest.findAllByReleaseDateBetween(from, to)
+    List<ReleaseEntity> results = underTest.findAllByArtistInAndReleaseDateBetween(artists, from, to)
 
     then:
-    results.containsAll(expectedReleases)
+    results == expectedReleases
 
     where:
     from                       | to                       | artists            | expectedReleases
     LocalDate.of(2020, 1, 1)   | LocalDate.of(2020, 3, 1) | ["A1", "A2", "A3"] | [release1, release2, release3]
     LocalDate.of(2019, 12, 31) | LocalDate.of(2020, 1, 1) | ["A1"]             | [release1]
-    LocalDate.of(2020, 1, 1)   | LocalDate.of(2020, 2, 1) | ["A1"]             | [release1]
   }
 }

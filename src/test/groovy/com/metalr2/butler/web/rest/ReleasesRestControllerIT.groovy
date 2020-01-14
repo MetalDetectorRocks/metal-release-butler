@@ -50,7 +50,7 @@ class ReleasesRestControllerIT extends Specification {
     and:
     ReleasesResponse releasesResponse = response.body().as(ReleasesResponse)
     releasesResponse.releases.size() == 2
-    releasesResponse.releases.containsAll(getReleaseDtosForTimeRangeTest())
+    releasesResponse.releases == getReleaseDtosForTimeRangeTest()
   }
 
   def "test releases endpoint for artists with time range with status ok"() {
@@ -74,8 +74,7 @@ class ReleasesRestControllerIT extends Specification {
 
     and:
     ReleasesResponse releasesResponse = response.body().as(ReleasesResponse)
-    releasesResponse.releases.size() == 1
-    releasesResponse.releases.contains(ReleaseDtoFactory.one("A1", LocalDate.of(2020, 1, 31)))
+    releasesResponse.releases == [ReleaseDtoFactory.one("A1", LocalDate.of(2020, 1, 31))]
   }
 
   @Unroll
@@ -104,7 +103,7 @@ class ReleasesRestControllerIT extends Specification {
              new ReleasesRequest(artists: ["A1"], dateFrom: null, dateTo: LocalDate.of(2020, 2, 1))]
   }
 
-  private List<ReleaseDto> getReleaseDtosForTimeRangeTest() {
+  private static List<ReleaseDto> getReleaseDtosForTimeRangeTest() {
     return [ReleaseDtoFactory.one("A1", LocalDate.of(2020, 1, 31)),
             ReleaseDtoFactory.one("A1", LocalDate.of(2020, 2, 28))]
   }
