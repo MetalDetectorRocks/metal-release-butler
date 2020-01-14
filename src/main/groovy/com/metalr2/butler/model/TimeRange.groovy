@@ -19,4 +19,9 @@ class TimeRange {
     return new TimeRange(from, to)
   }
 
+  @Override
+  String toString() {
+    return from.toString() + " to " + to.toString()
+  }
+
 }

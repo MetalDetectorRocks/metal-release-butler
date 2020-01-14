@@ -99,7 +99,8 @@ class ReleaseServiceImpl implements ReleaseService {
           .collect { convertToDto(it) }
     }
     else {
-      return releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
+      List<ReleaseEntity> test = releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
+      return test
           .collect { convertToDto(it) }
     }
   }
