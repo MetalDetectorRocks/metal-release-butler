@@ -50,7 +50,7 @@ dependencies {
 	testCompile group: 'org.spockframework', name: 'spock-core', version: spockVersion
 	testCompile group: 'org.spockframework', name: 'spock-spring', version: spockVersion
 	testCompile group: 'io.rest-assured', name: 'rest-assured', version: restAssuredVersion
-	compile group: 'io.rest-assured', name: 'json-path', version: restAssuredVersion
+	testCompile group: 'io.rest-assured', name: 'json-path', version: restAssuredVersion
 }
 
 test {
