@@ -47,10 +47,10 @@ dependencies {
 	testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
 	testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 	testCompile("org.junit.jupiter:junit-jupiter-params:$junitVersion")
-	testCompile group: 'org.spockframework', name: 'spock-core', version: spockVersion
-	testCompile group: 'org.spockframework', name: 'spock-spring', version: spockVersion
-	testCompile group: 'io.rest-assured', name: 'rest-assured', version: restAssuredVersion
-	testCompile group: 'io.rest-assured', name: 'json-path', version: restAssuredVersion
+	testCompile("org.spockframework:spock-core:$spockVersion")
+	testCompile("org.spockframework:spock-spring:$spockVersion")
+	testCompile("io.rest-assured:rest-assured:$restAssuredVersion")
+	testCompile("io.rest-assured:json-path:$restAssuredVersion")
 }
 
 test {
