@@ -9,6 +9,8 @@ import spock.lang.Unroll
 
 import java.time.LocalDate
 
+import static com.metalr2.butler.DtoFactory.ReleaseEntityFactory
+
 @Tag("integration-test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @DataJpaTest
@@ -17,9 +19,9 @@ class ReleaseRepositoryIT extends Specification {
   @Autowired
   ReleaseRepository underTest
 
-  static def release1 = new ReleaseEntity(artist: "A1", albumTitle: "T1", releaseDate: LocalDate.of(2020, 1, 1), state: ReleaseEntityRecordState.OK)
-  static def release2 = new ReleaseEntity(artist: "A2", albumTitle: "T2", releaseDate: LocalDate.of(2020, 2, 1), state: ReleaseEntityRecordState.OK)
-  static def release3 = new ReleaseEntity(artist: "A3", albumTitle: "T3", releaseDate: LocalDate.of(2020, 3, 1), state: ReleaseEntityRecordState.OK)
+  static def release1 = ReleaseEntityFactory.one("A1", LocalDate.of(2020, 1, 1))
+  static def release2 = ReleaseEntityFactory.one("A2", LocalDate.of(2020, 2, 1))
+  static def release3 = ReleaseEntityFactory.one("A3", LocalDate.of(2020, 3, 1))
 
   void setup() {
     def releases = [release1, release2, release3]
