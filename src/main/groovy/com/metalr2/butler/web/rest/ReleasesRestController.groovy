@@ -59,7 +59,7 @@ class ReleasesRestController {
     }
 
     def response = new ReleasesResponse(currentPage: request.getPage(), size: request.getSize(),
-                                        totalPages: Math.ceil(releases.size() / request.getSize()),
+                                        totalPages: Math.ceil(totalReleases / request.getSize()),
                                         totalReleases: totalReleases, releases: releases)
     return ResponseEntity.ok(response)
   }
