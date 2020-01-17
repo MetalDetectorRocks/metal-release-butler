@@ -31,9 +31,15 @@ class ReleaseServiceTest extends Specification {
     results == expectedReleases
 
     where:
-    artists            | releaseEntities                       | expectedReleases
-    ["A1"]             | [ReleaseEntityFactory.one("A1", now)] | [ReleaseDtoFactory.one("A1", now)]
-    ["A0", "A1", "A2"] | ReleaseEntityFactory.multiple(3, now) | ReleaseDtoFactory.multiple(3, now)
+    artists << [["A1"], ["A0", "A1", "A2"]]
+    releaseEntities << [[ReleaseEntityFactory.createReleaseEntity("A1", now)], [
+        ReleaseEntityFactory.createReleaseEntity("A1", now),
+        ReleaseEntityFactory.createReleaseEntity("A2", now),
+        ReleaseEntityFactory.createReleaseEntity("A3", now)]]
+    expectedReleases << [[ReleaseDtoFactory.createReleaseDto("A1", now)],
+                         [ReleaseDtoFactory.createReleaseDto("A1", now),
+                          ReleaseDtoFactory.createReleaseDto("A2", now),
+                          ReleaseDtoFactory.createReleaseDto("A3", now)]]
   }
 
   def "find all upcoming releases"() {
@@ -41,10 +47,14 @@ class ReleaseServiceTest extends Specification {
     List<ReleaseDto> results = underTest.findAllUpcomingReleases([])
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfter(_) >> ReleaseEntityFactory.multiple(3, now)
+    1 * underTest.releaseRepository.findAllByReleaseDateAfter(_) >> [ReleaseEntityFactory.createReleaseEntity("A1", now),
+                                                                     ReleaseEntityFactory.createReleaseEntity("A2", now),
+                                                                     ReleaseEntityFactory.createReleaseEntity("A3", now)]
 
     and:
-    results == ReleaseDtoFactory.multiple(3, now)
+    results == [ReleaseDtoFactory.createReleaseDto("A1", now),
+                ReleaseDtoFactory.createReleaseDto("A2", now),
+                ReleaseDtoFactory.createReleaseDto("A3", now)]
   }
 
   @Unroll
@@ -53,15 +63,15 @@ class ReleaseServiceTest extends Specification {
     List<ReleaseDto> results = underTest.findAllReleasesForTimeRange(artists, timeRange)
 
     then:
-    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artists,timeRange.from,timeRange.to) >> releaseEntities
+    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artists, timeRange.from, timeRange.to) >> releaseEntities
 
     and:
     results == expectedReleases
 
     where:
-    artists      | timeRange                                                         | releaseEntities                                             | expectedReleases
-    ["A1"]       | TimeRange.of(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 2, 1))  | [ReleaseEntityFactory.one("A1", LocalDate.of(2020, 1, 31))] | [ReleaseDtoFactory.one("A1", LocalDate.of(2020, 1, 31))]
-    ["A1", "A2"] | TimeRange.of(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 2, 28)) | getReleaseEntitiesForTimeRangeTest()                        | getReleaseDtosForTimeRangeTest()
+    artists      | timeRange                                                         | releaseEntities                                                             | expectedReleases
+    ["A1"]       | TimeRange.of(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 2, 1))  | [ReleaseEntityFactory.createReleaseEntity("A1", LocalDate.of(2020, 1, 31))] | [ReleaseDtoFactory.createReleaseDto("A1", LocalDate.of(2020, 1, 31))]
+    ["A1", "A2"] | TimeRange.of(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 2, 28)) | getReleaseEntitiesForTimeRangeTest()                                        | getReleaseDtosForTimeRangeTest()
   }
 
   def "find all upcoming releases between #timeRange"() {
@@ -139,14 +149,14 @@ class ReleaseServiceTest extends Specification {
   }
 
   private static List<ReleaseEntity> getReleaseEntitiesForTimeRangeTest() {
-    return [ReleaseEntityFactory.one("A1", LocalDate.of(2020, 1, 31)),
-            ReleaseEntityFactory.one("A1", LocalDate.of(2020, 2, 28)),
-            ReleaseEntityFactory.one("A2", LocalDate.of(2020, 3, 31))]
+    return [ReleaseEntityFactory.createReleaseEntity("A1", LocalDate.of(2020, 1, 31)),
+            ReleaseEntityFactory.createReleaseEntity("A1", LocalDate.of(2020, 2, 28)),
+            ReleaseEntityFactory.createReleaseEntity("A2", LocalDate.of(2020, 3, 31))]
   }
 
   private static List<ReleaseDto> getReleaseDtosForTimeRangeTest() {
-    return [ReleaseDtoFactory.one("A1", LocalDate.of(2020, 1, 31)),
-            ReleaseDtoFactory.one("A1", LocalDate.of(2020, 2, 28)),
-            ReleaseDtoFactory.one("A2", LocalDate.of(2020, 3, 31))]
+    return [ReleaseDtoFactory.createReleaseDto("A1", LocalDate.of(2020, 1, 31)),
+            ReleaseDtoFactory.createReleaseDto("A1", LocalDate.of(2020, 2, 28)),
+            ReleaseDtoFactory.createReleaseDto("A2", LocalDate.of(2020, 3, 31))]
   }
 }

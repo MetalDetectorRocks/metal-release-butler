@@ -99,9 +99,8 @@ class ReleaseServiceImpl implements ReleaseService {
           .collect { convertToDto(it) }
     }
     else {
-      List<ReleaseEntity> test = releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
-      return test
-          .collect { convertToDto(it) }
+      List<ReleaseEntity> releases = releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
+      return releases.collect { convertToDto(it) }
     }
   }
 
@@ -140,7 +139,7 @@ class ReleaseServiceImpl implements ReleaseService {
     }
   }
 
-  private ReleaseDto convertToDto(ReleaseEntity releaseEntity) {
+  private static ReleaseDto convertToDto(ReleaseEntity releaseEntity) {
     return new ReleaseDto(
             artist: releaseEntity.artist,
             additionalArtists: releaseEntity.additionalArtists,
@@ -149,5 +148,4 @@ class ReleaseServiceImpl implements ReleaseService {
             estimatedReleaseDate: releaseEntity.estimatedReleaseDate
     )
   }
-
 }

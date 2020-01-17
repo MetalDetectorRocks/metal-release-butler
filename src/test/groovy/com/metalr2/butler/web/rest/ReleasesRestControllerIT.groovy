@@ -26,6 +26,8 @@ import static io.restassured.RestAssured.given
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReleasesRestControllerIT extends Specification {
 
+  static final String ARTIST_NAME = "A1"
+
   @LocalServerPort
   private int port
 
@@ -34,15 +36,15 @@ class ReleasesRestControllerIT extends Specification {
 
   def "test releases endpoint for artists with status ok"() {
     given:
-    String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES
-    ReleasesRequest requestDto = new ReleasesRequest(artists: ["A1"])
+    String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES + Endpoints.UNPAGINATED
+    ReleasesRequest requestDto = new ReleasesRequest(artists: [ARTIST_NAME])
     def request = given().body(requestDto).accept(ContentType.JSON).contentType(ContentType.JSON)
 
     when:
     def response = request.when().post(requestUri)
 
     then:
-    1 * releaseService.findAllUpcomingReleases(["A1"]) >> getReleaseDtosForTimeRangeTest()
+    1 * releaseService.findAllUpcomingReleases([ARTIST_NAME]) >> getReleaseDtosForTimeRangeTest()
 
     and:
     response.statusCode() == HttpStatus.OK.value()
@@ -57,8 +59,8 @@ class ReleasesRestControllerIT extends Specification {
     given:
     def from = LocalDate.of(2020, 1, 1)
     def to = LocalDate.of(2020, 2, 1)
-    String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES
-    ReleasesRequest requestDto = new ReleasesRequest(artists: ["A1"],
+    String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES + Endpoints.UNPAGINATED
+    ReleasesRequest requestDto = new ReleasesRequest(artists: [ARTIST_NAME],
                                                      dateFrom: from,
                                                      dateTo: to)
     def request = given().body(requestDto).accept(ContentType.JSON).contentType(ContentType.JSON)
@@ -67,26 +69,21 @@ class ReleasesRestControllerIT extends Specification {
     def response = request.when().post(requestUri)
 
     then:
-    1 * releaseService.findAllReleasesForTimeRange(["A1"], TimeRange.of(from, to)) >> [ReleaseDtoFactory.one("A1", LocalDate.of(2020, 1, 31))]
+    1 * releaseService.findAllReleasesForTimeRange([ARTIST_NAME], TimeRange.of(from, to)) >> [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
 
     and:
     response.statusCode() == HttpStatus.OK.value()
 
     and:
     ReleasesResponse releasesResponse = response.body().as(ReleasesResponse)
-    releasesResponse.releases == [ReleaseDtoFactory.one("A1", LocalDate.of(2020, 1, 31))]
+    releasesResponse.releases == [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
   }
 
   @Unroll
   def "test releases endpoint for artists with bad requests"() {
     given:
-    def from = null
-    def to = LocalDate.of(2020, 2, 1)
-    String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES
-    ReleasesRequest requestDto = new ReleasesRequest(artists: ["A1"],
-                                                     dateFrom: from,
-                                                     dateTo: to)
-    def request = given().body(requestDto).accept(ContentType.JSON).contentType(ContentType.JSON)
+    String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES + Endpoints.UNPAGINATED
+    def request = given().body(body).accept(ContentType.JSON).contentType(ContentType.JSON)
 
     when:
     def response = request.when().post(requestUri)
@@ -100,11 +97,11 @@ class ReleasesRestControllerIT extends Specification {
 
     where:
     body << ["",
-             new ReleasesRequest(artists: ["A1"], dateFrom: null, dateTo: LocalDate.of(2020, 2, 1))]
+             new ReleasesRequest(artists: [ARTIST_NAME], dateFrom: null, dateTo: LocalDate.of(2020, 2, 1))]
   }
 
   private static List<ReleaseDto> getReleaseDtosForTimeRangeTest() {
-    return [ReleaseDtoFactory.one("A1", LocalDate.of(2020, 1, 31)),
-            ReleaseDtoFactory.one("A1", LocalDate.of(2020, 2, 28))]
+    return [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31)),
+            ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 2, 28))]
   }
 }
