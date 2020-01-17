@@ -19,9 +19,9 @@ class ReleaseRepositoryIT extends Specification {
   @Autowired
   ReleaseRepository underTest
 
-  static def release1 = ReleaseEntityFactory.one("A1", LocalDate.of(2020, 1, 1))
-  static def release2 = ReleaseEntityFactory.one("A2", LocalDate.of(2020, 2, 1))
-  static def release3 = ReleaseEntityFactory.one("A3", LocalDate.of(2020, 3, 1))
+  static def release1 = ReleaseEntityFactory.createReleaseEntity("A1", LocalDate.of(2020, 1, 1))
+  static def release2 = ReleaseEntityFactory.createReleaseEntity("A2", LocalDate.of(2020, 2, 1))
+  static def release3 = ReleaseEntityFactory.createReleaseEntity("A3", LocalDate.of(2020, 3, 1))
 
   void setup() {
     def releases = [release1, release2, release3]
