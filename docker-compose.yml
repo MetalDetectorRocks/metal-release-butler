@@ -1,50 +1,47 @@
 version: '3.7'
 
 services:
-  mrr-butler-mysql:
+  butler-db:
+    container_name: butler-db
     image: mysql:5
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/butler_db_root_password
       MYSQL_DATABASE: metal-release-butler
-      MYSQL_USER: db_metal_release_butler
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
     secrets:
-      - mysql_root_password
-      - mysql_password
+      - butler_db_root_password
     networks:
-      - mrr-butler-network
+      - butler-network
     volumes:
       - type: volume
-        source: mrr-butler-mysql-volume
-        target: /var/lib/mysql  
+        source: butler-db-volume
+        target: /var/lib/mysql
     ports:
       - 3307:3306
     restart: always
 
-  mrr-butler-phpmyadmin:
+  butler-phpmyadmin:
+    container_name: butler-phpmyadmin
     image: phpmyadmin/phpmyadmin
     environment:
-     PMA_ARBITRARY: 1
-     PMA_HOST: mrr-butler-mysql
+      PMA_ARBITRARY: 1
+      PMA_HOST: butler-db
     networks:
-      - mrr-butler-network
+      - butler-network
     volumes:
       - type: volume
-        source: mrr-butler-phpmyadmin-volume
+        source: butler-phpmyadmin-volume
         target: /sessions
     ports:
-     - 9001:80
+      - 9001:80
     restart: always
 
 volumes:
-  mrr-butler-mysql-volume:
-  mrr-butler-phpmyadmin-volume:
+  butler-db-volume:
+  butler-phpmyadmin-volume:
 
 secrets:
-  mysql_root_password:
-    file: .secrets/mysql_root_password.txt
-  mysql_password:
-    file: .secrets/mysql_password.txt
+  butler_db_root_password:
+    file: .secrets/butler_db_root_password.txt
 
 networks:
-  mrr-butler-network:
+  butler-network:
