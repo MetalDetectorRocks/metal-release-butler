@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
-import rocks.metaldetector.butler.DtoFactory
 import rocks.metaldetector.butler.config.Endpoints
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.ReleaseService
@@ -20,6 +19,7 @@ import spock.lang.Unroll
 import java.time.LocalDate
 
 import static io.restassured.RestAssured.given
+import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
 
 @Tag("integration-test")
 @TestPropertySource(locations = "classpath:application-test.properties")
@@ -69,14 +69,14 @@ class ReleasesRestControllerIT extends Specification {
     def response = request.when().post(requestUri)
 
     then:
-    1 * releaseService.findAllReleasesForTimeRange([ARTIST_NAME], TimeRange.of(from, to)) >> [DtoFactory.ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
+    1 * releaseService.findAllReleasesForTimeRange([ARTIST_NAME], TimeRange.of(from, to)) >> [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
 
     and:
     response.statusCode() == HttpStatus.OK.value()
 
     and:
     ReleasesResponse releasesResponse = response.body().as(ReleasesResponse)
-    releasesResponse.releases == [DtoFactory.ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
+    releasesResponse.releases == [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
   }
 
   @Unroll
@@ -101,7 +101,7 @@ class ReleasesRestControllerIT extends Specification {
   }
 
   private static List<ReleaseDto> getReleaseDtosForTimeRangeTest() {
-    return [DtoFactory.ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31)),
-            DtoFactory.ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 2, 28))]
+    return [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31)),
+            ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 2, 28))]
   }
 }
