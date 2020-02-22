@@ -1,4 +1,4 @@
-name: Build Metal Release Butler Docker Image
+name: Docker Image
 
 on:
   push:
@@ -16,10 +16,10 @@ jobs:
         with:
           args: bootJar
       - name: Build the Docker image
-        run: docker build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t metalreleaseradar/metal-release-butler:latest .
+        run: docker build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t metaldetector/metal-release-butler:latest .
       - name: Publish to DockerHub
         uses: elgohr/Publish-Docker-Github-Action@2.10
         with:
-          name: metalreleaseradar/metal-release-butler
+          name: metaldetector/metal-release-butler
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password:  ${{ secrets.DOCKERHUB_PASSWORD }}
