@@ -12,4 +12,4 @@ jobs:
         with:
           java-version: 1.8
       - name: Execute all tests
-        run: ./gradlew test
+        run: ./gradlew clean test
