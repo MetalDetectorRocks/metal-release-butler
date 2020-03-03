@@ -11,22 +11,19 @@ class MetalArchivesRestClient {
 
   static final String UPCOMING_RELEASES_URL = "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart={startOfRange}"
 
-  final RestTemplate restTemplate
-
   @Autowired
-  MetalArchivesRestClient(RestTemplate restTemplate) {
-    this.restTemplate = restTemplate
-  }
+  RestTemplate restTemplate
 
+  /*
+   * The REST-interface of metal-archives.com responses only with a list of strings for each release.
+   * The order of the strings in the array determines which information (band, album name etc.) is involved.
+   */
   List<String[]> requestReleases() {
-    /*
-     * The REST-interface of metal-archives.com responses a maximum of 100 records per request.
-     * Therefore we have to request 100 records each until we don't get any more results.
-     */
     List<String[]> rawResponse = []
     def dataAvailable = true
     def startOfRange = 0
 
+    // The REST endpoint of metal archives responses a maximum of 100 records per request
     while (dataAvailable) {
       // (1) request
       ResponseEntity<MetalArchivesResponse> responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL
@@ -53,5 +50,4 @@ class MetalArchivesRestClient {
 
     return rawResponse
   }
-
 }

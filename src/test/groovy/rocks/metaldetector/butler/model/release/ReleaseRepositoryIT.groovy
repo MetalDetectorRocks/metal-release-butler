@@ -33,7 +33,7 @@ class ReleaseRepositoryIT extends Specification {
   }
 
   @Unroll
-  def "Find all after #date"() {
+  "Find all after #date"() {
     when:
     List<ReleaseEntity> results = underTest.findAllByReleaseDateAfter(date)
 
@@ -49,7 +49,7 @@ class ReleaseRepositoryIT extends Specification {
   }
 
   @Unroll
-  def "Find all between #from and #to"() {
+  "Find all between #from and #to"() {
     when:
     List<ReleaseEntity> results = underTest.findAllByReleaseDateBetween(from, to)
 
@@ -64,7 +64,7 @@ class ReleaseRepositoryIT extends Specification {
   }
 
   @Unroll
-  def "Find all after #date and artist in #artists"() {
+  "Find all after #date and artist in #artists"() {
     when:
     List<ReleaseEntity> results = underTest.findAllByReleaseDateAfterAndArtistIn(date, artists)
 
@@ -79,7 +79,7 @@ class ReleaseRepositoryIT extends Specification {
   }
 
   @Unroll
-  def "Find all between #from and #to and artist in #artists"() {
+  "Find all between #from and #to and artist in #artists"() {
     when:
     List<ReleaseEntity> results = underTest.findAllByArtistInAndReleaseDateBetween(artists, from, to)
 
