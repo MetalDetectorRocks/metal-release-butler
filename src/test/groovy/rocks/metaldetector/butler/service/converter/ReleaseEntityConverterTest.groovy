@@ -1,155 +1,217 @@
 package rocks.metaldetector.butler.service.converter
 
-import org.assertj.core.api.WithAssertions
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
 import rocks.metaldetector.butler.model.release.ReleaseEntity
-import rocks.metaldetector.butler.model.release.ReleaseType
+import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.time.LocalDate
 
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
 import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 
-class ReleaseEntityConverterTest implements WithAssertions {
+class ReleaseEntityConverterTest extends Specification {
 
-  @Test
-  @DisplayName("Converting simple raw data should work")
-  void convert_simple_raw_data_should_be_ok() throws Exception {
-    // given
-    def artist = "<a href=\\\"https://www.dummy.com/artists/band-name/123456789\\\">The Band</a>"
-    def albumTitle = "<a href=\\\"https://www.dummy.com/albums/band-name/album-title/123456789\\\">The Album Title</a>"
+  ReleaseEntityConverter underTest = new ReleaseEntityConverter()
+
+  def "Should convert raw data into ReleaseEntity"() {
+    given:
+    def artist = '<a href="http://www.example.com/band">The Band</a>'
+    def albumTitle = '<a href="http://www.example.com/album">The Album Title</a>'
     def type = "Full-length"
     def genre = "Depressive Black Metal"
     def releaseDate = "August 26th, 2019"
     String[] rawReleaseData = [artist, albumTitle, type, genre, releaseDate]
 
-    // when
-    List<ReleaseEntity> conversionResult = new ReleaseEntityConverter().convert(rawReleaseData)
+    when:
+    List<ReleaseEntity> conversionResult = underTest.convert(rawReleaseData)
 
-    // then
-    assertThat(conversionResult).hasSize(1)
-    assertThat(conversionResult[0].artist).isEqualTo("The Band")
-    assertThat(conversionResult[0].metalArchivesArtistUrl).isEqualTo(new URL("https://www.dummy.com/artists/band-name/123456789"))
-    assertThat(conversionResult[0].additionalArtists).isEmpty()
-    assertThat(conversionResult[0].albumTitle).isEqualTo("The Album Title")
-    assertThat(conversionResult[0].metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
-    assertThat(conversionResult[0].type.name()).isEqualTo(FULL_LENGTH.name())
-    assertThat(conversionResult[0].genre).isEqualTo("Depressive Black Metal")
-    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 8, 26))
-    assertThat(conversionResult[0].estimatedReleaseDate).isNull()
-    assertThat(conversionResult[0].source.name()).isEqualTo(METAL_ARCHIVES.name())
+    then:
+    conversionResult.size() == 1
+
+    and:
+    conversionResult[0].artist == "The Band"
+    conversionResult[0].metalArchivesArtistUrl == new URL("http://www.example.com/band")
+    conversionResult[0].additionalArtists.isEmpty()
+    conversionResult[0].albumTitle =="The Album Title"
+    conversionResult[0].metalArchivesAlbumUrl == new URL("http://www.example.com/album")
+    conversionResult[0].type == FULL_LENGTH
+    conversionResult[0].genre == "Depressive Black Metal"
+    conversionResult[0].releaseDate == LocalDate.of(2019, 8, 26)
+    conversionResult[0].source == METAL_ARCHIVES
+    conversionResult[0].estimatedReleaseDate == null
   }
 
-  @Test
-  @DisplayName("Converting raw data with an ampersand in band name and/or album name should work")
-  void convert_raw_data_with_ampersand_in_name() {
-    // given
-    def artist = "<a href=\\\"https://www.dummy.com/artists/band-name/123456789\\\">The & Band</a>"
-    def albumTitle = "<a href=\\\"https://www.dummy.com/albums/band-name/album-title/123456789\\\">White & Black</a>"
-    def type = "EP"
-    def genre = "Heavy Metal"
+  def "Should handle null on index 2, 3 and 4" () {
+    given:
+    def artist = '<a href="http://www.example.com/band">The Band</a>'
+    def albumTitle = '<a href="http://www.example.com/album">The Album Title</a>'
+    String[] rawReleaseData = [artist, albumTitle, null, null, null]
+
+    when:
+    List<ReleaseEntity> conversionResult = underTest.convert(rawReleaseData)
+
+    then:
+    conversionResult.size() == 1
+
+    and:
+    conversionResult[0].type == null
+    conversionResult[0].genre == null
+    conversionResult[0].estimatedReleaseDate == null
+  }
+
+  def "Should convert raw data with an ampersand in band and album name"() {
+    given:
+    def artist = '<a href="https://www.example.com/band">The & Band</a>'
+    def albumTitle = '<a href="https://www.example.com/album">White & Black</a>'
     def releaseDate = "October 1st, 2019"
-    String[] rawReleaseData = [artist, albumTitle, type, genre, releaseDate]
+    String[] rawReleaseData = [artist, albumTitle, null, null, releaseDate]
 
-    // when
-    List<ReleaseEntity> conversionResult = new ReleaseEntityConverter().convert(rawReleaseData)
+    when:
+    List<ReleaseEntity> conversionResult = underTest.convert(rawReleaseData)
 
-    // then
-    assertThat(conversionResult).hasSize(1)
-    assertThat(conversionResult[0].artist).isEqualTo("The & Band")
-    assertThat(conversionResult[0].metalArchivesArtistUrl).isEqualTo(new URL("https://www.dummy.com/artists/band-name/123456789"))
-    assertThat(conversionResult[0].additionalArtists).isEmpty()
-    assertThat(conversionResult[0].albumTitle).isEqualTo("White & Black")
-    assertThat(conversionResult[0].metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
-    assertThat(conversionResult[0].type.name()).isEqualTo(ReleaseType.EP.name())
-    assertThat(conversionResult[0].genre).isEqualTo("Heavy Metal")
-    assertThat(conversionResult[0].releaseDate).isEqualTo(LocalDate.of(2019, 10, 1))
-    assertThat(conversionResult[0].estimatedReleaseDate).isNull()
-    assertThat(conversionResult[0].source.name()).isEqualTo(METAL_ARCHIVES.name())
+    then:
+    conversionResult.size() == 1
+
+    and:
+    conversionResult[0].artist == "The & Band"
+    conversionResult[0].albumTitle == "White & Black"
   }
 
-  @Test
-  @DisplayName("Converting raw data with two bands (so called 'Split Album') should work")
-  void convert_raw_data_with_two_bands() {
-    // given
+  def "Should convert raw data with two bands (Split Album)" () {
+    given:
+    def firstArtistName = "The 1st Artist"
+    def secondArtistName = "The 2nd Artist"
+    def firstArtistUrl = new URL("http://www.example.com/band1")
+    def secondArtistUrl = new URL("http://www.example.com/band2")
     def artist = """
-      <a href=\\\"https://www.dummy.com/artists/band-name/123456789\\\">The 1st Band</a> / 
-      <a href=\\"https://www.dummy.com/artists/band-name/1234567810\\">The 2nd Band</a>
+      <a href=\\\"$firstArtistUrl\\\">$firstArtistName</a> /
+      <a href=\\"$secondArtistUrl\\">$secondArtistName</a>
     """
-    def albumTitle = "<a href=\\\"https://www.dummy.com/albums/band-name/album-title/123456789\\\">The Album</a>"
-    def type = "Full-length"
-    def genre = "Heavy Metal"
-    def releaseDate = "October 3rd, 2019"
-    String[] rawReleaseData = [artist, albumTitle, type, genre, releaseDate]
+    def albumTitle = '<a href="http://www.example.com/album">The Album</a>'
+    String[] rawReleaseData = [artist, albumTitle, null, null, null]
 
-    // when
+    when:
     List<ReleaseEntity> conversionResult = new ReleaseEntityConverter().convert(rawReleaseData)
 
-    // then
-    assertThat(conversionResult).hasSize(2)
+    then:
+    conversionResult.size() == 2
 
-    assertThat(conversionResult[0].artist).isEqualTo("The 1st Band")
-    assertThat(conversionResult[0].metalArchivesArtistUrl).isEqualTo(new URL("https://www.dummy.com/artists/band-name/123456789"))
-    assertThat(conversionResult[0].additionalArtists).isEqualTo(["The 2nd Band"])
+    and:
+    conversionResult[0].artist == firstArtistName
+    conversionResult[0].metalArchivesArtistUrl == firstArtistUrl
+    conversionResult[0].additionalArtists == [secondArtistName]
 
-    assertThat(conversionResult[1].artist).isEqualTo("The 2nd Band")
-    assertThat(conversionResult[1].metalArchivesArtistUrl).isEqualTo(new URL("https://www.dummy.com/artists/band-name/1234567810"))
-    assertThat(conversionResult[1].additionalArtists).isEqualTo(["The 1st Band"])
-
-    conversionResult.each {
-      assertThat(it.albumTitle).isEqualTo("The Album")
-      assertThat(it.metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
-      assertThat(it.type.name()).isEqualTo(FULL_LENGTH.name())
-      assertThat(it.genre).isEqualTo("Heavy Metal")
-      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 3))
-      assertThat(it.estimatedReleaseDate).isNull()
-      assertThat(it.source.name()).isEqualTo(METAL_ARCHIVES.name())
-    }
+    and:
+    conversionResult[1].artist == secondArtistName
+    conversionResult[1].metalArchivesArtistUrl == secondArtistUrl
+    conversionResult[1].additionalArtists == [firstArtistName]
   }
 
-  @Test
-  @DisplayName("Converting raw data with three bands (so called 'Split Album') should work")
-  void convert_raw_data_with_three_bands() {
-    // given
+  def "Converting raw data with three bands (Split Album) should work" () {
+    given:
+    def firstArtistName = "The 1st Artist"
+    def secondArtistName = "The 2nd Artist"
+    def thirdArtistName = "The 3rd Artist"
+    def firstArtistUrl = new URL("http://www.example.com/band1")
+    def secondArtistUrl = new URL("http://www.example.com/band2")
+    def thirdArtistUrl = new URL("http://www.example.com/band3")
     def artist = """
-      <a href=\\\"https://www.dummy.com/artists/band-name/123456789\\\">The 1st Band</a> / 
-      <a href=\\"https://www.dummy.com/artists/band-name/1234567810\\">The 2nd Band</a> / 
-      <a href=\\"https://www.dummy.com/artists/band-name/1234567811\\">The 3rd Band</a>
+      <a href=\\\"$firstArtistUrl\\\">$firstArtistName</a> /
+      <a href=\\"$secondArtistUrl\\">$secondArtistName</a> /
+      <a href=\\"$thirdArtistUrl\\">$thirdArtistName</a>
     """
-    def albumTitle = "<a href=\\\"https://www.dummy.com/albums/band-name/album-title/123456789\\\">The Album</a>"
-    def type = "Full-length"
-    def genre = "Heavy Metal"
-    def releaseDate = "October 4th, 2019"
-    String[] rawReleaseData = [artist, albumTitle, type, genre, releaseDate]
+    def albumTitle = '<a href="http://www.example.com/album">The Album</a>'
+    String[] rawReleaseData = [artist, albumTitle, null, null, null]
 
-    // when
+    when:
     List<ReleaseEntity> conversionResult = new ReleaseEntityConverter().convert(rawReleaseData)
 
-    // then
-    assertThat(conversionResult).hasSize(3)
+    then:
+    conversionResult.size() == 3
 
-    assertThat(conversionResult[0].artist).isEqualTo("The 1st Band")
-    assertThat(conversionResult[0].metalArchivesArtistUrl).isEqualTo(new URL("https://www.dummy.com/artists/band-name/123456789"))
-    assertThat(conversionResult[0].additionalArtists).isEqualTo(["The 2nd Band", "The 3rd Band"])
+    and:
+    conversionResult[0].artist == firstArtistName
+    conversionResult[0].metalArchivesArtistUrl == firstArtistUrl
+    conversionResult[0].additionalArtists == [secondArtistName, thirdArtistName]
 
-    assertThat(conversionResult[1].artist).isEqualTo("The 2nd Band")
-    assertThat(conversionResult[1].metalArchivesArtistUrl).isEqualTo(new URL("https://www.dummy.com/artists/band-name/1234567810"))
-    assertThat(conversionResult[1].additionalArtists).isEqualTo(["The 1st Band", "The 3rd Band"])
+    and:
+    conversionResult[1].artist == secondArtistName
+    conversionResult[1].metalArchivesArtistUrl == secondArtistUrl
+    conversionResult[1].additionalArtists == [firstArtistName, thirdArtistName]
 
-    assertThat(conversionResult[2].artist).isEqualTo("The 3rd Band")
-    assertThat(conversionResult[2].metalArchivesArtistUrl).isEqualTo(new URL("https://www.dummy.com/artists/band-name/1234567811"))
-    assertThat(conversionResult[2].additionalArtists).isEqualTo(["The 1st Band", "The 2nd Band"])
-
-    conversionResult.each {
-      assertThat(it.albumTitle).isEqualTo("The Album")
-      assertThat(it.metalArchivesAlbumUrl).isEqualTo(new URL("https://www.dummy.com/albums/band-name/album-title/123456789"))
-      assertThat(it.type.name()).isEqualTo(FULL_LENGTH.name())
-      assertThat(it.genre).isEqualTo("Heavy Metal")
-      assertThat(it.releaseDate).isEqualTo(LocalDate.of(2019, 10, 4))
-      assertThat(it.estimatedReleaseDate).isNull()
-      assertThat(it.source.name()).isEqualTo(METAL_ARCHIVES.name())
-    }
+    and:
+    conversionResult[2].artist == thirdArtistName
+    conversionResult[2].metalArchivesArtistUrl == thirdArtistUrl
+    conversionResult[2].additionalArtists == [firstArtistName, secondArtistName]
   }
 
+  @Unroll
+  "Should parse '#releaseDateAsString' to '#expectedReleaseDate' (focus: day of the month)" () {
+    when:
+    def releaseDate = underTest.parseReleaseDate(releaseDateAsString)
+
+    then:
+    releaseDate == expectedReleaseDate
+
+    where:
+    releaseDateAsString  | expectedReleaseDate
+    "January 1st, 2020"  | LocalDate.of(2020, 1, 1)
+    "January 2nd, 2020"  | LocalDate.of(2020, 1, 2)
+    "January 3rd, 2020"  | LocalDate.of(2020, 1, 3)
+    "January 4th, 2020"  | LocalDate.of(2020, 1, 4)
+    "January 10th, 2020" | LocalDate.of(2020, 1, 10)
+    "January 21st, 2020" | LocalDate.of(2020, 1, 21)
+    "January 22nd, 2020" | LocalDate.of(2020, 1, 22)
+    "January 23rd, 2020" | LocalDate.of(2020, 1, 23)
+  }
+
+  @Unroll
+  "Should parse '#releaseDateAsString' to '#expectedReleaseDate' (focus: month of the year)" () {
+    when:
+    def releaseDate = underTest.parseReleaseDate(releaseDateAsString)
+
+    then:
+    releaseDate == expectedReleaseDate
+
+    where:
+    releaseDateAsString   | expectedReleaseDate
+    "January 1st, 2020"   | LocalDate.of(2020, 1, 1)
+    "February 1st, 2020"  | LocalDate.of(2020, 2, 1)
+    "March 1st, 2020"     | LocalDate.of(2020, 3, 1)
+    "April 1st, 2020"     | LocalDate.of(2020, 4, 1)
+    "May 1st, 2020"       | LocalDate.of(2020, 5, 1)
+    "June 1st, 2020"      | LocalDate.of(2020, 6, 1)
+    "July 1st, 2020"      | LocalDate.of(2020, 7, 1)
+    "August 1st, 2020"    | LocalDate.of(2020, 8, 1)
+    "September 1st, 2020" | LocalDate.of(2020, 9, 1)
+    "October 1st, 2020"   | LocalDate.of(2020, 10, 1)
+    "November 1st, 2020"  | LocalDate.of(2020, 11, 1)
+    "December 1st, 2020"  | LocalDate.of(2020, 12, 1)
+  }
+
+  @Unroll
+  "Should parse '#releaseDateAsString' to '#expectedReleaseDate' (focus: year)" () {
+    when:
+    def releaseDate = underTest.parseReleaseDate(releaseDateAsString)
+
+    then:
+    releaseDate == expectedReleaseDate
+
+    where:
+    releaseDateAsString  | expectedReleaseDate
+    "January 1st, 2020"  | LocalDate.of(2020, 1, 1)
+    "January 1st, 2021"  | LocalDate.of(2021, 1, 1)
+    "January 1st, 2022"  | LocalDate.of(2022, 1, 1)
+  }
+
+  def "Should return empty list when exception occurred" () {
+    when:
+    def response = underTest.convert(null)
+
+    then:
+    noExceptionThrown()
+
+    and:
+    response == []
+  }
 }

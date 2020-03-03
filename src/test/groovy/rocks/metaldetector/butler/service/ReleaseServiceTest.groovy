@@ -15,7 +15,7 @@ import static rocks.metaldetector.butler.DtoFactory.*
 
 class ReleaseServiceTest extends Specification {
 
-  ReleaseService underTest = new ReleaseServiceImpl(
+  ReleaseServiceImpl underTest = new ReleaseServiceImpl(
           releaseRepository: Mock(ReleaseRepository),
           restClient: Mock(MetalArchivesRestClient),
           releaseEntityConverter: Mock(ReleaseEntityConverter)
@@ -24,7 +24,7 @@ class ReleaseServiceTest extends Specification {
   static LocalDate now = LocalDate.now()
 
   @Unroll
-  def "find all upcoming releases for #artists"() {
+  "find all upcoming releases for #artists"() {
     when:
     List<ReleaseDto> results = underTest.findAllUpcomingReleases(artists)
 
@@ -62,7 +62,7 @@ class ReleaseServiceTest extends Specification {
   }
 
   @Unroll
-  def "find all upcoming releases for #artists and between #timeRange"() {
+  "find all upcoming releases for #artists and between #timeRange"() {
     when:
     List<ReleaseDto> results = underTest.findAllReleasesForTimeRange(artists, timeRange)
 
@@ -94,7 +94,7 @@ class ReleaseServiceTest extends Specification {
   }
 
   @Unroll
-  def "count all upcoming releases for #artists"() {
+  "count all upcoming releases for #artists"() {
     when:
     long result = underTest.totalCountAllUpcomingReleases(artists)
 

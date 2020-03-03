@@ -1,7 +1,6 @@
 package rocks.metaldetector.butler.service.converter
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import groovy.util.logging.Slf4j
 import org.springframework.stereotype.Component
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseType
@@ -13,11 +12,11 @@ import static rocks.metaldetector.butler.model.release.ReleaseEntityRecordState.
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
 
 @Component
+@Slf4j
 class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>> {
 
   static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.US)
 
-  final Logger log = LoggerFactory.getLogger(ReleaseEntityConverter)
   final XmlSlurper xmlSlurper
 
   ReleaseEntityConverter() {
@@ -50,21 +49,19 @@ class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>>
       def albumUrl    = parseAnchorHref(albumRawData)
       def type        = rawData[2]
       def genre       = rawData[3]
-      def releaseDate = parseReleaseDate(rawData[4])
+      def releaseDate = rawData[4] ? parseReleaseDate(rawData[4]) : null
 
-      def releaseEntity = ReleaseEntity.builder()
-                                       .artist(artistName)
-                                       .metalArchivesArtistUrl(artistUrl)
-                                       .albumTitle(albumTitle)
-                                       .metalArchivesAlbumUrl(albumUrl)
-                                       .type(ReleaseType.convertFrom(type))
-                                       .genre(genre)
-                                       .releaseDate(releaseDate)
-                                       .source(METAL_ARCHIVES)
-                                       .state(NOT_SET)
-                                       .build()
-
-      releaseEntities << releaseEntity
+      releaseEntities <<  new ReleaseEntity(
+              artist: artistName,
+              metalArchivesArtistUrl: artistUrl,
+              albumTitle: albumTitle,
+              metalArchivesAlbumUrl: albumUrl,
+              type: ReleaseType.convertFrom(type),
+              genre: genre,
+              releaseDate: releaseDate,
+              source: METAL_ARCHIVES,
+              state: NOT_SET
+      )
     }
 
     addAdditionalArtistInfo(releaseEntities)

@@ -80,7 +80,7 @@ class ReleasesRestControllerIT extends Specification {
   }
 
   @Unroll
-  def "test releases endpoint for artists with bad requests"() {
+  "test releases endpoint for artists with bad requests"() {
     given:
     String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES + Endpoints.UNPAGINATED
     def request = given().body(body).accept(ContentType.JSON).contentType(ContentType.JSON)
