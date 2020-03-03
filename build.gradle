@@ -4,9 +4,13 @@ plugins {
 	id 'groovy'
 }
 
-group = 'com.metalr2'
+group = 'rocks.metaldetector'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = JavaVersion.VERSION_1_8
+
+springBoot {
+	mainClassName = 'rocks.metaldetector.butler.MetalReleaseButlerApplication'
+}
 
 def swaggerVersion = '2.9.2'
 def spockVersion = '1.3-groovy-2.5'
