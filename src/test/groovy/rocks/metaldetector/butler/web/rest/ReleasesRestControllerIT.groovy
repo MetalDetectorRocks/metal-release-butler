@@ -1,7 +1,6 @@
 package rocks.metaldetector.butler.web.rest
 
 import io.restassured.http.ContentType
-import org.junit.jupiter.api.Tag
 import org.spockframework.spring.SpringBean
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
@@ -21,7 +20,6 @@ import java.time.LocalDate
 import static io.restassured.RestAssured.given
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
 
-@Tag("integration-test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReleasesRestControllerIT extends Specification {

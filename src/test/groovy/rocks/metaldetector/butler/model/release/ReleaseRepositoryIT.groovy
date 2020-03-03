@@ -1,6 +1,5 @@
 package rocks.metaldetector.butler.model.release
 
-import org.junit.jupiter.api.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.TestPropertySource
@@ -11,7 +10,6 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.*
 
-@Tag("integration-test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @DataJpaTest
 class ReleaseRepositoryIT extends Specification {
