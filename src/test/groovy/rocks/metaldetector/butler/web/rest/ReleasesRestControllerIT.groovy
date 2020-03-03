@@ -45,7 +45,7 @@ class ReleasesRestControllerIT extends Specification {
     1 * releaseService.findAllUpcomingReleases([ARTIST_NAME]) >> getReleaseDtosForTimeRangeTest()
 
     and:
-    response.statusCode() != HttpStatus.OK.value()
+    response.statusCode() == HttpStatus.OK.value()
 
     and:
     ReleasesResponse releasesResponse = response.body().as(ReleasesResponse)
