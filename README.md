@@ -10,7 +10,9 @@
 
 4. [ Start the application ](#start-application)
 
-5. [ API documentation ](#api-documentation)
+5. [ Execute tests locally ](#execute-tests-locally)
+
+6. [ API documentation ](#api-documentation)
 
 <a name="introduction"></a>
 ## 1 Introduction
@@ -58,13 +60,23 @@ It is also possible to define all mentioned connection details and secrets as en
 <a name="start-application"></a>
 ## 4 Start the application
 
-via Gradle
+via gradle
 - Execute command `./gradlew bootRun` in root directory
 
 via your IDE
 - Execute main class `rocks.metaldetector.butler.MetalReleaseButlerApplication`
 
+<a name="start-application"></a>
+## 5 Execute tests locally
+
+via gradle
+- Execute command `./gradlew clean test` in root directory
+
+via your IDE
+- Execute the task `test` from folder `verification`
+- Please note: You might get the message "Test events were not received" if you do this via IntelliJ. This is intentional behaviour of gradle. If nothing changes in the tests themselves, they will not be executed repeatedly. If you still want to run the tests, you have to execute `clean` before.
+
 <a name="api-documentation"></a>
-## 5 API documentation
+## 6 API documentation
 
 A Swagger API documentation is coming soon...
