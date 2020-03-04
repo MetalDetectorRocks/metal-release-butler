@@ -10,8 +10,7 @@ enum ReleaseType {
   SINGLE("Single"),
   SPLIT("Split"),
   LIVE_ALBUM("Live Album"),
-  VIDEO("Video"),
-  OTHER("Other");
+  VIDEO("Video")
 
   static final MAPPINGS = [
           'Full-length': FULL_LENGTH,
