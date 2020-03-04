@@ -77,36 +77,6 @@ class ReleaseEntityConverterTest extends Specification {
     conversionResult[0].albumTitle == "White & Black"
   }
 
-  def "Should convert raw data with two bands (Split Album)" () {
-    given:
-    def firstArtistName = "The 1st Artist"
-    def secondArtistName = "The 2nd Artist"
-    def firstArtistUrl = new URL("http://www.example.com/band1")
-    def secondArtistUrl = new URL("http://www.example.com/band2")
-    def artist = """
-      <a href=\\\"$firstArtistUrl\\\">$firstArtistName</a> /
-      <a href=\\"$secondArtistUrl\\">$secondArtistName</a>
-    """
-    def albumTitle = '<a href="http://www.example.com/album">The Album</a>'
-    String[] rawReleaseData = [artist, albumTitle, null, null, null]
-
-    when:
-    List<ReleaseEntity> conversionResult = new ReleaseEntityConverter().convert(rawReleaseData)
-
-    then:
-    conversionResult.size() == 2
-
-    and:
-    conversionResult[0].artist == firstArtistName
-    conversionResult[0].metalArchivesArtistUrl == firstArtistUrl
-    conversionResult[0].additionalArtists == [secondArtistName]
-
-    and:
-    conversionResult[1].artist == secondArtistName
-    conversionResult[1].metalArchivesArtistUrl == secondArtistUrl
-    conversionResult[1].additionalArtists == [firstArtistName]
-  }
-
   def "Converting raw data with three bands (Split Album) should work" () {
     given:
     def firstArtistName = "The 1st Artist"
