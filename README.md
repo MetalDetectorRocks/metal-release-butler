@@ -66,7 +66,7 @@ via gradle
 via your IDE
 - Execute main class `rocks.metaldetector.butler.MetalReleaseButlerApplication`
 
-<a name="start-application"></a>
+<a name="execute-tests-locally"></a>
 ## 5 Execute tests locally
 
 via gradle
