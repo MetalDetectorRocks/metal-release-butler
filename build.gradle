@@ -4,9 +4,12 @@ plugins {
 	id 'groovy'
 }
 
+configurations.each { println it.name }
+
+
 group = 'rocks.metaldetector'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_11
 
 springBoot {
 	mainClassName = 'rocks.metaldetector.butler.MetalReleaseButlerApplication'
@@ -14,10 +17,13 @@ springBoot {
 
 def swaggerVersion = '2.9.2'
 def junitVersion = '5.6.0'
+//def spockVersion = '2.0-M2-groovy-2.5'
+//def groovyVersion = '2.5.10'
 def spockVersion = '2.0-M2-groovy-3.0'
 def groovyVersion = '3.0.1'
 def mySqlVersion = '5.1.48'
 def restAssuredVersion = '4.2.0'
+def jaxbOsgiVersion = '2.3.1'
 
 configurations {
 	developmentOnly
@@ -40,7 +46,6 @@ dependencies {
 	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
 	implementation "io.springfox:springfox-swagger2:$swaggerVersion"
 	implementation "io.springfox:springfox-swagger-ui:$swaggerVersion"
-	implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.4.0-b180830.0359'
 	developmentOnly "org.springframework.boot:spring-boot-devtools"
 	runtimeOnly "com.h2database:h2"
 	runtimeOnly "mysql:mysql-connector-java:$mySqlVersion"
@@ -49,13 +54,14 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude group: 'junit', module: 'junit'
 	}
-	testCompile("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-	testRuntime("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-	testCompile("org.junit.jupiter:junit-jupiter-params:$junitVersion")
-	testCompile("org.spockframework:spock-core:$spockVersion")
-	testCompile("org.spockframework:spock-spring:$spockVersion")
-	testCompile("io.rest-assured:rest-assured:$restAssuredVersion")
-	testCompile("io.rest-assured:json-path:$restAssuredVersion")
+	testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+	testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+	testImplementation "org.spockframework:spock-core:$spockVersion"
+	testImplementation "org.spockframework:spock-spring:$spockVersion"
+	testImplementation "io.rest-assured:rest-assured:$restAssuredVersion"
+	testImplementation "io.rest-assured:json-path:$restAssuredVersion"
+	testImplementation "com.sun.xml.bind:jaxb-osgi:$jaxbOsgiVersion"
 }
 
 test {
