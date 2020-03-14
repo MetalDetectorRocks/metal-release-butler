@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.1.9.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'org.springframework.boot' version '2.2.5.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 	id 'groovy'
 }
 
@@ -13,10 +13,9 @@ springBoot {
 }
 
 def swaggerVersion = '2.9.2'
-def spockVersion = '1.3-groovy-2.5'
-def groovyVersion = '2.5.8'
+def spockVersion = '2.0-M2-groovy-3.0'
+def groovyVersion = '3.0.2'
 def mySqlVersion = '5.1.48'
-def restAssuredVersion = '3.3.0'
 
 configurations {
 	developmentOnly
@@ -36,7 +35,27 @@ dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 	implementation "org.springframework.boot:spring-boot-starter-web"
 	implementation "org.apache.httpcomponents:httpclient"
-	implementation "org.codehaus.groovy:groovy-all:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-docgenerator:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-ant:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-groovysh:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-console:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-groovydoc:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-cli-picocli:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-datetime:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-jmx:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-json:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-jsr223:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-macro:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-nio:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-servlet:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-sql:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-swing:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-templates:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-test-junit5:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-test:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-testng:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy-xml:$groovyVersion"
+	implementation "org.codehaus.groovy:groovy:$groovyVersion"
 	implementation "io.springfox:springfox-swagger2:$swaggerVersion"
 	implementation "io.springfox:springfox-swagger-ui:$swaggerVersion"
 	developmentOnly "org.springframework.boot:spring-boot-devtools"
@@ -48,8 +67,11 @@ dependencies {
 		exclude group: 'junit', module: 'junit'
 	}
 
-	testCompile("org.spockframework:spock-core:$spockVersion")
-	testCompile("org.spockframework:spock-spring:$spockVersion")
-	testCompile("io.rest-assured:rest-assured:$restAssuredVersion")
-	testCompile("io.rest-assured:json-path:$restAssuredVersion")
+	testImplementation "org.spockframework:spock-core:$spockVersion"
+	testImplementation "org.spockframework:spock-spring:$spockVersion"
+}
+
+test {
+	useJUnitPlatform()
+	testLogging.showStandardStreams(true)
 }
