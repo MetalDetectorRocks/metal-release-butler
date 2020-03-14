@@ -1,99 +1,129 @@
 package rocks.metaldetector.butler.web.rest
 
-import io.restassured.http.ContentType
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.spockframework.spring.SpringBean
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.test.context.TestPropertySource
+import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.config.Endpoints
 import rocks.metaldetector.butler.model.TimeRange
-import rocks.metaldetector.butler.service.ReleaseService
+import rocks.metaldetector.butler.service.ReleaseServiceImpl
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesResponse
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 
-import static io.restassured.RestAssured.given
+import static org.mockito.Mockito.reset
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
 
 @Tag("integration-test")
 @TestPropertySource(locations = "classpath:application-test.properties")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@AutoConfigureMockMvc
 class ReleasesRestControllerIT extends Specification {
 
   static final String ARTIST_NAME = "A1"
 
-  @LocalServerPort
-  private int port
-
   @SpringBean
-  private ReleaseService releaseService = Mock()
+  ReleaseServiceImpl releaseService = Mock()
+
+  @Autowired
+  MockMvc mockMvc
+
+  ObjectMapper objectMapper
+
+  @BeforeEach
+  void setup() {
+    objectMapper = new ObjectMapper(dateFormat: new SimpleDateFormat("yyyy-MM-dd"))
+    objectMapper.registerModule(new JavaTimeModule())
+  }
+
+  @AfterEach
+  void tearDown() {
+    reset(releaseService)
+  }
 
   def "test releases endpoint for artists with status ok"() {
     given:
-    String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES + Endpoints.UNPAGINATED
-    ReleasesRequest requestDto = new ReleasesRequest(artists: [ARTIST_NAME])
-    def request = given().body(requestDto).accept(ContentType.JSON).contentType(ContentType.JSON)
+    def artists = [ARTIST_NAME]
+    def expectedReleases = getReleaseDtosForTimeRangeTest()
+    def releasesRequest = new ReleasesRequest(artists: artists)
+    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(releasesRequest))
 
     when:
-    def response = request.when().post(requestUri)
+    def result = mockMvc.perform(request).andReturn()
 
     then:
-    1 * releaseService.findAllUpcomingReleases([ARTIST_NAME]) >> getReleaseDtosForTimeRangeTest()
+    1 * releaseService.findAllUpcomingReleases(artists) >> expectedReleases
 
     and:
-    response.statusCode() == HttpStatus.OK.value()
+    result.response.status == HttpStatus.OK.value()
 
     and:
-    ReleasesResponse releasesResponse = response.body().as(ReleasesResponse)
+    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse.class)
     releasesResponse.releases.size() == 2
-    releasesResponse.releases == getReleaseDtosForTimeRangeTest()
+    releasesResponse.releases == expectedReleases
   }
 
   def "test releases endpoint for artists with time range with status ok"() {
     given:
     def from = LocalDate.of(2020, 1, 1)
     def to = LocalDate.of(2020, 2, 1)
-    String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES + Endpoints.UNPAGINATED
-    ReleasesRequest requestDto = new ReleasesRequest(artists: [ARTIST_NAME],
-                                                     dateFrom: from,
-                                                     dateTo: to)
-    def request = given().body(requestDto).accept(ContentType.JSON).contentType(ContentType.JSON)
+    def artists = [ARTIST_NAME]
+    def requestDto = new ReleasesRequest(artists: artists, dateFrom: from, dateTo: to)
+    def expectedReleases = [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
+    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(requestDto))
 
     when:
-    def response = request.when().post(requestUri)
+    def result = mockMvc.perform(request).andReturn()
 
     then:
-    1 * releaseService.findAllReleasesForTimeRange([ARTIST_NAME], TimeRange.of(from, to)) >> [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
+    1 * releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(from, to)) >> expectedReleases
 
     and:
-    response.statusCode() == HttpStatus.OK.value()
+    result.response.status == HttpStatus.OK.value()
 
     and:
-    ReleasesResponse releasesResponse = response.body().as(ReleasesResponse)
-    releasesResponse.releases == [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
+    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse.class)
+    releasesResponse.releases == expectedReleases
   }
 
   @Unroll
   def "test releases endpoint for artists with bad requests"() {
     given:
-    String requestUri = "http://localhost:" + port + "/metal-release-butler" + Endpoints.RELEASES + Endpoints.UNPAGINATED
-    def request = given().body(body).accept(ContentType.JSON).contentType(ContentType.JSON)
+    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(body))
 
     when:
-    def response = request.when().post(requestUri)
+    def result = mockMvc.perform(request).andReturn()
 
     then:
     0 * releaseService.findAllUpcomingReleases(_)
     0 * releaseService.findAllReleasesForTimeRange(*_)
 
     and:
-    response.statusCode() == HttpStatus.BAD_REQUEST.value()
+    result.response.status == HttpStatus.BAD_REQUEST.value()
 
     where:
     body << ["",

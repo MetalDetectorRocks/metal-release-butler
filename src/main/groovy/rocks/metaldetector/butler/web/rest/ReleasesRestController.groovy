@@ -1,11 +1,5 @@
 package rocks.metaldetector.butler.web.rest
 
-import rocks.metaldetector.butler.model.TimeRange
-import rocks.metaldetector.butler.service.ReleaseService
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
-import rocks.metaldetector.butler.web.dto.ReleasesRequest
-import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
-import rocks.metaldetector.butler.web.dto.ReleasesResponse
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,10 +8,17 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import rocks.metaldetector.butler.model.TimeRange
+import rocks.metaldetector.butler.service.ReleaseService
+import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
+import rocks.metaldetector.butler.web.dto.ReleasesRequest
+import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
+import rocks.metaldetector.butler.web.dto.ReleasesResponse
 
 import javax.validation.Valid
 
-import static rocks.metaldetector.butler.config.Endpoints.*
+import static rocks.metaldetector.butler.config.Endpoints.RELEASES
+import static rocks.metaldetector.butler.config.Endpoints.UNPAGINATED
 
 @RestController
 @RequestMapping(RELEASES)

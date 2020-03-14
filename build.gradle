@@ -20,8 +20,6 @@ def junitVersion = '5.6.0'
 def spockVersion = '2.0-M2-groovy-3.0'
 def groovyVersion = '3.0.2'
 def mySqlVersion = '5.1.48'
-def restAssuredVersion = '4.2.0'
-def jaxbOsgiVersion = '2.3.1'
 
 configurations {
 	developmentOnly
@@ -77,9 +75,6 @@ dependencies {
 	testImplementation "org.junit.jupiter:junit-jupiter-params:$junitVersion"
 	testImplementation "org.spockframework:spock-core:$spockVersion"
 	testImplementation "org.spockframework:spock-spring:$spockVersion"
-	testImplementation "io.rest-assured:rest-assured:$restAssuredVersion"
-	testImplementation "io.rest-assured:json-path:$restAssuredVersion"
-	testImplementation "com.sun.xml.bind:jaxb-osgi:$jaxbOsgiVersion"
 }
 
 test {
