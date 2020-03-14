@@ -10,11 +10,20 @@ enum ReleaseType {
   SINGLE("Single"),
   SPLIT("Split"),
   LIVE_ALBUM("Live Album"),
-  VIDEO("Video"),
-  OTHER("Other");
+  VIDEO("Video")
 
-  static final MAPPINGS = ['Full-length': FULL_LENGTH, 'Demo': DEMO, 'EP': EP, 'Compilation': COMPILATION, 'Boxed set': BOXED_SET,
-                           'Single': SINGLE, 'Split': SPLIT, 'Live album': LIVE_ALBUM, 'Video': VIDEO]
+  static final MAPPINGS = [
+          'Full-length': FULL_LENGTH,
+          'Demo': DEMO,
+          'EP': EP,
+          'Compilation': COMPILATION,
+          'Boxed set': BOXED_SET,
+          'Single': SINGLE,
+          'Split': SPLIT,
+          'Live album': LIVE_ALBUM,
+          'Video': VIDEO
+  ]
+
   String typeName
 
   ReleaseType(String typeName) {
@@ -22,7 +31,6 @@ enum ReleaseType {
   }
 
   static ReleaseType convertFrom(String value) {
-    return MAPPINGS[value] ?: OTHER
+    return MAPPINGS[value]
   }
-
 }

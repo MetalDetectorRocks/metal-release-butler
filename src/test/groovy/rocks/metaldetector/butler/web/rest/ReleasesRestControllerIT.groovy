@@ -29,10 +29,8 @@ import static org.mockito.Mockito.reset
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
 
-@Tag("integration-test")
 @TestPropertySource(locations = "classpath:application-test.properties")
-@SpringBootTest
-@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ReleasesRestControllerIT extends Specification {
 
   static final String ARTIST_NAME = "A1"
@@ -108,7 +106,7 @@ class ReleasesRestControllerIT extends Specification {
   }
 
   @Unroll
-  def "test releases endpoint for artists with bad requests"() {
+  "test releases endpoint for artists with bad requests"() {
     given:
     def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)

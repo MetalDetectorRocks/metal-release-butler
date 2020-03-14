@@ -1,6 +1,5 @@
 package rocks.metaldetector.butler.model.release
 
-import org.junit.jupiter.api.Tag
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.TestPropertySource
@@ -11,7 +10,6 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.*
 
-@Tag("integration-test")
 @TestPropertySource(locations = "classpath:application-test.properties")
 @DataJpaTest
 class ReleaseRepositoryIT extends Specification {
@@ -33,7 +31,7 @@ class ReleaseRepositoryIT extends Specification {
   }
 
   @Unroll
-  def "Find all after #date"() {
+  "Find all after #date"() {
     when:
     List<ReleaseEntity> results = underTest.findAllByReleaseDateAfter(date)
 
@@ -49,7 +47,7 @@ class ReleaseRepositoryIT extends Specification {
   }
 
   @Unroll
-  def "Find all between #from and #to"() {
+  "Find all between #from and #to"() {
     when:
     List<ReleaseEntity> results = underTest.findAllByReleaseDateBetween(from, to)
 
@@ -64,7 +62,7 @@ class ReleaseRepositoryIT extends Specification {
   }
 
   @Unroll
-  def "Find all after #date and artist in #artists"() {
+  "Find all after #date and artist in #artists"() {
     when:
     List<ReleaseEntity> results = underTest.findAllByReleaseDateAfterAndArtistIn(date, artists)
 
@@ -79,7 +77,7 @@ class ReleaseRepositoryIT extends Specification {
   }
 
   @Unroll
-  def "Find all between #from and #to and artist in #artists"() {
+  "Find all between #from and #to and artist in #artists"() {
     when:
     List<ReleaseEntity> results = underTest.findAllByArtistInAndReleaseDateBetween(artists, from, to)
 

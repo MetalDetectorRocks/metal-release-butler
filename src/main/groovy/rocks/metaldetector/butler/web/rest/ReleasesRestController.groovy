@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.web.rest
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,11 +27,8 @@ class ReleasesRestController {
 
   static final IMPORT_ACTION = "import"
 
-  final ReleaseService releaseService
-
-  ReleasesRestController(ReleaseService releaseService) {
-    this.releaseService = releaseService
-  }
+  @Autowired
+  ReleaseService releaseService
 
   @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<ReleaseImportResponse> importReleases(@RequestParam("action") String action) {
