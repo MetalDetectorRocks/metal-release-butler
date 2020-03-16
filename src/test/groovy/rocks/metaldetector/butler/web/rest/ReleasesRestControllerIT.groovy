@@ -10,11 +10,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.test.context.TestPropertySource
 import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.config.Endpoints
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.ReleaseServiceImpl
+import rocks.metaldetector.butler.testutil.WithIntegrationTestProfile
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesResponse
@@ -28,10 +28,9 @@ import static org.mockito.Mockito.reset
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
 
-@TestPropertySource(locations = "classpath:application-test.properties")
 @SpringBootTest
 @AutoConfigureMockMvc
-class ReleasesRestControllerIT extends Specification {
+class ReleasesRestControllerIT extends Specification implements WithIntegrationTestProfile {
 
   static final String ARTIST_NAME = "A1"
 
