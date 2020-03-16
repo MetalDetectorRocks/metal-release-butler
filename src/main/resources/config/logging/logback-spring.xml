@@ -31,8 +31,8 @@
         <appender-ref ref="Console" />
     </root>
 
-    <!-- LOG "com.metalr2.*" at TRACE level -->
-    <logger name="com.metalr2" level="trace" additivity="false">
+    <!-- LOG "rocks.metaldetector.butler.*" at TRACE level -->
+    <logger name="rocks.metaldetector.butler" level="trace" additivity="false">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </logger>
