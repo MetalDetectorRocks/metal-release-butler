@@ -30,7 +30,7 @@ class ReleasesRestController {
   @Autowired
   ReleaseService releaseService
 
-  @GetMapping(path = "", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<ReleaseImportResponse> importReleases(@RequestParam("action") String action) {
     if (action == IMPORT_ACTION) {
       ReleaseImportResponse response = releaseService.importFromExternalSource()
@@ -41,7 +41,7 @@ class ReleasesRestController {
     }
   }
 
-  @PostMapping(path = ["","/"], consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request) {
     def releases
     def totalReleases
