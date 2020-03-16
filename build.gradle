@@ -6,7 +6,7 @@ plugins {
 
 group = 'rocks.metaldetector'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_11
 
 springBoot {
 	mainClassName = 'rocks.metaldetector.butler.MetalReleaseButlerApplication'
@@ -16,6 +16,7 @@ def swaggerVersion = '2.9.2'
 def spockVersion = '2.0-M2-groovy-3.0'
 def groovyVersion = '3.0.2'
 def mySqlVersion = '5.1.48'
+def bucket4JVersion = '0.2.0'
 
 configurations {
 	developmentOnly
@@ -34,7 +35,14 @@ repositories {
 dependencies {
 	implementation "org.springframework.boot:spring-boot-starter-data-jpa"
 	implementation "org.springframework.boot:spring-boot-starter-web"
+	implementation "org.springframework.boot:spring-boot-starter-security"
 	implementation "org.apache.httpcomponents:httpclient"
+
+	implementation "org.springframework.boot:spring-boot-starter-cache"
+	implementation "org.ehcache:ehcache"
+	implementation "com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:$bucket4JVersion"
+
+	// Groovy (https://trello.com/c/LYad48xw)
 	implementation "org.codehaus.groovy:groovy-docgenerator:$groovyVersion"
 	implementation "org.codehaus.groovy:groovy-ant:$groovyVersion"
 	implementation "org.codehaus.groovy:groovy-groovysh:$groovyVersion"
@@ -56,6 +64,7 @@ dependencies {
 	implementation "org.codehaus.groovy:groovy-testng:$groovyVersion"
 	implementation "org.codehaus.groovy:groovy-xml:$groovyVersion"
 	implementation "org.codehaus.groovy:groovy:$groovyVersion"
+
 	implementation "io.springfox:springfox-swagger2:$swaggerVersion"
 	implementation "io.springfox:springfox-swagger-ui:$swaggerVersion"
 	developmentOnly "org.springframework.boot:spring-boot-devtools"
@@ -66,9 +75,9 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude group: 'junit', module: 'junit'
 	}
-
 	testImplementation "org.spockframework:spock-core:$spockVersion"
 	testImplementation "org.spockframework:spock-spring:$spockVersion"
+	testImplementation "org.springframework.security:spring-security-test"
 }
 
 test {

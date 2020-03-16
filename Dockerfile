@@ -1,4 +1,4 @@
-FROM openjdk:8-alpine
+FROM openjdk:11-stretch
 
 ARG BUILD_DATE
 LABEL org.label-schema.build-date=$BUILD_DATE
