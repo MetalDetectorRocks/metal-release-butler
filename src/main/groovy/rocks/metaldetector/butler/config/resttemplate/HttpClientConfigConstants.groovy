@@ -16,6 +16,6 @@ interface HttpClientConfigConstants {
   int SOCKET_TIMEOUT     = 60 * 1000 // 60 sec, the time for waiting for data
 
   // Idle connection monitor
-  long IDLE_CONNECTION_WAIT_TIME = 30 * 1000 // 30 sec
+  long IDLE_CONNECTION_WAIT_TIME = 60 * 1000 // 30 sec
 
 }

@@ -82,14 +82,12 @@ class ApacheHttpClientConfig {
   Runnable idleConnectionMonitor(PoolingHttpClientConnectionManager pool) {
     return new Runnable() {
       @Override
-      @Scheduled(fixedDelay = 20000L)
+      @Scheduled(fixedDelay = 60000L)
       void run() {
         // only if connection pool is initialised
         if (pool != null) {
           pool.closeExpiredConnections()
           pool.closeIdleConnections(IDLE_CONNECTION_WAIT_TIME, TimeUnit.MILLISECONDS)
-
-          log.info("Idle connection monitor: Closing expired and idle connections")
         }
       }
     }
