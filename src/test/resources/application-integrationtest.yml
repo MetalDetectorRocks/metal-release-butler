@@ -30,4 +30,4 @@ server:
       enabled: true
 
 logging:
-  config: src/main/resources/logback-test.xml
+  config: src/test/resources/logback-test.xml

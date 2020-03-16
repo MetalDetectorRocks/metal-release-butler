@@ -14,16 +14,3 @@ server:
 
 bucket4j:
   enabled: true
-  filters:
-    - cache-name: buckets
-      filter-method: servlet
-      url: .*
-      metrics:
-        tags:
-          - key: URL
-            expression: getRequestURI()
-      rate-limits:
-        - bandwidths:
-            - capacity: 20
-              time: 1
-              unit: minutes
