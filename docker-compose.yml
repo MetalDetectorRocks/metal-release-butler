@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   butler-db:
-    container_name: butler-db
+    container_name: butler-db-main
     image: mysql:5
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/butler_db_root_password
@@ -20,7 +20,7 @@ services:
     restart: always
 
   butler-phpmyadmin:
-    container_name: butler-phpmyadmin
+    container_name: butler-phpmyadmin-main
     image: phpmyadmin/phpmyadmin
     environment:
       PMA_ARBITRARY: 1
