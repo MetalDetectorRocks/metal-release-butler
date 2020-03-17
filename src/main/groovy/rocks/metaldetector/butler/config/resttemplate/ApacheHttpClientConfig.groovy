@@ -12,8 +12,7 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
 import org.apache.http.message.BasicHeaderElementIterator
 import org.apache.http.protocol.HTTP
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -21,24 +20,21 @@ import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 
-import java.util.concurrent.TimeUnit
+import java.time.Duration
 
-import static rocks.metaldetector.butler.config.resttemplate.HttpClientConfigConstants.CONNECTION_TIMEOUT
-import static rocks.metaldetector.butler.config.resttemplate.HttpClientConfigConstants.DEFAULT_KEEP_ALIVE_TIME
-import static rocks.metaldetector.butler.config.resttemplate.HttpClientConfigConstants.IDLE_CONNECTION_WAIT_TIME
-import static rocks.metaldetector.butler.config.resttemplate.HttpClientConfigConstants.MAX_TOTAL_CONNECTIONS
-import static rocks.metaldetector.butler.config.resttemplate.HttpClientConfigConstants.MAX_ROUTE_CONNECTIONS
-import static rocks.metaldetector.butler.config.resttemplate.HttpClientConfigConstants.MAX_LOCALHOST_CONNECTIONS
-import static rocks.metaldetector.butler.config.resttemplate.HttpClientConfigConstants.REQUEST_TIMEOUT
-import static rocks.metaldetector.butler.config.resttemplate.HttpClientConfigConstants.SOCKET_TIMEOUT
+import static java.util.concurrent.TimeUnit.MINUTES
 
 @Configuration
 class ApacheHttpClientConfig {
 
-  final Logger log = LoggerFactory.getLogger(ApacheHttpClientConfig)
+  private static final int MAX_ROUTE_CONNECTIONS     = 40
+  private static final int MAX_TOTAL_CONNECTIONS     = 40
+  private static final int MAX_LOCALHOST_CONNECTIONS = 80
+
   final int port
 
-  ApacheHttpClientConfig(@Value(value = '${server.port}') int port) {
+  @Autowired
+  ApacheHttpClientConfig(@Value('${server.port}') int port) {
     this.port = port
   }
 
@@ -74,7 +70,7 @@ class ApacheHttpClientConfig {
         }
       }
 
-      return DEFAULT_KEEP_ALIVE_TIME
+      return Duration.ofSeconds(20).toMillis()
     }
   }
 
@@ -87,7 +83,7 @@ class ApacheHttpClientConfig {
         // only if connection pool is initialised
         if (pool != null) {
           pool.closeExpiredConnections()
-          pool.closeIdleConnections(IDLE_CONNECTION_WAIT_TIME, TimeUnit.MILLISECONDS)
+          pool.closeIdleConnections(10, MINUTES)
         }
       }
     }
@@ -104,9 +100,9 @@ class ApacheHttpClientConfig {
   @Bean
   CloseableHttpClient httpClient() {
     RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectTimeout(CONNECTION_TIMEOUT)
-            .setConnectionRequestTimeout(REQUEST_TIMEOUT)
-            .setSocketTimeout(SOCKET_TIMEOUT)
+            .setConnectTimeout(Duration.ofSeconds(20).toMillis() as int) // the time for waiting until a connection is established
+            .setConnectionRequestTimeout(Duration.ofSeconds(20).toMillis() as int) // the time for waiting for a connection from connection pool
+            .setSocketTimeout(Duration.ofSeconds(30).toMillis() as int) // the time for waiting for data
             .build()
 
     return HttpClients.custom()
@@ -115,5 +111,4 @@ class ApacheHttpClientConfig {
             .setKeepAliveStrategy(connectionKeepAliveStrategy())
             .build()
   }
-
 }

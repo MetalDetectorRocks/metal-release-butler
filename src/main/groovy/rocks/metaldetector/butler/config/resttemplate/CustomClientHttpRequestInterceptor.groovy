@@ -1,16 +1,15 @@
 package rocks.metaldetector.butler.config.resttemplate
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import groovy.util.logging.Slf4j
 import org.springframework.http.HttpRequest
 import org.springframework.http.MediaType
 import org.springframework.http.client.ClientHttpRequestExecution
 import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.ClientHttpResponse
 
+@Slf4j
 class CustomClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 
-  final Logger log = LoggerFactory.getLogger(CustomClientErrorHandler)
   final String userAgent
 
   CustomClientHttpRequestInterceptor(String userAgent) {
@@ -27,5 +26,4 @@ class CustomClientHttpRequestInterceptor implements ClientHttpRequestInterceptor
 
     return execution.execute(request, body)
   }
-
 }
