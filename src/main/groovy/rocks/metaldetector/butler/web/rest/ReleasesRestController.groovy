@@ -18,8 +18,8 @@ import rocks.metaldetector.butler.web.dto.ReleasesResponse
 
 import javax.validation.Valid
 
-import static rocks.metaldetector.butler.config.Endpoints.RELEASES
-import static rocks.metaldetector.butler.config.Endpoints.UNPAGINATED
+import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
+import static rocks.metaldetector.butler.config.constants.Endpoints.UNPAGINATED
 
 @RestController
 @RequestMapping(RELEASES)
