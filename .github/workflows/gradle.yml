@@ -13,3 +13,11 @@ jobs:
           java-version: 1.11
       - name: Execute all tests
         run: ./gradlew clean test
+      - name: Generate coverage report
+        run: ./gradlew jacocoTestReport
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          #file: ./coverage.xml
+          name: codecov-umbrella
+          fail_ci_if_error: true
