@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.config.resttemplate
+package rocks.metaldetector.butler.config.web
 
 import groovy.util.logging.Slf4j
 import org.springframework.http.HttpRequest

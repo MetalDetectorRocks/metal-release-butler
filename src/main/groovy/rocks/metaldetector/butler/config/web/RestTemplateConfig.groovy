@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.config.resttemplate
+package rocks.metaldetector.butler.config.web
 
 import org.apache.http.impl.client.CloseableHttpClient
 import org.springframework.beans.factory.annotation.Autowired
