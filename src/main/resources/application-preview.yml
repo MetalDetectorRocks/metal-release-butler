@@ -1,7 +1,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
 server:
   port: 8080
@@ -14,4 +14,3 @@ server:
 
 bucket4j:
   enabled: true
-

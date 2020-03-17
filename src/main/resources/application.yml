@@ -9,10 +9,11 @@ spring:
     password: ${DATASOURCE_PASSWORD}
     url: ${DATASOURCE_URL}
     driver-class-name: com.mysql.jdbc.Driver
-    tomcat:
-      max-wait: 10000
-      max-active: 5
-      test-on-borrow: true
+    hikari:
+      max-lifetime: 1200000
+    data: classpath:schema-mysql.sql
+    platform: mysql
+    initialization-mode: always
   jpa:
     properties:
       hibernate:
@@ -23,7 +24,7 @@ spring:
     show-sql: false
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
-      ddl-auto: create-drop # (create, create-drop, validate, update)
+      ddl-auto: validate # (create, create-drop, validate, update)
     open-in-view: false
   cache:
     jcache:

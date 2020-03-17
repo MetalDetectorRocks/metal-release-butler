@@ -14,13 +14,12 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.model.release.ReleaseEntityRecordState.DEMO
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
-import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 import static rocks.metaldetector.butler.model.release.ReleaseType.COMPILATION
 import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 import static rocks.metaldetector.butler.model.release.ReleaseType.SPLIT
 
 @Component
-@Profile("dev")
+@Profile("default")
 class DevelopmentDbInitializer implements ApplicationRunner {
 
   @PersistenceContext
@@ -34,77 +33,66 @@ class DevelopmentDbInitializer implements ApplicationRunner {
   @Override
   @Transactional(readOnly = false)
   void run(ApplicationArguments args) throws Exception {
-    addExampleReleases()
+    addExampleUpcomingReleases()
   }
 
-  private void addExampleReleases() {
-    ReleaseEntity alcest = ReleaseEntity.builder()
-            .artist("Alcest")
-            .albumTitle("Spiritual Instinct")
-            .releaseDate(LocalDate.of(2019, 11, 25))
+  private void addExampleUpcomingReleases() {
+    ReleaseEntity release1 = ReleaseEntity.builder()
+            .artist("Corona")
+            .albumTitle("Bringing the Death to you")
+            .releaseDate(LocalDate.now().plusDays(33))
             .genre("Black Metal (early), Post-Metal/Shoegaze (later)")
             .type(FULL_LENGTH)
             .source(METAL_ARCHIVES)
             .state(DEMO)
             .build()
 
-    ReleaseEntity cradleOfFilth = ReleaseEntity.builder()
-            .artist("Cradle of Filth")
-            .albumTitle("Cruelty and the Beast: Re-Mistressed")
-            .releaseDate(LocalDate.of(2019, 11, 1))
+    ReleaseEntity release2 = ReleaseEntity.builder()
+            .artist("Outbreak")
+            .albumTitle("Disastrous Pandemic")
+            .releaseDate(LocalDate.now().plusDays(66))
             .genre("Death Metal (early), Symphonic Black Metal (mid), Extreme Gothic Metal (later)")
             .type(FULL_LENGTH)
             .source(METAL_ARCHIVES)
             .state(DEMO)
             .build()
 
-    ReleaseEntity caronte = ReleaseEntity.builder()
-            .artist("Caronte")
-            .albumTitle("Wolves of Thelema")
-            .estimatedReleaseDate("Winter")
-            .genre("Death Metal")
-            .type(FULL_LENGTH)
-            .source(METAL_HAMMER_DE)
-            .state(DEMO)
-            .build()
-
-    ReleaseEntity voland = ReleaseEntity.builder()
+    ReleaseEntity release3 = ReleaseEntity.builder()
             .artist("平衡世界的意志")
             .albumTitle("Bоланд")
-            .releaseDate(LocalDate.of(2019, 11, 23))
+            .releaseDate(LocalDate.now().plusDays(99))
             .genre("Symphonic/Folk Black Metal")
             .type(COMPILATION)
             .source(METAL_ARCHIVES)
             .state(DEMO)
             .build()
 
-    ReleaseEntity grond = ReleaseEntity.builder()
-            .artist("Grond")
-            .albumTitle("Endless Spiral of Terror")
-            .releaseDate(LocalDate.of(2019, 11, 30))
+    ReleaseEntity release4 = ReleaseEntity.builder()
+            .artist("Hamster purchaser")
+            .albumTitle("Hope you gonna die with a roll of toilet paper in your hand")
+            .releaseDate(LocalDate.now().plusDays(40))
             .genre("Death Metal")
             .type(SPLIT)
             .source(METAL_ARCHIVES)
-            .additionalArtists("Graceless")
+            .additionalArtists("Stupid people")
             .state(DEMO)
             .build()
 
-    ReleaseEntity graceless = ReleaseEntity.builder()
-            .artist("Graceless")
-            .albumTitle("Endless Spiral of Terror")
-            .releaseDate(LocalDate.of(2019, 11, 30))
+    ReleaseEntity release5 = ReleaseEntity.builder()
+            .artist("Stupid people")
+            .albumTitle("Hope you gonna die with a roll of toilet paper in your hand")
+            .releaseDate(LocalDate.now().plusDays(40))
             .genre("Death Metal")
             .type(SPLIT)
             .source(METAL_ARCHIVES)
-            .additionalArtists("Grond")
+            .additionalArtists("Hamster purchaser")
             .state(DEMO)
             .build()
 
-    entityManager.persist(alcest)
-    entityManager.persist(cradleOfFilth)
-    entityManager.persist(caronte)
-    entityManager.persist(voland)
-    entityManager.persist(grond)
-    entityManager.persist(graceless)
+    entityManager.persist(release1)
+    entityManager.persist(release2)
+    entityManager.persist(release3)
+    entityManager.persist(release4)
+    entityManager.persist(release5)
   }
 }
