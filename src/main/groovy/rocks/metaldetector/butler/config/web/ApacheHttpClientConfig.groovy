@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.config.resttemplate
+package rocks.metaldetector.butler.config.web
 
 import org.apache.http.HeaderElement
 import org.apache.http.HeaderElementIterator
