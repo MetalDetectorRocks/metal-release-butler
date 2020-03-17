@@ -74,7 +74,7 @@ class RestExceptionHandler {
             .body(new ErrorResponse(UNPROCESSABLE_ENTITY.value(), UNPROCESSABLE_ENTITY.reasonPhrase, exception.message))
   }
 
-  @ExceptionHandler({Exception.class})
+  @ExceptionHandler([Exception.class])
   ResponseEntity<ErrorResponse> handleAllOtherExceptions(Exception exception, WebRequest webRequest) {
     log.error("${webRequest.contextPath}: ${exception.message}", exception)
     return ResponseEntity

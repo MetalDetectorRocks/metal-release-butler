@@ -1,7 +1,10 @@
 package rocks.metaldetector.butler.config.web
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.apache.http.impl.client.CloseableHttpClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -38,9 +41,12 @@ class RestTemplateConfig {
 
   @Bean
   ObjectMapper objectMapper() {
-    ObjectMapper objectMapper = new ObjectMapper(
-            serializationInclusion: JsonInclude.Include.NON_EMPTY
-    )
+    ObjectMapper objectMapper = new ObjectMapper()
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+    objectMapper.registerModule(new JavaTimeModule())
+    objectMapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL)
+    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
 
     return objectMapper
   }

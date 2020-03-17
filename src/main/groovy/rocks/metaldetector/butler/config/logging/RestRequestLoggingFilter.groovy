@@ -7,11 +7,11 @@ import javax.servlet.http.HttpServletRequest
 class RestRequestLoggingFilter extends CommonsRequestLoggingFilter {
 
   RestRequestLoggingFilter() {
-    super.includeQueryString = true
-    super.includePayload = true
-    super.includeClientInfo = true
-    super.includeHeaders = true
-    super.maxPayloadLength = 10000
+    super.setIncludeQueryString(true)
+    super.setIncludePayload(true)
+    super.setIncludeClientInfo(true)
+    super.setIncludeHeaders(true)
+    super.setMaxPayloadLength(10000)
   }
 
   @Override
