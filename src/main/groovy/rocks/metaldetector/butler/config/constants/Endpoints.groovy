@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.config
+package rocks.metaldetector.butler.config.constants
 
 class Endpoints {
 
