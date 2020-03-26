@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "7e670231-7b88-40a4-bf4c-9e9a2048873f",
+		"_postman_id": "75016a18-8faa-4de2-98cc-ea5f423619c3",
 		"name": "Metal Release Butler",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -130,14 +130,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8095/metal-release-butler/rest/v1/releases?action=import",
+					"raw": "http://localhost:8095/rest/v1/releases?action=import",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8095",
 					"path": [
-						"metal-release-butler",
 						"rest",
 						"v1",
 						"releases"
@@ -173,14 +172,13 @@
 					"raw": "{\n\t\"page\": 1,\n\t\"size\": 20\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8095/metal-release-butler/rest/v1/releases",
+					"raw": "http://localhost:8095/rest/v1/releases",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8095",
 					"path": [
-						"metal-release-butler",
 						"rest",
 						"v1",
 						"releases"
@@ -210,14 +208,13 @@
 					"raw": "{\n\t\"page\": 22,\n\t\"size\": 20,\n\t\"dateFrom\": \"2019-11-18\",\n\t\"dateTo\": \"2019-12-31\"\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8095/metal-release-butler/rest/v1/releases",
+					"raw": "http://localhost:8095/rest/v1/releases",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8095",
 					"path": [
-						"metal-release-butler",
 						"rest",
 						"v1",
 						"releases"
@@ -247,14 +244,13 @@
 					"raw": "{\n\t\"page\": 1,\n\t\"size\": 10,\n\t\"artists\": [\n\t\t\"Nightwish\", \"Grond\"\t\n\t]\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8095/metal-release-butler/rest/v1/releases",
+					"raw": "http://localhost:8095/rest/v1/releases",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8095",
 					"path": [
-						"metal-release-butler",
 						"rest",
 						"v1",
 						"releases"
@@ -284,14 +280,13 @@
 					"raw": "{\n\t\"page\": 1,\n\t\"size\": 10,\n\t\"dateFrom\": \"2019-11-18\",\n\t\"dateTo\": \"2019-12-31\",\n\t\"artists\": [\n\t\t\"Nightwish\", \"Grond\"\t\n\t]\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8095/metal-release-butler/rest/v1/releases",
+					"raw": "http://localhost:8095/rest/v1/releases",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "8095",
 					"path": [
-						"metal-release-butler",
 						"rest",
 						"v1",
 						"releases"
