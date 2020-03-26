@@ -47,11 +47,11 @@ class MetalArchivesRestClient {
       // (4) prepare next iteration
       if ((startOfRange + 100) < responseBody.totalRecords) {
         startOfRange += 100
+        attempt = 0
       }
       else {
         dataAvailable = false
       }
-      attempt = 0
     }
 
     return rawResponse
