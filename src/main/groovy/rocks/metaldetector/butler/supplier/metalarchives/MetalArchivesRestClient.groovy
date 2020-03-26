@@ -51,6 +51,7 @@ class MetalArchivesRestClient {
       else {
         dataAvailable = false
       }
+      attempt = 0
     }
 
     return rawResponse
