@@ -43,20 +43,16 @@ class ReleaseServiceImpl implements ReleaseService {
     // convert raw string data into ReleaseEntity
     List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
 
-    // ToDo DanielW: only import releases that do not yet exist
-//    releaseEntities.each { release ->
-//      if (! releaseRepository.exists(release)) {
-//        releaseRepository.save(release)
-//      }
-//    }
+    // insert new releases
+    def inserted = 0
+    releaseEntities.each { ReleaseEntity release ->
+      if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release.artist, release.albumTitle, release.releaseDate)) {
+        releaseRepository.save(release)
+        inserted++
+      }
+    }
 
-    // remove any record that has a release date today or later
-    releaseRepository.deleteByReleaseDateAfter(YESTERDAY)
-
-    // insert releases
-    def inserted = releaseRepository.saveAll(releaseEntities.unique())
-
-    return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted.size())
+    return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted)
   }
 
   @Override
@@ -65,11 +61,11 @@ class ReleaseServiceImpl implements ReleaseService {
     PageRequest pageRequest = pageableSupplier(page, size)
     if (artistNames.isEmpty()) {
       return releaseRepository.findAllByReleaseDateAfter(YESTERDAY, pageRequest)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
     else {
       return releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, pageRequest)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
   }
 
@@ -79,11 +75,11 @@ class ReleaseServiceImpl implements ReleaseService {
     PageRequest pageRequest = pageableSupplier(page, size)
     if (artistNames.isEmpty()) {
       return releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to, pageRequest)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
     else {
       return releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, pageRequest)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
   }
 
@@ -137,11 +133,11 @@ class ReleaseServiceImpl implements ReleaseService {
 
   private static ReleaseDto convertToDto(ReleaseEntity releaseEntity) {
     return new ReleaseDto(
-            artist: releaseEntity.artist,
-            additionalArtists: releaseEntity.additionalArtists,
-            albumTitle: releaseEntity.albumTitle,
-            releaseDate: releaseEntity.releaseDate,
-            estimatedReleaseDate: releaseEntity.estimatedReleaseDate
+        artist: releaseEntity.artist,
+        additionalArtists: releaseEntity.additionalArtists,
+        albumTitle: releaseEntity.albumTitle,
+        releaseDate: releaseEntity.releaseDate,
+        estimatedReleaseDate: releaseEntity.estimatedReleaseDate
     )
   }
 }

@@ -11,14 +11,15 @@ import spock.lang.Unroll
 
 import java.time.LocalDate
 
-import static rocks.metaldetector.butler.DtoFactory.*
+import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
+import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
 
 class ReleaseServiceTest extends Specification {
 
   ReleaseServiceImpl underTest = new ReleaseServiceImpl(
-          releaseRepository: Mock(ReleaseRepository),
-          restClient: Mock(MetalArchivesRestClient),
-          releaseEntityConverter: Mock(ReleaseEntityConverter)
+      releaseRepository: Mock(ReleaseRepository),
+      restClient: Mock(MetalArchivesRestClient),
+      releaseEntityConverter: Mock(ReleaseEntityConverter)
   )
 
   static LocalDate now = LocalDate.now()
@@ -150,6 +151,59 @@ class ReleaseServiceTest extends Specification {
 
     and:
     result == 1
+  }
+
+  def "rest client is called once on import"() {
+    when:
+    underTest.importFromExternalSource()
+
+    then:
+    1 * underTest.restClient.requestReleases() >> []
+  }
+
+  @Unroll
+  "release converter is called for every response from rest template"() {
+    given:
+    underTest.restClient.requestReleases() >> releases
+
+    when:
+    underTest.importFromExternalSource()
+
+    then:
+    releases.size() * underTest.releaseEntityConverter.convert(_) >> [new ReleaseEntity()]
+
+    where:
+    releases << [[], [new String[0], new String[0]]]
+  }
+
+  def "new releases are saved"() {
+    given:
+    underTest.restClient.requestReleases() >> [new String[0]]
+    underTest.releaseEntityConverter.convert(_) >> [new ReleaseEntity(), new ReleaseEntity()]
+
+    when:
+    underTest.importFromExternalSource()
+
+    then:
+    2 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >> false
+
+    and:
+    2 * underTest.releaseRepository.save(_)
+  }
+
+  def "existing releases are not saved"() {
+    given:
+    underTest.restClient.requestReleases() >> [new String[0]]
+    underTest.releaseEntityConverter.convert(_) >> [new ReleaseEntity()]
+
+    when:
+    underTest.importFromExternalSource()
+
+    then:
+    1 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >> true
+
+    and:
+    0 * underTest.releaseRepository.save(_)
   }
 
   private static List<ReleaseEntity> getReleaseEntitiesForTimeRangeTest() {
