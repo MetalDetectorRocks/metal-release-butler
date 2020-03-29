@@ -8,6 +8,7 @@ plugins {
 group = 'rocks.metaldetector'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 springBoot {
 	mainClassName = 'rocks.metaldetector.butler.MetalReleaseButlerApplication'
