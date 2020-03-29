@@ -1,6 +1,12 @@
 name: Continous Integration
 
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   ci:
@@ -12,9 +18,13 @@ jobs:
         with:
           java-version: 1.11
       - name: Execute all tests
-        run: ./gradlew clean test
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: clean test
       - name: Generate coverage report
-        run: ./gradlew jacocoTestReport
+        uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: jacocoTestReport
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v1
         with:

@@ -12,14 +12,15 @@ jobs:
       - name: Checkout master
         uses: actions/checkout@v1
       - name: Execute gradle task 'bootJar'
-        uses: MrRamych/gradle-actions@1.0
+        uses: eskatos/gradle-command-action@v1
         with:
-          args: bootJar
+          arguments: bootJar
       - name: Build the Docker image
         run: docker build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t metaldetector/metal-release-butler:latest .
       - name: Publish to DockerHub
-        uses: elgohr/Publish-Docker-Github-Action@2.10
+        uses: docker/build-push-action@v1
         with:
-          name: metaldetector/metal-release-butler
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password:  ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: metaldetector/metal-release-butler
+          tags: latest
