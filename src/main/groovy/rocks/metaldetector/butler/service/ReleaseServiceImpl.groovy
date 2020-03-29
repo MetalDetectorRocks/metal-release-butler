@@ -43,20 +43,16 @@ class ReleaseServiceImpl implements ReleaseService {
     // convert raw string data into ReleaseEntity
     List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
 
-    // ToDo DanielW: only import releases that do not yet exist
-//    releaseEntities.each { release ->
-//      if (! releaseRepository.exists(release)) {
-//        releaseRepository.save(release)
-//      }
-//    }
+    // insert new releases
+    def inserted = 0
+    releaseEntities.each { ReleaseEntity release ->
+      if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release.artist, release.albumTitle, release.releaseDate)) {
+        releaseRepository.save(release)
+        inserted++
+      }
+    }
 
-    // remove any record that has a release date today or later
-    releaseRepository.deleteByReleaseDateAfter(YESTERDAY)
-
-    // insert releases
-    def inserted = releaseRepository.saveAll(releaseEntities.unique())
-
-    return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted.size())
+    return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted)
   }
 
   @Override
@@ -92,7 +88,7 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames) {
     if (artistNames.isEmpty()) {
       return releaseRepository.findAllByReleaseDateAfter(YESTERDAY)
-          .collect { convertToDto(it) }
+                              .collect { convertToDto(it) }
     }
     else {
       List<ReleaseEntity> releases = releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
@@ -105,11 +101,11 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange) {
     if (artistNames.isEmpty()) {
       return releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to)
-          .collect { convertToDto(it) }
+                              .collect { convertToDto(it) }
     }
     else {
       return releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
-          .collect { convertToDto(it) }
+                              .collect { convertToDto(it) }
     }
   }
 
@@ -137,11 +133,11 @@ class ReleaseServiceImpl implements ReleaseService {
 
   private static ReleaseDto convertToDto(ReleaseEntity releaseEntity) {
     return new ReleaseDto(
-            artist: releaseEntity.artist,
-            additionalArtists: releaseEntity.additionalArtists,
-            albumTitle: releaseEntity.albumTitle,
-            releaseDate: releaseEntity.releaseDate,
-            estimatedReleaseDate: releaseEntity.estimatedReleaseDate
+        artist: releaseEntity.artist,
+        additionalArtists: releaseEntity.additionalArtists,
+        albumTitle: releaseEntity.albumTitle,
+        releaseDate: releaseEntity.releaseDate,
+        estimatedReleaseDate: releaseEntity.estimatedReleaseDate
     )
   }
 }

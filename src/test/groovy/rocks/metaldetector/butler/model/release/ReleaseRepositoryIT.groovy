@@ -8,7 +8,7 @@ import spock.lang.Unroll
 
 import java.time.LocalDate
 
-import static rocks.metaldetector.butler.DtoFactory.*
+import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
 
 @DataJpaTest
 class ReleaseRepositoryIT extends Specification implements WithIntegrationTestProfile {
@@ -87,5 +87,20 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestPr
     from                       | to                       | artists            | expectedReleases
     LocalDate.of(2020, 1, 1)   | LocalDate.of(2020, 3, 1) | ["A1", "A2", "A3"] | [release1, release2, release3]
     LocalDate.of(2019, 12, 31) | LocalDate.of(2020, 1, 1) | ["A1"]             | [release1]
+  }
+
+  @Unroll
+  "Release already exists"() {
+    when:
+    boolean result = underTest.existsByArtistAndAlbumTitleAndReleaseDate(artist, albumTitle, releaseDate)
+
+    then:
+    result == expectedResult
+
+    where:
+    artist          | albumTitle          | releaseDate          | expectedResult
+    null            | null                | null                 | false
+    release1.artist | release1.albumTitle | release1.releaseDate | true
+    release2.artist | release1.albumTitle | release1.releaseDate | false
   }
 }
