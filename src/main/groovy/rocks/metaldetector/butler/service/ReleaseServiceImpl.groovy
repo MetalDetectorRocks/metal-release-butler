@@ -137,7 +137,13 @@ class ReleaseServiceImpl implements ReleaseService {
         additionalArtists: releaseEntity.additionalArtists,
         albumTitle: releaseEntity.albumTitle,
         releaseDate: releaseEntity.releaseDate,
-        estimatedReleaseDate: releaseEntity.estimatedReleaseDate
+        estimatedReleaseDate: releaseEntity.estimatedReleaseDate,
+        genre: releaseEntity.genre,
+        type: releaseEntity.type,
+        metalArchivesAlbumUrl: releaseEntity.metalArchivesAlbumUrl,
+        metalArchivesArtistUrl: releaseEntity.metalArchivesArtistUrl,
+        source: releaseEntity.source,
+        state: releaseEntity.state
     )
   }
 }

@@ -19,7 +19,9 @@ class DtoFactory {
   static class ReleaseDtoFactory {
 
     static ReleaseDto createReleaseDto(String artist, LocalDate releaseDate) {
-      return new ReleaseDto(artist, [artist], "T", releaseDate, "releaseDate")
+      return new ReleaseDto(artist: artist, additionalArtists: [artist], albumTitle: "T",
+                            releaseDate: releaseDate, estimatedReleaseDate: "releaseDate",
+                            state: ReleaseEntityRecordState.OK)
     }
   }
 }
