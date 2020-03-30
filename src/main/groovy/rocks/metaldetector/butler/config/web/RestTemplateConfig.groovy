@@ -42,7 +42,7 @@ class RestTemplateConfig {
   @Bean
   ObjectMapper objectMapper() {
     ObjectMapper objectMapper = new ObjectMapper()
-    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY)
+    objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     objectMapper.registerModule(new JavaTimeModule())
     objectMapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL)
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
