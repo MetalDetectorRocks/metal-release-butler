@@ -15,13 +15,13 @@ import java.time.LocalDate
 @Builder(excludes = "new") // because there is method isNew in super class
 class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
 
-  @Column(name = "artist", nullable = false, columnDefinition = "NVARCHAR(255)")
+  @Column(name = "artist", nullable = false, columnDefinition = "varchar(255)")
   String artist
 
-  @Column(name = "album_title", nullable = false, columnDefinition = "NVARCHAR(255)")
+  @Column(name = "album_title", nullable = false, columnDefinition = "varchar(255)")
   String albumTitle
 
-  @Column(name = "release_date", nullable = true, columnDefinition = "DATE")
+  @Column(name = "release_date", nullable = true, columnDefinition = "date")
   LocalDate releaseDate
 
   @Column(name = "estimated_release_date", nullable = true)
@@ -45,7 +45,7 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
   // for inaccurate data such as "Summer 2020"
   ReleaseSource source
 
-  @Column(name = "additional_artists", nullable = true, columnDefinition = "NVARCHAR(255)")
+  @Column(name = "additional_artists", nullable = true, columnDefinition = "varchar(255)")
   String additionalArtists
 
   @Column(name = "state", nullable = false)
