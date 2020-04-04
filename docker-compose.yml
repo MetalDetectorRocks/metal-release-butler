@@ -19,22 +19,6 @@ services:
       - 3307:3306
     restart: always
 
-  butler-phpmyadmin:
-    container_name: butler-phpmyadmin-main
-    image: phpmyadmin/phpmyadmin
-    environment:
-      PMA_ARBITRARY: 1
-      PMA_HOST: butler-db
-    networks:
-      - butler-network
-    volumes:
-      - type: volume
-        source: butler-phpmyadmin-volume
-        target: /sessions
-    ports:
-      - 9001:80
-    restart: always
-
 volumes:
   butler-db-volume:
   butler-phpmyadmin-volume:
