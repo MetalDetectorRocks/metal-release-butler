@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.service
 
+import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -16,6 +17,7 @@ import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 import java.time.LocalDate
 
 @Service
+@Slf4j
 class ReleaseServiceImpl implements ReleaseService {
 
   static final YESTERDAY = LocalDate.now() - 1
@@ -46,6 +48,7 @@ class ReleaseServiceImpl implements ReleaseService {
     // insert new releases
     def inserted = 0
     releaseEntities.each { ReleaseEntity release ->
+      logCertainRelease(release)
       if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release.artist, release.albumTitle, release.releaseDate)) {
         releaseRepository.save(release)
         inserted++
@@ -53,6 +56,12 @@ class ReleaseServiceImpl implements ReleaseService {
     }
 
     return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted)
+  }
+
+  private void logCertainRelease(ReleaseEntity releaseEntity) {
+    if (releaseEntity.artist.equalsIgnoreCase('Faith ov Gestalgt')) {
+      log.info(releaseEntity.albumTitle)
+    }
   }
 
   @Override

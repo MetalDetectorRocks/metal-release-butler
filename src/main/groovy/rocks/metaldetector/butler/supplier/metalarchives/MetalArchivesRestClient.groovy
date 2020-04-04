@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.supplier.metalarchives
 
+import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
+@Slf4j
 class MetalArchivesRestClient {
 
   static final String UPCOMING_RELEASES_URL = "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart={startOfRange}"
@@ -42,6 +44,7 @@ class MetalArchivesRestClient {
       }
 
       // (3) collect raw response data
+      logCertainLine(responseBody)
       rawResponse.addAll(responseBody.data)
 
       // (4) prepare next iteration
@@ -55,5 +58,15 @@ class MetalArchivesRestClient {
     }
 
     return rawResponse
+  }
+
+  private void logCertainLine(MetalArchivesResponse responseBody) {
+    responseBody.data.each {
+      it.each {
+        if (it.contains('<a href="https://www.metal-archives.com/albums/Faith_ov_Gestalgt')) {
+          log.info(it)
+        }
+      }
+    }
   }
 }
