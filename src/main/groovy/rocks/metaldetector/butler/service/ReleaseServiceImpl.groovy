@@ -59,7 +59,7 @@ class ReleaseServiceImpl implements ReleaseService {
   }
 
   private void logCertainRelease(ReleaseEntity releaseEntity) {
-    if (releaseEntity.artist.equalsIgnoreCase('Faith ov Gestalgt')) {
+    if (releaseEntity?.artist?.equalsIgnoreCase('Faith ov Gestalgt')) {
       log.info(releaseEntity.albumTitle)
     }
   }
