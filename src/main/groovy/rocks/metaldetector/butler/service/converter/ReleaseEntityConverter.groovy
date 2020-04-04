@@ -104,7 +104,6 @@ class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>>
   }
 
   private String parseAnchorName(String text) {
-    logCertainText(text)
     def xml = xmlSlurper.parseText(text)
 
     return xml.text().trim()
@@ -139,14 +138,6 @@ class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>>
       if (! additionalArtists.isEmpty()) {
         it.additionalArtists = additionalArtists.join(", ")
       }
-    }
-  }
-
-  private void logCertainText(String text) {
-    if (text.contains('<a href="https://www.metal-archives.com/albums/Faith_ov_Gestalgt')) {
-      log.info(text)
-      def xml = xmlSlurper.parseText(text)
-      log.info(xml.text().trim())
     }
   }
 }

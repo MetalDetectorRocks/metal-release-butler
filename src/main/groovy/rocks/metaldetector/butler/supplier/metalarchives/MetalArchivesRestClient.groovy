@@ -44,7 +44,6 @@ class MetalArchivesRestClient {
       }
 
       // (3) collect raw response data
-      logCertainLine(responseBody)
       rawResponse.addAll(responseBody.data)
 
       // (4) prepare next iteration
@@ -58,15 +57,5 @@ class MetalArchivesRestClient {
     }
 
     return rawResponse
-  }
-
-  private void logCertainLine(MetalArchivesResponse responseBody) {
-    responseBody.data.each {
-      it.each {
-        if (it.contains('<a href="https://www.metal-archives.com/albums/Faith_ov_Gestalgt')) {
-          log.info(it)
-        }
-      }
-    }
   }
 }
