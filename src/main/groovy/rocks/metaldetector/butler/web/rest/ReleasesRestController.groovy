@@ -3,12 +3,14 @@ package rocks.metaldetector.butler.web.rest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import rocks.metaldetector.butler.config.security.JwtsSupport
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.ReleaseService
 import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
@@ -28,9 +30,12 @@ class ReleasesRestController {
   static final IMPORT_ACTION = "import"
 
   @Autowired
+  JwtsSupport jwtsSupport
+  @Autowired
   ReleaseService releaseService
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<ReleaseImportResponse> importReleases(@RequestParam("action") String action) {
     if (action == IMPORT_ACTION) {
       ReleaseImportResponse response = releaseService.importFromExternalSource()
@@ -42,6 +47,7 @@ class ReleasesRestController {
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasRole('ROLE_USER')")
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request) {
     def releases
     def totalReleases
@@ -66,6 +72,7 @@ class ReleasesRestController {
   }
 
   @PostMapping(path = [UNPAGINATED], consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasRole('ROLE_USER')")
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request) {
     def releases
 
@@ -84,5 +91,4 @@ class ReleasesRestController {
                                         totalReleases: releases.size(), releases: releases)
     return ResponseEntity.ok(response)
   }
-
 }

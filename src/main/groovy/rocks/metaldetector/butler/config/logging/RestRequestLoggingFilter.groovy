@@ -10,7 +10,7 @@ class RestRequestLoggingFilter extends CommonsRequestLoggingFilter {
     super.setIncludeQueryString(true)
     super.setIncludePayload(true)
     super.setIncludeClientInfo(true)
-    super.setIncludeHeaders(true)
+    super.setIncludeHeaders(false)
     super.setMaxPayloadLength(10000)
   }
 
@@ -25,6 +25,6 @@ class RestRequestLoggingFilter extends CommonsRequestLoggingFilter {
 
   @Override
   protected void afterRequest(HttpServletRequest request, String message) {
-    logger.info(request.getMethod() + ": " + message);
+    logger.info(message)
   }
 }
