@@ -32,3 +32,6 @@ server:
 
 logging:
   config: src/test/resources/logback-test.xml
+
+security:
+  token-secret: secret
