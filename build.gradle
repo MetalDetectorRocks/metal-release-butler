@@ -19,6 +19,7 @@ def spockVersion = '2.0-M2-groovy-3.0'
 def groovyVersion = '3.0.2'
 def mySqlVersion = '5.1.48'
 def bucket4JVersion = '0.2.0'
+def jsonwebtokenVersion = '0.9.1'
 
 configurations {
 	developmentOnly
@@ -73,6 +74,7 @@ dependencies {
 	runtimeOnly "com.h2database:h2"
 	runtimeOnly "mysql:mysql-connector-java:$mySqlVersion"
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+	implementation "io.jsonwebtoken:jjwt:$jsonwebtokenVersion"
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude group: 'junit', module: 'junit'

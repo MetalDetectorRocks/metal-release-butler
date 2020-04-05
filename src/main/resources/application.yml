@@ -60,3 +60,6 @@ bucket4j:
             - capacity: 20
               time: 1
               unit: minutes
+
+security:
+  token-secret: ${JWT_SECRET}

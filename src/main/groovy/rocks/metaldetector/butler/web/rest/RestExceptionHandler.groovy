@@ -3,6 +3,7 @@ package rocks.metaldetector.butler.web.rest
 import groovy.util.logging.Slf4j
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.HttpMediaTypeNotSupportedException
 import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -15,6 +16,7 @@ import rocks.metaldetector.butler.web.dto.ErrorResponse
 import javax.validation.ValidationException
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST
+import static org.springframework.http.HttpStatus.FORBIDDEN
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED
 import static org.springframework.http.HttpStatus.UNPROCESSABLE_ENTITY
@@ -74,7 +76,15 @@ class RestExceptionHandler {
             .body(new ErrorResponse(UNPROCESSABLE_ENTITY.value(), UNPROCESSABLE_ENTITY.reasonPhrase, exception.message))
   }
 
-  @ExceptionHandler([Exception.class])
+  @ExceptionHandler([AccessDeniedException])
+  ResponseEntity<ErrorResponse> handleAccessDeniedException(RuntimeException exception, WebRequest webRequest) {
+    log.warn("${webRequest.contextPath}: ${exception.message}", exception)
+    return ResponseEntity
+            .status(FORBIDDEN)
+            .body(new ErrorResponse(FORBIDDEN.value(), FORBIDDEN.reasonPhrase, exception.message))
+  }
+
+  @ExceptionHandler([Exception])
   ResponseEntity<ErrorResponse> handleAllOtherExceptions(Exception exception, WebRequest webRequest) {
     log.error("${webRequest.contextPath}: ${exception.message}", exception)
     return ResponseEntity
