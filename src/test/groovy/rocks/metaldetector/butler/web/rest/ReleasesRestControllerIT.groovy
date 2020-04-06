@@ -114,7 +114,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     result.response.status == HttpStatus.OK.value()
   }
 
-  def "User can access unpaginated releases endpoint"() {
+  def "User cannot access unpaginated releases endpoint"() {
     given:
     def requestBody = new ReleasesRequest(artists: [])
     def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
@@ -127,6 +127,6 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    result.response.status == HttpStatus.OK.value()
+    result.response.status == HttpStatus.FORBIDDEN.value()
   }
 }
