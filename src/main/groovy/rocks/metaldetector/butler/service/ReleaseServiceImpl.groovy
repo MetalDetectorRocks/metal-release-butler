@@ -48,7 +48,6 @@ class ReleaseServiceImpl implements ReleaseService {
     // insert new releases
     def inserted = 0
     releaseEntities.each { ReleaseEntity release ->
-      logCertainRelease(release)
       if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release.artist, release.albumTitle, release.releaseDate)) {
         releaseRepository.save(release)
         inserted++
@@ -56,12 +55,6 @@ class ReleaseServiceImpl implements ReleaseService {
     }
 
     return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted)
-  }
-
-  private void logCertainRelease(ReleaseEntity releaseEntity) {
-    if (releaseEntity?.artist?.equalsIgnoreCase('Faith ov Gestalgt')) {
-      log.info(releaseEntity.albumTitle)
-    }
   }
 
   @Override

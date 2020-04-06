@@ -17,7 +17,7 @@ springBoot {
 def swaggerVersion = '2.9.2'
 def spockVersion = '2.0-M2-groovy-3.0'
 def groovyVersion = '3.0.2'
-def mySqlVersion = '5.1.48'
+def postgresqlVersion = '42.2.12'
 def bucket4JVersion = '0.2.0'
 def jsonwebtokenVersion = '0.9.1'
 
@@ -72,7 +72,7 @@ dependencies {
 	implementation "io.springfox:springfox-swagger-ui:$swaggerVersion"
 	developmentOnly "org.springframework.boot:spring-boot-devtools"
 	runtimeOnly "com.h2database:h2"
-	runtimeOnly "mysql:mysql-connector-java:$mySqlVersion"
+	runtimeOnly "org.postgresql:postgresql:$postgresqlVersion"
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 	implementation "io.jsonwebtoken:jjwt:$jsonwebtokenVersion"
 

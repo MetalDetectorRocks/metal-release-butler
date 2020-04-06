@@ -3,10 +3,11 @@ version: '3.7'
 services:
   butler-db:
     container_name: butler-db-main
-    image: mysql:5
+    image: postgres:alpine
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/butler_db_root_password
-      MYSQL_DATABASE: metal-release-butler
+      POSTGRES_PASSWORD_FILE: /run/secrets/butler_db_root_password
+      POSTGRES_DB: metal-release-butler
+      PGDATA: /var/lib/postgresql/data/db-files/
     secrets:
       - butler_db_root_password
     networks:
@@ -14,30 +15,13 @@ services:
     volumes:
       - type: volume
         source: butler-db-volume
-        target: /var/lib/mysql
+        target: /var/lib/postgresql/data
     ports:
-      - 3307:3306
-    restart: always
-
-  butler-phpmyadmin:
-    container_name: butler-phpmyadmin-main
-    image: phpmyadmin/phpmyadmin
-    environment:
-      PMA_ARBITRARY: 1
-      PMA_HOST: butler-db
-    networks:
-      - butler-network
-    volumes:
-      - type: volume
-        source: butler-phpmyadmin-volume
-        target: /sessions
-    ports:
-      - 9001:80
+      - 5432:5432
     restart: always
 
 volumes:
   butler-db-volume:
-  butler-phpmyadmin-volume:
 
 secrets:
   butler_db_root_password:
