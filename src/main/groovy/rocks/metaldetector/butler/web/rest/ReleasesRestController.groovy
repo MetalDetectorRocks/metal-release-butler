@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import rocks.metaldetector.butler.config.security.JwtsSupport
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.ReleaseService
 import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
@@ -29,8 +28,6 @@ class ReleasesRestController {
 
   static final IMPORT_ACTION = "import"
 
-  @Autowired
-  JwtsSupport jwtsSupport
   @Autowired
   ReleaseService releaseService
 
