@@ -46,41 +46,12 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     reset(releaseService)
   }
 
-  def "Admin can access import endpoint"() {
-    given:
-    def request = get(Endpoints.RELEASES).param("action", "import").header("Authorization", "Bearer " + testAdminToken)
-
+  def "TEST"() {
     when:
-    def result = mockMvc.perform(request).andReturn()
+    def result = null
 
     then:
-    result.response.status == HttpStatus.OK.value()
-  }
-
-  def "User cannot access import endpoint"() {
-    given:
-    def request = get(Endpoints.RELEASES).param("action", "import").header("Authorization", "Bearer " + testUserToken)
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == HttpStatus.FORBIDDEN.value()
-  }
-
-  def "Admin can access releases endpoint"() {
-    given:
-    def requestBody = new ReleasesRequestPaginated(page: 1, size: 10, artists: [])
-    def request = post(Endpoints.RELEASES)
-        .content(objectMapper.writeValueAsString(requestBody))
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + testAdminToken)
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == HttpStatus.OK.value()
+    !result
   }
 
   def "User can access releases endpoint"() {
@@ -90,6 +61,21 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
         .content(objectMapper.writeValueAsString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
         .header("Authorization", "Bearer " + testUserToken)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == HttpStatus.OK.value()
+  }
+
+  def "Admin can access releases endpoint"() {
+    given:
+    def requestBody = new ReleasesRequestPaginated(page: 1, size: 10, artists: [])
+    def request = post(Endpoints.RELEASES)
+        .content(objectMapper.writeValueAsString(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Bearer " + testAdminToken)
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -112,6 +98,28 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
     then:
     result.response.status == HttpStatus.OK.value()
+  }
+
+  def "Admin can access import endpoint"() {
+    given:
+    def request = get(Endpoints.RELEASES).param("action", "import").header("Authorization", "Bearer " + testAdminToken)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == HttpStatus.OK.value()
+  }
+
+  def "User cannot access import endpoint"() {
+    given:
+    def request = get(Endpoints.RELEASES).param("action", "import").header("Authorization", "Bearer " + testUserToken)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == HttpStatus.FORBIDDEN.value()
   }
 
   def "User cannot access unpaginated releases endpoint"() {
