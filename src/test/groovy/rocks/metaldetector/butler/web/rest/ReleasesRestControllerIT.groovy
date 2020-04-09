@@ -12,7 +12,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.TokenFactory
 import rocks.metaldetector.butler.config.constants.Endpoints
-import rocks.metaldetector.butler.service.ReleaseServiceImpl
+import rocks.metaldetector.butler.service.ReleaseService
 import rocks.metaldetector.butler.testutil.WithIntegrationTestProfile
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 class ReleasesRestControllerIT extends Specification implements WithIntegrationTestProfile {
 
   @SpringBean
-  ReleaseServiceImpl releaseService = Mock()
+  ReleaseService releaseService = Mock()
 
   @Autowired
   MockMvc mockMvc
@@ -46,12 +46,15 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     reset(releaseService)
   }
 
-  def "TEST"() {
-    when:
-    def result = null
-
-    then:
-    !result
+  /**
+   * For some reason this test is needed. Otherwise gradle fails on the first
+   * test after this one (no matter which one is put first). Running only the
+   * test (or the whole class) via gradle works.
+   * See: https://trello.com/c/DT2oQHal
+   */
+  def "Why am I here?"() {
+    expect:
+    true
   }
 
   def "User can access releases endpoint"() {
@@ -84,14 +87,9 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     result.response.status == HttpStatus.OK.value()
   }
 
-  def "Admin can access unpaginated releases endpoint"() {
+  def "Admin can access import endpoint"() {
     given:
-    def requestBody = new ReleasesRequest(artists: [])
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
-        .content(objectMapper.writeValueAsString(requestBody))
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + testAdminToken)
-    releaseService.findAllUpcomingReleases(_) >> []
+    def request = get(Endpoints.RELEASES).param("action", "import").header("Authorization", "Bearer " + testAdminToken)
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -100,9 +98,14 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     result.response.status == HttpStatus.OK.value()
   }
 
-  def "Admin can access import endpoint"() {
+  def "Admin can access unpaginated releases endpoint"() {
     given:
-    def request = get(Endpoints.RELEASES).param("action", "import").header("Authorization", "Bearer " + testAdminToken)
+    def requestBody = new ReleasesRequest(artists: [])
+    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+        .content(objectMapper.writeValueAsString(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Bearer " + testAdminToken)
+    releaseService.findAllUpcomingReleases(_) >> []
 
     when:
     def result = mockMvc.perform(request).andReturn()
