@@ -4,6 +4,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.TestPropertySource
 
 @TestPropertySource(locations = "classpath:application-integrationtest.yml")
-@ActiveProfiles("integrationtest")
+@ActiveProfiles(["integrationtest", "default"])
 interface WithIntegrationTestProfile {
 }
