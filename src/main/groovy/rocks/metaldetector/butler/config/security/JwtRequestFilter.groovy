@@ -7,6 +7,7 @@ import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.SignatureException
 import io.jsonwebtoken.UnsupportedJwtException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 @Slf4j
+@Profile(["default", "preview", "prod"])
 class JwtRequestFilter extends OncePerRequestFilter {
 
   static final HEADER_NAME = "Authorization"
