@@ -95,7 +95,7 @@ class ReleasesRestControllerTest extends Specification {
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse.class)
+    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse)
     releasesResponse.releases.size() == 2
     releasesResponse.releases == expectedReleases
   }
@@ -155,7 +155,7 @@ class ReleasesRestControllerTest extends Specification {
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse.class)
+    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse)
     releasesResponse.releases == expectedReleases
   }
 
@@ -180,7 +180,7 @@ class ReleasesRestControllerTest extends Specification {
   }
 
   @Unroll
-  "Requesting unpaginated releases with bad request should not return bad request"() {
+  "Requesting unpaginated releases with bad request should return bad request"() {
     given:
     def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
@@ -249,7 +249,7 @@ class ReleasesRestControllerTest extends Specification {
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse.class)
+    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse)
     releasesResponse.releases.size() == 2
     releasesResponse.releases == expectedReleases
   }
@@ -268,7 +268,7 @@ class ReleasesRestControllerTest extends Specification {
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse.class)
+    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse)
     releasesResponse.currentPage == releasesRequest.page
     releasesResponse.size == releasesRequest.size
   }
@@ -289,7 +289,7 @@ class ReleasesRestControllerTest extends Specification {
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse.class)
+    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse)
     releasesResponse.totalReleases == expectedReleases.size()
     releasesResponse.totalPages == expectedPages
   }
@@ -352,40 +352,12 @@ class ReleasesRestControllerTest extends Specification {
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse.class)
+    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse)
     releasesResponse.releases == expectedReleases
   }
 
   @Unroll
-  "Requesting releases with bad request should not call releases service"() {
-    given:
-    def request = post(Endpoints.RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(body))
-
-    when:
-    mockMvc.perform(request).andReturn()
-
-    then:
-    0 * underTest.releaseService.findAllUpcomingReleases(_)
-    0 * underTest.releaseService.findAllReleasesForTimeRange(*_)
-
-    where:
-    body << ["",
-             new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: null, dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 10),
-             new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1),
-                                          dateTo: LocalDate.of(2020, 2, 1), page: 0, size: 10),
-             new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1),
-                                          dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 0),
-             new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1),
-                                          dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 51),
-             new ReleasesRequestPaginated(dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2020, 2, 1),
-                                          page: 1, size: 51)]
-  }
-
-  @Unroll
-  "Requesting releases with bad request should not return bad request"() {
+  "Requesting releases with bad request should return bad request"() {
     given:
     def request = post(Endpoints.RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
@@ -397,6 +369,10 @@ class ReleasesRestControllerTest extends Specification {
 
     then:
     result.response.status == BAD_REQUEST.value()
+
+    and:
+    0 * underTest.releaseService.findAllUpcomingReleases(_)
+    0 * underTest.releaseService.findAllReleasesForTimeRange(*_)
 
     where:
     body << ["",
@@ -449,7 +425,7 @@ class ReleasesRestControllerTest extends Specification {
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    ReleaseImportResponse importResponse = objectMapper.readValue(result.response.getContentAsString(), ReleaseImportResponse.class)
+    ReleaseImportResponse importResponse = objectMapper.readValue(result.response.getContentAsString(), ReleaseImportResponse)
     importResponse.totalCountRequested == importResultDto.totalCountRequested
 
     and:
