@@ -18,7 +18,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@Profile(["default", "preview", "prod"])
+@Profile("!authentication-less-mode")
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Autowired

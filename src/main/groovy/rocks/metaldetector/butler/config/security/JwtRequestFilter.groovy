@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 @Slf4j
-@Profile(["default", "preview", "prod"])
+@Profile("!authentication-less-mode")
 class JwtRequestFilter extends OncePerRequestFilter {
 
   static final HEADER_NAME = "Authorization"
