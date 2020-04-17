@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 @Component
 @PropertySource(value = "classpath:application.yml")
-@Profile(["default", "preview", "prod"])
+@Profile("!authentication-less-mode")
 class JwtsSupport {
 
   static final String AUTHORITIES_KEY = "auth"

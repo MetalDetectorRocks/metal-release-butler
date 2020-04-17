@@ -13,7 +13,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
 @Component
 @Slf4j
-@Profile(["default", "preview", "prod"])
+@Profile("!authentication-less-mode")
 class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
   @Override
