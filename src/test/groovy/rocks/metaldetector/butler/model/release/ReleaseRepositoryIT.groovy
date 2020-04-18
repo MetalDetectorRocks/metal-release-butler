@@ -2,7 +2,7 @@ package rocks.metaldetector.butler.model.release
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import rocks.metaldetector.butler.testutil.WithIntegrationTestProfile
+import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -11,7 +11,7 @@ import java.time.LocalDate
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
 
 @DataJpaTest
-class ReleaseRepositoryIT extends Specification implements WithIntegrationTestProfile {
+class ReleaseRepositoryIT extends Specification implements WithIntegrationTestConfig {
 
   @Autowired
   ReleaseRepository underTest

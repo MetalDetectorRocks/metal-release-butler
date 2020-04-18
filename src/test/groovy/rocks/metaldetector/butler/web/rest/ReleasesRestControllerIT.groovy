@@ -1,8 +1,6 @@
 package rocks.metaldetector.butler.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
@@ -13,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.TokenFactory
 import rocks.metaldetector.butler.config.constants.Endpoints
 import rocks.metaldetector.butler.service.ReleaseService
-import rocks.metaldetector.butler.testutil.WithIntegrationTestProfile
+import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
 import spock.lang.Specification
@@ -24,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ReleasesRestControllerIT extends Specification implements WithIntegrationTestProfile {
+class ReleasesRestControllerIT extends Specification implements WithIntegrationTestConfig {
 
   @SpringBean
   ReleaseService releaseService = Mock()
@@ -36,25 +34,12 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
   String testAdminToken = TokenFactory.generateAdminTestToken()
   String testUserToken = TokenFactory.generateUserTestToken()
 
-  @BeforeEach
   void setup() {
     objectMapper = new ObjectMapper()
   }
 
-  @AfterEach
   void tearDown() {
     reset(releaseService)
-  }
-
-  /**
-   * For some reason this test is needed. Otherwise gradle fails on the first
-   * test after this one (no matter which one is put first). Running only the
-   * test (or the whole class) via gradle works.
-   * See: https://trello.com/c/DT2oQHal
-   */
-  def "Why am I here?"() {
-    expect:
-    true
   }
 
   def "User can access releases endpoint"() {
