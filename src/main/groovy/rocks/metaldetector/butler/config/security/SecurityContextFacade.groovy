@@ -1,10 +1,8 @@
 package rocks.metaldetector.butler.config.security
 
-import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.Authentication
 
 interface SecurityContextFacade {
 
-  SecurityContext getContext()
-
-  void setContext(SecurityContext securityContext)
+  void setAuthentication(Authentication authentication)
 }

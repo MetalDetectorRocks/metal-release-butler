@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.config.security
+package rocks.metaldetector.butler.config.security.filter
 
 import groovy.util.logging.Slf4j
 import io.jsonwebtoken.Claims
@@ -7,12 +7,14 @@ import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.SignatureException
 import io.jsonwebtoken.UnsupportedJwtException
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Profile
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import rocks.metaldetector.butler.config.security.JwtsSupport
+import rocks.metaldetector.butler.config.security.SecurityContextFacade
 
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
@@ -21,8 +23,12 @@ import javax.servlet.http.HttpServletResponse
 
 @Component
 @Slf4j
-@Profile("!authentication-less-mode")
-class JwtRequestFilter extends OncePerRequestFilter {
+@ConditionalOnProperty(
+        name = "rocks.metaldetector.authentication.enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
+class JwtRequestFilterImpl extends OncePerRequestFilter implements JwtRequestFilter {
 
   static final HEADER_NAME = "Authorization"
   static final TOKEN_PREFIX = "Bearer "
@@ -59,7 +65,7 @@ class JwtRequestFilter extends OncePerRequestFilter {
         def usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(principal, token, authorities)
         usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request))
 
-        securityContextFacade.getContext().setAuthentication(usernamePasswordAuthenticationToken)
+        securityContextFacade.setAuthentication(usernamePasswordAuthenticationToken)
       }
     }
     else {

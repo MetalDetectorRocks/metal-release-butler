@@ -1,24 +1,26 @@
-package rocks.metaldetector.butler.config.security
+package rocks.metaldetector.butler.config.security.filter
 
 import io.jsonwebtoken.impl.DefaultClaims
-import org.junit.jupiter.api.BeforeEach
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.context.SecurityContext
+import rocks.metaldetector.butler.config.security.JwtsSupport
+import rocks.metaldetector.butler.config.security.SecurityContextFacade
 import spock.lang.Specification
 
 import javax.servlet.FilterChain
 
-class JwtRequestFilterTest extends Specification {
+class JwtRequestFilterImplTest extends Specification {
 
-  JwtRequestFilter underTest = new JwtRequestFilter(jwtsSupport: Mock(JwtsSupport),
-                                                    securityContextFacade: Mock(SecurityContextFacade))
+  JwtRequestFilterImpl underTest = new JwtRequestFilterImpl(
+          jwtsSupport: Mock(JwtsSupport),
+          securityContextFacade: Mock(SecurityContextFacade)
+  )
   MockHttpServletRequest mockRequest
   MockHttpServletResponse mockResponse
   FilterChain filterChain
 
-  @BeforeEach
   def setup() {
     mockRequest = new MockHttpServletRequest()
     mockResponse = new MockHttpServletResponse()
@@ -84,7 +86,6 @@ class JwtRequestFilterTest extends Specification {
     claims.setSubject("subject")
     mockRequest.addHeader("Authorization", "Bearer token")
     underTest.jwtsSupport.getClaims(_) >> claims
-    underTest.securityContextFacade.getContext() >> Mock(SecurityContext)
 
     when:
     underTest.doFilterInternal(mockRequest, mockResponse, filterChain)
@@ -93,18 +94,23 @@ class JwtRequestFilterTest extends Specification {
     1 * underTest.jwtsSupport.getAuthorities(claims) >> [new SimpleGrantedAuthority("user")]
   }
 
-  def "On verification success SecurityContextFacade is called to set authorities"() {
+  def "On verification success an authentication object is set via SecurityContextFacade"() {
     given:
+    def username = "john.doe"
+    def authorities = [new SimpleGrantedAuthority("user")]
     def claims = new DefaultClaims()
-    claims.setSubject("subject")
+    claims.setSubject(username)
     mockRequest.addHeader("Authorization", "Bearer token")
     underTest.jwtsSupport.getClaims(_) >> claims
-    underTest.jwtsSupport.getAuthorities(claims) >> [new SimpleGrantedAuthority("user")]
+    underTest.jwtsSupport.getAuthorities(claims) >> authorities
 
     when:
     underTest.doFilterInternal(mockRequest, mockResponse, filterChain)
 
     then:
-    1 * underTest.securityContextFacade.getContext() >> Mock(SecurityContext)
+    1 * underTest.securityContextFacade.setAuthentication({ Authentication authentication ->
+      assert authentication.name == username
+      assert authentication.authorities == authorities
+    })
   }
 }

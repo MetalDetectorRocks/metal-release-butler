@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims
 import io.jsonwebtoken.JwtParser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Profile
 import org.springframework.context.annotation.PropertySource
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component
 
 @Component
 @PropertySource(value = "classpath:application.yml")
-@Profile("!authentication-less-mode")
 class JwtsSupport {
 
   static final String AUTHORITIES_KEY = "auth"

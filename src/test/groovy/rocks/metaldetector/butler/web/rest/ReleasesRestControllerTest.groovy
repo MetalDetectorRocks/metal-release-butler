@@ -2,7 +2,6 @@ package rocks.metaldetector.butler.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import org.junit.jupiter.api.BeforeEach
 import org.springframework.context.support.StaticApplicationContext
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -40,7 +39,6 @@ class ReleasesRestControllerTest extends Specification {
 
   ObjectMapper objectMapper
 
-  @BeforeEach
   void setup() {
     underTest = new ReleasesRestController(releaseService: Mock(ReleaseService))
     mockMvc = MockMvcBuilders.standaloneSetup(underTest, exceptionResolver()).build()
