@@ -5,11 +5,9 @@ services:
     container_name: butler-db-main
     image: postgres:alpine
     environment:
-      POSTGRES_PASSWORD_FILE: /run/secrets/butler_db_root_password
+      POSTGRES_PASSWORD: secret
       POSTGRES_DB: metal-release-butler
       PGDATA: /var/lib/postgresql/data/db-files/
-    secrets:
-      - butler_db_root_password
     networks:
       - butler-network
     volumes:
@@ -22,10 +20,6 @@ services:
 
 volumes:
   butler-db-volume:
-
-secrets:
-  butler_db_root_password:
-    file: .secrets/butler_db_root_password.txt
 
 networks:
   butler-network:
