@@ -21,8 +21,15 @@ jobs:
           gradle-version: 6.3
           arguments: clean bootJar
       - name: Build the Docker image
-        run: docker build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -t metaldetector/metal-release-butler:latest .
-      - name: Publish to DockerHub
+        run: docker build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%S'),VCS_REF=${{ github.ref }} -t metaldetector/metal-release-butler:$(date -u +'%Y%m%dT%H%M%S') .
+      - name: Publish to DockerHub with version tag
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password:  ${{ secrets.DOCKERHUB_PASSWORD }}
+          repository: metaldetector/metal-release-butler
+          tags: $(date -u +'%Y%m%dT%H%M%S')
+      - name: Publish to DockerHub with latest tag
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
