@@ -1,12 +1,33 @@
 FROM openjdk:11-stretch
 
+ENV TZ=Europe/Berlin
+ENV SERVER_PORT 8080
+
+EXPOSE $SERVER_PORT
+
+RUN mkdir /app
+WORKDIR /app
+
+RUN useradd --no-log-init --no-create-home --shell /bin/false service_user
+
+# Arguments
+ARG SOURCE_JAR_FILE="build/libs/*.jar"
 ARG BUILD_DATE
+ARG VCS_REF
+
+# Labels
+LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.build-date=$BUILD_DATE
+LABEL org.label-schema.name="metaldetector/metal-release-butler"
+LABEL org.label-schema.description="Metal Release Butler application collects information about announced album releases of metal bands from external sources and made it available through a REST endpoint."
+LABEL org.label-schema.maintainer="https://github.com/MetalDetectorRocks"
+LABEL org.label-schema.url="https://metal-detector.rocks"
+LABEL org.label-schema.vcs-url="https://github.com/MetalDetectorRocks/metal-release-butler"
+LABEL org.label-schema.vcs-ref=$VCS_REF
+LABEL org.label-schema.version=$BUILD_DATE
 
-COPY build/libs/metal-release-butler-0.0.1-SNAPSHOT.jar metal-release-butler.jar
+COPY $SOURCE_JAR_FILE app.jar
 
-RUN sh -c 'touch /metal-release-butler.jar'
+RUN sh -c 'touch app.jar'
 
-EXPOSE 8095
-
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/metal-release-butler.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
