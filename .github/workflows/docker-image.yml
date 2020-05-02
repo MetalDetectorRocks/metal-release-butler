@@ -21,7 +21,7 @@ jobs:
           gradle-version: 6.3
           arguments: clean bootJar
       - name: Build the Docker image
-        run: docker build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%S'),VCS_REF=${{ github.ref }} -t metaldetector/metal-release-butler:$(date -u +'%Y%m%dT%H%M%S') .
+        run: docker build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%S'),VCS_REF=${{ github.ref }} -t metaldetector/metal-release-butler .
       - name: Publish to DockerHub with version tag
         uses: docker/build-push-action@v1
         with:
