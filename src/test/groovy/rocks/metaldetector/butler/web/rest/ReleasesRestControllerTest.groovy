@@ -382,7 +382,9 @@ class ReleasesRestControllerTest extends Specification {
              new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1),
                                           dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 51),
              new ReleasesRequestPaginated(dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2020, 2, 1),
-                                          page: 1, size: 51)]
+                                          page: 1, size: 51),
+             new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2019, 1, 1),
+                                          page: 1, size: 10)]
   }
 
   def "Requesting import endpoint with correct action should return ok"() {

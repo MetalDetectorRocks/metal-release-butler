@@ -3,6 +3,7 @@ package rocks.metaldetector.butler.web.dto
 import groovy.transform.Canonical
 import org.springframework.format.annotation.DateTimeFormat
 
+import javax.validation.constraints.AssertTrue
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import java.time.LocalDate
@@ -29,4 +30,11 @@ class ReleasesRequestPaginated {
     return artists ?: Collections.emptyList() as Iterable<String>
   }
 
+  @AssertTrue(message = "If dates are set, dateFrom has to be equal to or before dateTo!")
+  private boolean isValid() {
+    if (dateFrom != null && dateTo != null) {
+      return dateFrom == dateTo || dateFrom.isBefore(dateTo)
+    }
+    return true
+  }
 }
