@@ -6,8 +6,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
-import static org.springframework.http.HttpStatus.OK
-
 @Service
 @Slf4j
 class MetalArchivesRestClient {
@@ -31,23 +29,26 @@ class MetalArchivesRestClient {
     // The REST endpoint of metal archives responds a maximum of 100 records per request
     while (dataAvailable) {
       // (1) request
-      ResponseEntity<MetalArchivesReleasesResponse> responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL,
-                                                                                               MetalArchivesReleasesResponse,
-                                                                                               startOfRange)
-
-      // (2) check http status and response body
-      MetalArchivesReleasesResponse responseBody = responseEntity.body
-      if (responseEntity.statusCode != OK || responseBody == null) {
+      ResponseEntity<MetalArchivesReleasesResponse> responseEntity
+      try {
+        responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL, MetalArchivesReleasesResponse, startOfRange)
+      }
+      catch (Exception e) {
         if (++attempt < MAX_ATTEMPTS) {
+          log.warn("Error during fetching the releases (iDisplayStart=${startOfRange}). I will try again.")
           continue
         }
-        break
+        else {
+          log.error("5 errors in a row during fetching the releases. I give up.", e)
+          break
+        }
       }
 
-      // (3) collect raw response data
+      // (2) collect raw response data
+      MetalArchivesReleasesResponse responseBody = responseEntity.body
       rawResponse.addAll(responseBody.data)
 
-      // (4) prepare next iteration
+      // (3) prepare next iteration
       if ((startOfRange + 100) < responseBody.totalRecords) {
         startOfRange += 100
         attempt = 0
