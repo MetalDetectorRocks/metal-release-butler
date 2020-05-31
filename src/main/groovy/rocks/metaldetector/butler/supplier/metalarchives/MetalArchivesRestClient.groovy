@@ -22,7 +22,6 @@ class MetalArchivesRestClient {
    * The REST-interface of metal-archives.com responds only with a list of strings for each release.
    * The information on band, album name etc. is determined by the order of the string in the array.
    */
-
   List<String[]> requestReleases() {
     List<String[]> rawResponse = []
     def dataAvailable = true
