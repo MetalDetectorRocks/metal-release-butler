@@ -20,6 +20,8 @@ def groovyVersion = '3.0.2'
 def postgresqlVersion = '42.2.12'
 def bucket4JVersion = '0.2.0'
 def jsonwebtokenVersion = '0.9.1'
+def httpBuilderVersion = '0.7.1'
+def commonsIoVersion = '2.6'
 
 configurations {
 	developmentOnly
@@ -67,6 +69,9 @@ dependencies {
 	implementation "org.codehaus.groovy:groovy-testng:$groovyVersion"
 	implementation "org.codehaus.groovy:groovy-xml:$groovyVersion"
 	implementation "org.codehaus.groovy:groovy:$groovyVersion"
+
+	implementation "org.codehaus.groovy.modules.http-builder:http-builder:$httpBuilderVersion"
+	implementation "commons-io:commons-io:$commonsIoVersion"
 
 	implementation "io.springfox:springfox-swagger2:$swaggerVersion"
 	implementation "io.springfox:springfox-swagger-ui:$swaggerVersion"

@@ -52,6 +52,9 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
   @Enumerated(EnumType.STRING)
   ReleaseEntityRecordState state
 
+  @Column(name = "coverImagePath", nullable = true)
+  String coverImagePath
+
   List<String> getAdditionalArtists() {
     return additionalArtists ? additionalArtists.tokenize(",")*.trim() : []
   }

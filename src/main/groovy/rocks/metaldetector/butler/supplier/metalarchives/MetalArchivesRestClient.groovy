@@ -2,10 +2,11 @@ package rocks.metaldetector.butler.supplier.metalarchives
 
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+
+import static org.springframework.http.HttpStatus.OK
 
 @Service
 @Slf4j
@@ -21,6 +22,7 @@ class MetalArchivesRestClient {
    * The REST-interface of metal-archives.com responds only with a list of strings for each release.
    * The information on band, album name etc. is determined by the order of the string in the array.
    */
+
   List<String[]> requestReleases() {
     List<String[]> rawResponse = []
     def dataAvailable = true
@@ -30,13 +32,13 @@ class MetalArchivesRestClient {
     // The REST endpoint of metal archives responds a maximum of 100 records per request
     while (dataAvailable) {
       // (1) request
-      ResponseEntity<MetalArchivesResponse> responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL,
-                                                                                       MetalArchivesResponse,
-                                                                                       startOfRange)
+      ResponseEntity<MetalArchivesReleasesResponse> responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL,
+                                                                                               MetalArchivesReleasesResponse,
+                                                                                               startOfRange)
 
       // (2) check http status and response body
-      MetalArchivesResponse responseBody = responseEntity.body
-      if (responseEntity.statusCode != HttpStatus.OK || responseBody == null) {
+      MetalArchivesReleasesResponse responseBody = responseEntity.body
+      if (responseEntity.statusCode != OK || responseBody == null) {
         if (++attempt < MAX_ATTEMPTS) {
           continue
         }
