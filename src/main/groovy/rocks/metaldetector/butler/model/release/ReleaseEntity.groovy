@@ -42,7 +42,6 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
 
   @Column(name = "source", nullable = true)
   @Enumerated(EnumType.STRING)
-  // for inaccurate data such as "Summer 2020"
   ReleaseSource source
 
   @Column(name = "additional_artists", nullable = true, columnDefinition = "varchar(255)")
@@ -52,8 +51,8 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
   @Enumerated(EnumType.STRING)
   ReleaseEntityRecordState state
 
-  @Column(name = "coverImagePath", nullable = true)
-  String coverImagePath
+  @Column(name = "cover_url", nullable = true)
+  String coverUrl
 
   List<String> getAdditionalArtists() {
     return additionalArtists ? additionalArtists.tokenize(",")*.trim() : []

@@ -27,7 +27,7 @@ class CoverServiceImpl implements CoverService {
       def folderCreated = createFolderIfNecessary()
       if (albumCoverLink && folderCreated) {
         def coverPath = downloadCover(albumCoverLink)
-        releaseEntity.coverImagePath = coverPath
+        releaseEntity.coverUrl = coverPath
       }
     }
     else {
