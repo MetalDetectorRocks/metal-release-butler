@@ -16,7 +16,7 @@ class MetalArchivesRestClientTest extends Specification {
     underTest.requestReleases()
 
     then:
-    underTest.restTemplate.getForEntity(UPCOMING_RELEASES_URL, _, _) >> ResponseEntity.ok(new MetalArchivesResponse(totalRecords: 0, data: []))
+    underTest.restTemplate.getForEntity(UPCOMING_RELEASES_URL, _, _) >> ResponseEntity.ok(new MetalArchivesReleasesResponse(totalRecords: 0, data: []))
   }
 
   def "RestTemplate is called with correct response type"() {
@@ -24,7 +24,7 @@ class MetalArchivesRestClientTest extends Specification {
     underTest.requestReleases()
 
     then:
-    underTest.restTemplate.getForEntity(_, MetalArchivesResponse, _) >> ResponseEntity.ok(new MetalArchivesResponse(totalRecords: 0, data: []))
+    underTest.restTemplate.getForEntity(_, MetalArchivesReleasesResponse, _) >> ResponseEntity.ok(new MetalArchivesReleasesResponse(totalRecords: 0, data: []))
   }
 
   def "RestTemplate is called with correct URL parameter range, starting with 0"() {
@@ -32,7 +32,7 @@ class MetalArchivesRestClientTest extends Specification {
     underTest.requestReleases()
 
     then:
-    underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.ok(new MetalArchivesResponse(totalRecords: 0, data: []))
+    underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.ok(new MetalArchivesReleasesResponse(totalRecords: 0, data: []))
   }
 
   def "On faulty response the same range is requested again"() {
@@ -43,7 +43,7 @@ class MetalArchivesRestClientTest extends Specification {
     1 * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.badRequest().build()
 
     then:
-    1 * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.ok(new MetalArchivesResponse(totalRecords: 0, data: []))
+    1 * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.ok(new MetalArchivesReleasesResponse(totalRecords: 0, data: []))
   }
 
   def "The maximum number of attempts is 5"() {
@@ -62,7 +62,7 @@ class MetalArchivesRestClientTest extends Specification {
     underTest.requestReleases()
 
     then:
-    1 * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.ok(new MetalArchivesResponse(totalRecords: 99, data: []))
+    1 * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.ok(new MetalArchivesReleasesResponse(totalRecords: 99, data: []))
 
     then:
     0 * underTest.restTemplate.getForEntity(*_)
@@ -73,15 +73,15 @@ class MetalArchivesRestClientTest extends Specification {
     underTest.requestReleases()
 
     then:
-    1 * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.ok(new MetalArchivesResponse(totalRecords: 150, data: []))
+    1 * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.ok(new MetalArchivesReleasesResponse(totalRecords: 150, data: []))
 
     then:
-    1 * underTest.restTemplate.getForEntity(_, _, 100) >> ResponseEntity.ok(new MetalArchivesResponse(totalRecords: 50, data: []))
+    1 * underTest.restTemplate.getForEntity(_, _, 100) >> ResponseEntity.ok(new MetalArchivesReleasesResponse(totalRecords: 50, data: []))
   }
 
   def "The response data is returned"() {
     given:
-    def metalArchivesResponse = new MetalArchivesResponse(totalRecords: 0, data: [["Test1"], ["Test2"]])
+    def metalArchivesResponse = new MetalArchivesReleasesResponse(totalRecords: 0, data: [["Test1"], ["Test2"]])
     underTest.restTemplate.getForEntity(*_) >> ResponseEntity.ok(metalArchivesResponse)
 
     when:

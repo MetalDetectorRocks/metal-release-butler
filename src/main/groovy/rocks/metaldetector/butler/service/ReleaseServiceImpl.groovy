@@ -15,6 +15,8 @@ import rocks.metaldetector.butler.web.dto.ReleaseDto
 import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 
 import java.time.LocalDate
+import java.util.concurrent.Executor
+import java.util.concurrent.atomic.AtomicInteger
 
 @Service
 @Slf4j
@@ -29,7 +31,13 @@ class ReleaseServiceImpl implements ReleaseService {
   MetalArchivesRestClient restClient
 
   @Autowired
+  CoverService coverService
+
+  @Autowired
   Converter<String[], List<ReleaseEntity>> releaseEntityConverter
+
+  @Autowired
+  Executor threadPoolTaskExecutor
 
   final Closure<PageRequest> pageableSupplier = { int page, int size ->
     // Since the page is index-based we decrement the value by 1
@@ -46,15 +54,21 @@ class ReleaseServiceImpl implements ReleaseService {
     List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
 
     // insert new releases
-    def inserted = 0
-    releaseEntities.each { ReleaseEntity release ->
+//    AtomicInteger inserted = new AtomicInteger()
+    int inserted = 0
+
+    releaseEntities.each {
+      ReleaseEntity release ->
       if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release.artist, release.albumTitle, release.releaseDate)) {
+        coverService.downloadReleaseCover(release)
         releaseRepository.save(release)
         inserted++
       }
+//      threadPoolTaskExecutor.execute(new DownloadReleaseCoverTask(release, inserted))
     }
 
     return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted)
+//    return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted.get())
   }
 
   @Override
@@ -63,11 +77,11 @@ class ReleaseServiceImpl implements ReleaseService {
     PageRequest pageRequest = pageableSupplier(page, size)
     if (artistNames.isEmpty()) {
       return releaseRepository.findAllByReleaseDateAfter(YESTERDAY, pageRequest)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
     else {
       return releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, pageRequest)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
   }
 
@@ -77,11 +91,11 @@ class ReleaseServiceImpl implements ReleaseService {
     PageRequest pageRequest = pageableSupplier(page, size)
     if (artistNames.isEmpty()) {
       return releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to, pageRequest)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
     else {
       return releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, pageRequest)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
   }
 
@@ -90,7 +104,7 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames) {
     if (artistNames.isEmpty()) {
       return releaseRepository.findAllByReleaseDateAfter(YESTERDAY)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
     else {
       List<ReleaseEntity> releases = releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
@@ -103,11 +117,11 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange) {
     if (artistNames.isEmpty()) {
       return releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
     else {
       return releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
-                              .collect { convertToDto(it) }
+          .collect { convertToDto(it) }
     }
   }
 
@@ -147,5 +161,25 @@ class ReleaseServiceImpl implements ReleaseService {
         source: releaseEntity.source,
         state: releaseEntity.state
     )
+  }
+
+  private class DownloadReleaseCoverTask implements Runnable {
+
+    ReleaseEntity release
+    AtomicInteger inserted
+
+    DownloadReleaseCoverTask(ReleaseEntity release, AtomicInteger inserted) {
+      this.release = release
+      this.inserted = inserted
+    }
+
+    @Override
+    void run() {
+      if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release.artist, release.albumTitle, release.releaseDate)) {
+        coverService.downloadReleaseCover(release)
+        releaseRepository.save(release)
+        inserted.getAndIncrement()
+      }
+    }
   }
 }

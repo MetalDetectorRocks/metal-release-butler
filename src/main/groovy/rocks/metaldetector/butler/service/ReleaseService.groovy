@@ -6,7 +6,7 @@ import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 
 interface ReleaseService {
 
-  ReleaseImportResponse importFromExternalSource();
+  ReleaseImportResponse importFromExternalSource()
 
   // ToDo DanielW: Cache?
   List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames, int page, int size)
