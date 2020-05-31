@@ -11,7 +11,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport
 import rocks.metaldetector.butler.config.constants.Endpoints
 import rocks.metaldetector.butler.model.TimeRange
-import rocks.metaldetector.butler.service.ReleaseService
+import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
@@ -410,7 +410,7 @@ class ReleasesRestControllerTest extends Specification {
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.importFromExternalSource()
+    1 * underTest.releaseService.importFromExternalSources()
   }
 
   def "Requesting import endpoint with correct action should return import result"() {
@@ -419,7 +419,7 @@ class ReleasesRestControllerTest extends Specification {
         .accept(MediaType.APPLICATION_JSON)
         .param("action", "import")
     def importResultDto = new ReleaseImportResponse(totalCountRequested: 666, totalCountImported: 666)
-    underTest.releaseService.importFromExternalSource() >> importResultDto
+    underTest.releaseService.importFromExternalSources() >> importResultDto
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -455,7 +455,7 @@ class ReleasesRestControllerTest extends Specification {
     mockMvc.perform(request).andReturn()
 
     then:
-    0 * underTest.releaseService.importFromExternalSource()
+    0 * underTest.releaseService.importFromExternalSources()
   }
 
   private static List<ReleaseDto> getReleaseDtosForTimeRangeTest() {

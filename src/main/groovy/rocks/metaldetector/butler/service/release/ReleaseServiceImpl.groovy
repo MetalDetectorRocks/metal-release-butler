@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.service
+package rocks.metaldetector.butler.service.release
 
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,14 +9,10 @@ import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
-import rocks.metaldetector.butler.service.converter.Converter
-import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 
 import java.time.LocalDate
-import java.util.concurrent.Executor
-import java.util.concurrent.atomic.AtomicInteger
 
 @Service
 @Slf4j
@@ -28,16 +24,7 @@ class ReleaseServiceImpl implements ReleaseService {
   ReleaseRepository releaseRepository
 
   @Autowired
-  MetalArchivesRestClient restClient
-
-  @Autowired
-  CoverService coverService
-
-  @Autowired
-  Converter<String[], List<ReleaseEntity>> releaseEntityConverter
-
-  @Autowired
-  Executor threadPoolTaskExecutor
+  ReleaseImportService metalArchivesReleaseImportService
 
   final Closure<PageRequest> pageableSupplier = { int page, int size ->
     // Since the page is index-based we decrement the value by 1
@@ -46,28 +33,8 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional
-  ReleaseImportResponse importFromExternalSource() {
-    // query metal archives
-    def upcomingReleasesRawData = restClient.requestReleases()
-
-    // convert raw string data into ReleaseEntity
-    List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
-
-    // insert new releases
-//    AtomicInteger inserted = new AtomicInteger()
-    int inserted = 0
-
-    releaseEntities.each { ReleaseEntity release ->
-      if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release.artist, release.albumTitle, release.releaseDate)) {
-        coverService.downloadReleaseCover(release)
-        releaseRepository.save(release)
-        inserted++
-      }
-//      threadPoolTaskExecutor.execute(new DownloadReleaseCoverTask(release, inserted))
-    }
-
-    return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted)
-//    return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted.get())
+  ReleaseImportResponse importFromExternalSources() {
+    return metalArchivesReleaseImportService.importReleases()
   }
 
   @Override
@@ -154,7 +121,7 @@ class ReleaseServiceImpl implements ReleaseService {
     }
   }
 
-  private static ReleaseDto convertToDto(ReleaseEntity releaseEntity) {
+  private ReleaseDto convertToDto(ReleaseEntity releaseEntity) {
     return new ReleaseDto(
         artist: releaseEntity.artist,
         additionalArtists: releaseEntity.additionalArtists,
@@ -168,25 +135,5 @@ class ReleaseServiceImpl implements ReleaseService {
         source: releaseEntity.source,
         state: releaseEntity.state
     )
-  }
-
-  private class DownloadReleaseCoverTask implements Runnable {
-
-    ReleaseEntity release
-    AtomicInteger inserted
-
-    DownloadReleaseCoverTask(ReleaseEntity release, AtomicInteger inserted) {
-      this.release = release
-      this.inserted = inserted
-    }
-
-    @Override
-    void run() {
-      if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release.artist, release.albumTitle, release.releaseDate)) {
-        coverService.downloadReleaseCover(release)
-        releaseRepository.save(release)
-        inserted.getAndIncrement()
-      }
-    }
   }
 }

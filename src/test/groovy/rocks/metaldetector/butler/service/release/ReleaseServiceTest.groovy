@@ -1,10 +1,9 @@
-package rocks.metaldetector.butler.service
+package rocks.metaldetector.butler.service.release
 
+import org.springframework.data.domain.PageImpl
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
-import rocks.metaldetector.butler.service.converter.ReleaseEntityConverter
-import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -17,34 +16,82 @@ import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
 class ReleaseServiceTest extends Specification {
 
   ReleaseServiceImpl underTest = new ReleaseServiceImpl(
-      releaseRepository: Mock(ReleaseRepository),
-      restClient: Mock(MetalArchivesRestClient),
-      releaseEntityConverter: Mock(ReleaseEntityConverter)
+          releaseRepository: Mock(ReleaseRepository),
+          metalArchivesReleaseImportService: Mock(ReleaseImportService)
   )
 
-  static LocalDate now = LocalDate.now()
+  static LocalDate NOW = LocalDate.now()
 
-  @Unroll
-  "find all upcoming releases for #artists"() {
+  def "should call metalArchivesReleaseImportService when importing from external source"() {
+    when:
+    underTest.importFromExternalSources()
+
+    then:
+    1 * underTest.metalArchivesReleaseImportService.importReleases()
+  }
+
+  def "find all upcoming releases for #artists (paginated)"() {
+    given:
+    def artists = ["A1", "A2"]
+    def page = 1
+    def size = 10
+
+    when:
+    List<ReleaseDto> results = underTest.findAllUpcomingReleases(artists, page, size)
+
+    then:
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(_, artists, _) >> new PageImpl<>([
+            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+    ])
+
+    and:
+    results ==  [
+            ReleaseDtoFactory.createReleaseDto("A1", NOW),
+            ReleaseDtoFactory.createReleaseDto("A2", NOW)
+    ]
+  }
+
+  def "find all upcoming releases (paginated)"() {
+    given:
+    def artists = []
+    def page = 1
+    def size = 10
+
+    when:
+    List<ReleaseDto> results = underTest.findAllUpcomingReleases(artists, page, size)
+
+    then:
+    1 * underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> new PageImpl<>([
+            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+    ])
+
+    and:
+    results == [
+            ReleaseDtoFactory.createReleaseDto("A1", NOW),
+            ReleaseDtoFactory.createReleaseDto("A2", NOW)
+    ]
+  }
+
+  def "find all upcoming releases for #artists"() {
+    given:
+    def artists = ["A1", "A2"]
+
     when:
     List<ReleaseDto> results = underTest.findAllUpcomingReleases(artists)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(_, artists) >> releaseEntities
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(_, artists) >> [
+            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+    ]
 
     and:
-    results == expectedReleases
-
-    where:
-    artists << [["A1"], ["A0", "A1", "A2"]]
-    releaseEntities << [[ReleaseEntityFactory.createReleaseEntity("A1", now)], [
-        ReleaseEntityFactory.createReleaseEntity("A1", now),
-        ReleaseEntityFactory.createReleaseEntity("A2", now),
-        ReleaseEntityFactory.createReleaseEntity("A3", now)]]
-    expectedReleases << [[ReleaseDtoFactory.createReleaseDto("A1", now)],
-                         [ReleaseDtoFactory.createReleaseDto("A1", now),
-                          ReleaseDtoFactory.createReleaseDto("A2", now),
-                          ReleaseDtoFactory.createReleaseDto("A3", now)]]
+    results == [
+            ReleaseDtoFactory.createReleaseDto("A1", NOW),
+            ReleaseDtoFactory.createReleaseDto("A2", NOW)
+    ]
   }
 
   def "find all upcoming releases"() {
@@ -52,14 +99,16 @@ class ReleaseServiceTest extends Specification {
     List<ReleaseDto> results = underTest.findAllUpcomingReleases([])
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfter(_) >> [ReleaseEntityFactory.createReleaseEntity("A1", now),
-                                                                     ReleaseEntityFactory.createReleaseEntity("A2", now),
-                                                                     ReleaseEntityFactory.createReleaseEntity("A3", now)]
+    1 * underTest.releaseRepository.findAllByReleaseDateAfter(_) >> [
+            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+    ]
 
     and:
-    results == [ReleaseDtoFactory.createReleaseDto("A1", now),
-                ReleaseDtoFactory.createReleaseDto("A2", now),
-                ReleaseDtoFactory.createReleaseDto("A3", now)]
+    results == [
+            ReleaseDtoFactory.createReleaseDto("A1", NOW),
+            ReleaseDtoFactory.createReleaseDto("A2", NOW)
+    ]
   }
 
   @Unroll
@@ -151,59 +200,6 @@ class ReleaseServiceTest extends Specification {
 
     and:
     result == 1
-  }
-
-  def "rest client is called once on import"() {
-    when:
-    underTest.importFromExternalSource()
-
-    then:
-    1 * underTest.restClient.requestReleases() >> []
-  }
-
-  @Unroll
-  "release converter is called for every response from rest template"() {
-    given:
-    underTest.restClient.requestReleases() >> releases
-
-    when:
-    underTest.importFromExternalSource()
-
-    then:
-    releases.size() * underTest.releaseEntityConverter.convert(_) >> [new ReleaseEntity()]
-
-    where:
-    releases << [[], [new String[0], new String[0]]]
-  }
-
-  def "new releases are saved"() {
-    given:
-    underTest.restClient.requestReleases() >> [new String[0]]
-    underTest.releaseEntityConverter.convert(_) >> [new ReleaseEntity(), new ReleaseEntity()]
-
-    when:
-    underTest.importFromExternalSource()
-
-    then:
-    2 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >> false
-
-    and:
-    2 * underTest.releaseRepository.save(_)
-  }
-
-  def "existing releases are not saved"() {
-    given:
-    underTest.restClient.requestReleases() >> [new String[0]]
-    underTest.releaseEntityConverter.convert(_) >> [new ReleaseEntity()]
-
-    when:
-    underTest.importFromExternalSource()
-
-    then:
-    1 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >> true
-
-    and:
-    0 * underTest.releaseRepository.save(_)
   }
 
   private static List<ReleaseEntity> getReleaseEntitiesForTimeRangeTest() {

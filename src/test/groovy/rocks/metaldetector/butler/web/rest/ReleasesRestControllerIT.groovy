@@ -10,7 +10,7 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.TokenFactory
 import rocks.metaldetector.butler.config.constants.Endpoints
-import rocks.metaldetector.butler.service.ReleaseService
+import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated

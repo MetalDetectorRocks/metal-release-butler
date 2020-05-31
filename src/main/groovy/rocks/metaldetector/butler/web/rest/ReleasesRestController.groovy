@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import rocks.metaldetector.butler.model.TimeRange
-import rocks.metaldetector.butler.service.ReleaseService
+import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
@@ -35,7 +35,7 @@ class ReleasesRestController {
   @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<ReleaseImportResponse> importReleases(@RequestParam("action") String action) {
     if (action == IMPORT_ACTION) {
-      ReleaseImportResponse response = releaseService.importFromExternalSource()
+      ReleaseImportResponse response = releaseService.importFromExternalSources()
       return ResponseEntity.ok(response)
     }
     else {
