@@ -40,7 +40,7 @@ class MetalArchivesRestClientTest extends Specification {
     underTest.requestReleases()
 
     then:
-    1 * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.badRequest().build()
+    1 * underTest.restTemplate.getForEntity(_, _, 0) >> {throw new RuntimeException("exception")}
 
     then:
     1 * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.ok(new MetalArchivesReleasesResponse(totalRecords: 0, data: []))
@@ -51,7 +51,7 @@ class MetalArchivesRestClientTest extends Specification {
     underTest.requestReleases()
 
     then:
-    MAX_ATTEMPTS * underTest.restTemplate.getForEntity(_, _, 0) >> ResponseEntity.badRequest().build()
+    MAX_ATTEMPTS * underTest.restTemplate.getForEntity(_, _, 0) >> {throw new RuntimeException("exception")}
 
     then:
     0 * underTest.restTemplate.getForEntity(*_)
