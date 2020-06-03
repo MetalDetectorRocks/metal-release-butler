@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service
 class CoverServiceImpl implements CoverService {
 
   @Autowired
-  private CoverFetcher metalArchivesCoverFetcher
+  CoverFetcher metalArchivesCoverFetcher
 
   @Autowired
-  private CoverPersistenceService localCoverPersistenceService
+  CoverPersistenceService localCoverPersistenceService
 
   @Override
   String transfer(URL sourceUrl) {
