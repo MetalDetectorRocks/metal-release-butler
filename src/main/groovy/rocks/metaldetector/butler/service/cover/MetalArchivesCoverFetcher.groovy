@@ -2,6 +2,7 @@ package rocks.metaldetector.butler.service.cover
 
 import groovy.util.logging.Slf4j
 import groovyx.net.http.HTTPBuilder
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 import java.util.concurrent.TimeUnit
@@ -14,17 +15,20 @@ class MetalArchivesCoverFetcher implements CoverFetcher {
   static final int MAX_ATTEMPTS = 5
   int currentAttempt
 
+  @Autowired
+  HTTPBuilderFunction httpBuilderFunction
+
   @Override
   URL fetchCoverUrl(URL metalArchivesAlbumUrl) {
     currentAttempt = 0
-    HTTPBuilder httpBuilder = new HTTPBuilder(metalArchivesAlbumUrl)
+    HTTPBuilder httpBuilder = httpBuilderFunction.apply(metalArchivesAlbumUrl)
     def releasePage = fetchReleasePage(httpBuilder)
     def coverDiv = releasePage?."**"?.findAll { it.@id == ALBUM_COVER_HTML_ID }?.first()
     def coverLink = coverDiv?.@href?.text() as String
     return coverLink ? new URL(coverLink) : null
   }
 
-  def fetchReleasePage(HTTPBuilder httpBuilder) {
+  private def fetchReleasePage(HTTPBuilder httpBuilder) {
     try {
       currentAttempt++
       return httpBuilder.get([:])
