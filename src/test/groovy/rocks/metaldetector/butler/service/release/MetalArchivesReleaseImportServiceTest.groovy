@@ -5,7 +5,7 @@ import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.ReleaseEntityConverter
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
+import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -105,8 +105,9 @@ class MetalArchivesReleaseImportServiceTest extends Specification {
     when:
     def response = underTest.importReleases()
 
+    // ToDo DanielW: Handle Test
     then:
-    response == new ReleaseImportResponse(
+    response == new ImportJobResponse(
             totalCountRequested: 2,
             totalCountImported: 1
     )

@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
+import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ReleaseDto
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 
 import java.time.LocalDate
 
@@ -33,8 +33,10 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional
-  ReleaseImportResponse importFromExternalSources() {
-    return metalArchivesReleaseImportService.importReleases()
+  CreateImportJobResponse importFromExternalSources() {
+    metalArchivesReleaseImportService.importReleases()
+    CreateImportJobResponse response = new CreateImportJobResponse(jobId: UUID.randomUUID()) // ToDo DanielW: Handle return value
+    return response
   }
 
   @Override

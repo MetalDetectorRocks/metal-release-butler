@@ -1,9 +1,9 @@
 package rocks.metaldetector.butler.service.release
 
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
+import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
 interface ReleaseImportService {
 
-  ReleaseImportResponse importReleases()
+  ImportJobResponse importReleases()
 
 }

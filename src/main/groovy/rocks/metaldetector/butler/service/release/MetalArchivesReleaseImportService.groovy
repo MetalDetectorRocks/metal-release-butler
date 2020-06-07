@@ -9,7 +9,7 @@ import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.Converter
 import rocks.metaldetector.butler.service.cover.CoverService
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
+import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
 import java.util.concurrent.Future
 
@@ -33,7 +33,7 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
   ThreadPoolTaskExecutor releaseEntityPersistenceThreadPool
 
   @Override
-  ReleaseImportResponse importReleases() {
+  ImportJobResponse importReleases() {
     // query metal archives
     def upcomingReleasesRawData = restClient.requestReleases()
 
@@ -52,7 +52,8 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
     }
 
     futures*.get()
-    return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted)
+    // ToDo DanielW: Handle Return Value
+    return new ImportJobResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted)
   }
 
   private PersistReleaseEntityTask createPersistReleaseEntityTask(ReleaseEntity releaseEntity) {
