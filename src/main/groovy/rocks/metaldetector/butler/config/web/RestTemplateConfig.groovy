@@ -35,7 +35,7 @@ class RestTemplateConfig {
   @Bean
   MappingJackson2HttpMessageConverter jackson2HttpMessageConverter() {
     new MappingJackson2HttpMessageConverter(
-            objectMapper: objectMapper()
+        objectMapper: objectMapper()
     )
   }
 
@@ -54,9 +54,9 @@ class RestTemplateConfig {
   @Bean
   StringHttpMessageConverter stringHttpMessageConverter() {
     new StringHttpMessageConverter(
-            defaultCharset: UTF_8,
-            writeAcceptCharset: false,
-            supportedMediaTypes: [TEXT_PLAIN, TEXT_HTML]
+        defaultCharset: UTF_8,
+        writeAcceptCharset: false,
+        supportedMediaTypes: [TEXT_PLAIN, TEXT_HTML]
     )
   }
 
@@ -70,10 +70,10 @@ class RestTemplateConfig {
   @Bean
   RestTemplate restTemplate() {
     return new RestTemplateBuilder()
-            .requestFactory({ -> clientHttpRequestFactory() })
-            .errorHandler(new CustomClientErrorHandler())
-            .interceptors(new CustomClientHttpRequestInterceptor(userAgent))
-            .messageConverters([jackson2HttpMessageConverter(), stringHttpMessageConverter()])
-            .build()
+        .requestFactory({ -> clientHttpRequestFactory() })
+        .errorHandler(new CustomClientErrorHandler())
+        .interceptors(new CustomClientHttpRequestInterceptor(userAgent))
+        .messageConverters([jackson2HttpMessageConverter(), stringHttpMessageConverter()])
+        .build()
   }
 }

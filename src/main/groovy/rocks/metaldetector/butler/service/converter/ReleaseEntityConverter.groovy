@@ -1,6 +1,7 @@
 package rocks.metaldetector.butler.service.converter
 
 import groovy.util.logging.Slf4j
+import groovy.xml.XmlSlurper
 import org.springframework.stereotype.Component
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseType

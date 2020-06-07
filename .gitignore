@@ -7,6 +7,9 @@
 # ignore all stuff in secrets folder
 .secrets/
 
+# ignore all stuff in images folder
+images/
+
 # ignore all stuff in target, build and out folder
 target/
 build/
