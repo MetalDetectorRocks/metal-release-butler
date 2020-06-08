@@ -43,8 +43,8 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
   @Autowired
   ImportJobTransformer importJobTransformer
 
-  @Override
   @Async
+  @Override
   ImportJobResponse importReleases(Long internalJobId) {
     // query metal archives
     def upcomingReleasesRawData = restClient.requestReleases()
@@ -58,6 +58,7 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
     // update import job
     ImportJobEntity importJobEntity = updateImportJob(internalJobId, upcomingReleasesRawData.size(), inserted)
 
+    log.info("Import of new releases is done!")
     return importJobTransformer.transform(importJobEntity)
   }
 
