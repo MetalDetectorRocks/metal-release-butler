@@ -9,7 +9,7 @@ import rocks.metaldetector.butler.web.dto.ImportJobResponse
 class MetalHammerReleaseImportService implements ReleaseImportService {
 
   @Override
-  ImportJobResponse importReleases() {
+  ImportJobResponse importReleases(Long internalJobId) {
     throw new UnsupportedOperationException("not yet implemented")
   }
 }

@@ -4,6 +4,6 @@ import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
 interface ReleaseImportService {
 
-  ImportJobResponse importReleases()
+  ImportJobResponse importReleases(Long internalJobId)
 
 }

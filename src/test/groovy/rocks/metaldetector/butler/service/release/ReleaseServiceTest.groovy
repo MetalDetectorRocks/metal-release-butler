@@ -2,8 +2,11 @@ package rocks.metaldetector.butler.service.release
 
 import org.springframework.data.domain.PageImpl
 import rocks.metaldetector.butler.model.TimeRange
+import rocks.metaldetector.butler.model.importjob.ImportJobEntity
+import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
+import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -17,17 +20,48 @@ class ReleaseServiceTest extends Specification {
 
   ReleaseServiceImpl underTest = new ReleaseServiceImpl(
           releaseRepository: Mock(ReleaseRepository),
+          importJobRepository: Mock(ImportJobRepository),
           metalArchivesReleaseImportService: Mock(ReleaseImportService)
   )
 
   static LocalDate NOW = LocalDate.now()
 
-  def "should call metalArchivesReleaseImportService when importing from external source"() {
+  def "importFromExternalSources: should create a new import job before start importing new releases"() {
     when:
     underTest.importFromExternalSources()
 
     then:
-    1 * underTest.metalArchivesReleaseImportService.importReleases()
+    1 * underTest.importJobRepository.save({
+      assert it.jobId != null
+      assert it.startTime != null
+    }) >> new ImportJobEntity(jobId: UUID.randomUUID())
+
+    then:
+    1 * underTest.metalArchivesReleaseImportService.importReleases(*_)
+  }
+
+  def "importFromExternalSources: should pass internal import job id to metalArchivesReleaseImportService"() {
+    given:
+    Long id = 666
+    underTest.importJobRepository.save(*_) >> new ImportJobEntity(id: id)
+
+    when:
+    underTest.importFromExternalSources()
+
+    then:
+    1 * underTest.metalArchivesReleaseImportService.importReleases(id)
+  }
+
+  def "importFromExternalSources: should return response with import job id"() {
+    given:
+    UUID jobId = UUID.randomUUID()
+    underTest.importJobRepository.save(*_) >> new ImportJobEntity(jobId: jobId)
+
+    when:
+    def result = underTest.importFromExternalSources()
+
+    then:
+    result == new CreateImportJobResponse(jobId: jobId)
   }
 
   def "find all upcoming releases for #artists (paginated)"() {
