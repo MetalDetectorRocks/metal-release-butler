@@ -1,6 +1,8 @@
 spring:
   application:
     name: Metal Release Butler
+  autoconfigure: # prevents spring from showing default user password in logs on startup
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   groovy:
     template:
       check-template-location: false
