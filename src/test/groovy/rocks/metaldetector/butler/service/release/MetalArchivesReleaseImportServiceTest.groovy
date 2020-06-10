@@ -131,7 +131,6 @@ class MetalArchivesReleaseImportServiceTest extends Specification {
             createReleaseEntity("Metallica", LocalDate.now())
     ]
     underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >>> [true, false]
-    underTest.importJobRepository.findById(*_) >> Optional.of(new ImportJobEntity())
 
     when:
     underTest.importReleases()
@@ -150,7 +149,6 @@ class MetalArchivesReleaseImportServiceTest extends Specification {
     def transformedResponse = new ImportJobResponse()
     underTest.restClient.requestReleases() >> [new String[0]]
     underTest.releaseEntityConverter.convert(*_) >> [new ReleaseEntity()]
-    underTest.importJobRepository.findById(*_) >> Optional.of(importJobEntityMock)
     underTest.importJobRepository.save(*_) >> importJobEntityMock
 
     when:
