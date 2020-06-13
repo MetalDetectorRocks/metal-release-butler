@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.TokenFactory
-import rocks.metaldetector.butler.config.constants.Endpoints
 import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
@@ -17,8 +16,10 @@ import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
 import spock.lang.Specification
 
 import static org.mockito.Mockito.reset
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
+import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
+import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -30,13 +31,9 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
   @Autowired
   MockMvc mockMvc
 
-  ObjectMapper objectMapper
+  ObjectMapper objectMapper = new ObjectMapper()
   String testAdminToken = TokenFactory.generateAdminTestToken()
   String testUserToken = TokenFactory.generateUserTestToken()
-
-  void setup() {
-    objectMapper = new ObjectMapper()
-  }
 
   void tearDown() {
     reset(releaseService)
@@ -45,7 +42,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
   def "User can access releases endpoint"() {
     given:
     def requestBody = new ReleasesRequestPaginated(page: 1, size: 10, artists: [])
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .content(objectMapper.writeValueAsString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
         .header("Authorization", "Bearer " + testUserToken)
@@ -60,7 +57,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
   def "Admin can access releases endpoint"() {
     given:
     def requestBody = new ReleasesRequestPaginated(page: 1, size: 10, artists: [])
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .content(objectMapper.writeValueAsString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
         .header("Authorization", "Bearer " + testAdminToken)
@@ -74,7 +71,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   def "Admin can access import endpoint"() {
     given:
-    def request = get(Endpoints.RELEASES).param("action", "import").header("Authorization", "Bearer " + testAdminToken)
+    def request = post(IMPORT_JOB).header("Authorization", "Bearer " + testAdminToken)
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -86,7 +83,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
   def "Admin can access unpaginated releases endpoint"() {
     given:
     def requestBody = new ReleasesRequest(artists: [])
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .content(objectMapper.writeValueAsString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
         .header("Authorization", "Bearer " + testAdminToken)
@@ -101,7 +98,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   def "User cannot access import endpoint"() {
     given:
-    def request = get(Endpoints.RELEASES).param("action", "import").header("Authorization", "Bearer " + testUserToken)
+    def request = post(IMPORT_JOB).header("Authorization", "Bearer " + testUserToken)
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -113,7 +110,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
   def "User cannot access unpaginated releases endpoint"() {
     given:
     def requestBody = new ReleasesRequest(artists: [])
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .content(objectMapper.writeValueAsString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
         .header("Authorization", "Bearer " + testUserToken)

@@ -1,9 +1,11 @@
 package rocks.metaldetector.butler.service.release
 
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
+import org.springframework.scheduling.annotation.Async
+import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
 interface ReleaseImportService {
 
-  ReleaseImportResponse importReleases()
+  @Async
+  ImportJobResponse importReleases(Long internalJobId)
 
 }
