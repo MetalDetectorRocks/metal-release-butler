@@ -9,9 +9,9 @@ import java.time.LocalDate
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
 import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 
-class ReleaseEntityConverterTest extends Specification {
+class MetalArchivesReleaseEntityConverterTest extends Specification {
 
-  ReleaseEntityConverter underTest = new ReleaseEntityConverter()
+  MetalArchivesReleaseEntityConverter underTest = new MetalArchivesReleaseEntityConverter()
 
   def "Should convert raw data into ReleaseEntity"() {
     given:
@@ -94,7 +94,7 @@ class ReleaseEntityConverterTest extends Specification {
     String[] rawReleaseData = [artist, albumTitle, null, null, null]
 
     when:
-    List<ReleaseEntity> conversionResult = new ReleaseEntityConverter().convert(rawReleaseData)
+    List<ReleaseEntity> conversionResult = new MetalArchivesReleaseEntityConverter().convert(rawReleaseData)
 
     then:
     conversionResult.size() == 3

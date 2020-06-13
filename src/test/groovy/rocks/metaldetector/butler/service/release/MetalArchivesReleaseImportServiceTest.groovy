@@ -3,7 +3,7 @@ package rocks.metaldetector.butler.service.release
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
-import rocks.metaldetector.butler.service.converter.ReleaseEntityConverter
+import rocks.metaldetector.butler.service.converter.MetalArchivesReleaseEntityConverter
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 import spock.lang.Specification
@@ -16,10 +16,10 @@ import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory.createR
 class MetalArchivesReleaseImportServiceTest extends Specification {
 
   MetalArchivesReleaseImportService underTest = new MetalArchivesReleaseImportService(
-          releaseRepository: Mock(ReleaseRepository),
-          restClient: Mock(MetalArchivesRestClient),
-          releaseEntityConverter: Mock(ReleaseEntityConverter),
-          releaseEntityPersistenceThreadPool: Mock(ThreadPoolTaskExecutor)
+      releaseRepository: Mock(ReleaseRepository),
+      restClient: Mock(MetalArchivesRestClient),
+      releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
+      releaseEntityPersistenceThreadPool: Mock(ThreadPoolTaskExecutor)
   )
 
   def "rest client is called once on import"() {

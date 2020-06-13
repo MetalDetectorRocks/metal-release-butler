@@ -93,7 +93,7 @@ class ApacheHttpClientConfig {
   TaskScheduler taskScheduler() {
     ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler()
     scheduler.threadNamePrefix = "idleMonitor"
-    scheduler.poolSize = 5
+    scheduler.poolSize = 4
     return scheduler
   }
 

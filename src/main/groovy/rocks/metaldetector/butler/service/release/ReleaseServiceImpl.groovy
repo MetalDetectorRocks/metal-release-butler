@@ -26,6 +26,9 @@ class ReleaseServiceImpl implements ReleaseService {
   @Autowired
   ReleaseImportService metalArchivesReleaseImportService
 
+  @Autowired
+  ReleaseImportService metalHammerReleaseImportService
+
   final Closure<PageRequest> pageableSupplier = { int page, int size ->
     // Since the page is index-based we decrement the value by 1
     return PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle"))
@@ -34,7 +37,10 @@ class ReleaseServiceImpl implements ReleaseService {
   @Override
   @Transactional
   ReleaseImportResponse importFromExternalSources() {
-    return metalArchivesReleaseImportService.importReleases()
+    def metalHammerImportResponse = metalHammerReleaseImportService.importReleases()
+    def metalArchivesImportResponse = metalArchivesReleaseImportService.importReleases()
+    return new ReleaseImportResponse(metalHammerImportResponse.totalCountRequested + metalArchivesImportResponse.totalCountRequested,
+                                     metalArchivesImportResponse.totalCountImported + metalArchivesImportResponse.totalCountImported)
   }
 
   @Override
@@ -43,13 +49,13 @@ class ReleaseServiceImpl implements ReleaseService {
     PageRequest pageRequest = pageableSupplier.call(page, size)
     if (artistNames.isEmpty()) {
       return releaseRepository
-              .findAllByReleaseDateAfter(YESTERDAY, pageRequest)
-              .collect { convertToDto(it) }
+          .findAllByReleaseDateAfter(YESTERDAY, pageRequest)
+          .collect { convertToDto(it) }
     }
     else {
       return releaseRepository
-              .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, pageRequest)
-              .collect { convertToDto(it) }
+          .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, pageRequest)
+          .collect { convertToDto(it) }
     }
   }
 
@@ -59,13 +65,13 @@ class ReleaseServiceImpl implements ReleaseService {
     PageRequest pageRequest = pageableSupplier.call(page, size)
     if (artistNames.isEmpty()) {
       return releaseRepository
-              .findAllByReleaseDateBetween(timeRange.from, timeRange.to, pageRequest)
-              .collect { convertToDto(it) }
+          .findAllByReleaseDateBetween(timeRange.from, timeRange.to, pageRequest)
+          .collect { convertToDto(it) }
     }
     else {
       return releaseRepository
-              .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, pageRequest)
-              .collect { convertToDto(it) }
+          .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, pageRequest)
+          .collect { convertToDto(it) }
     }
   }
 
@@ -74,13 +80,13 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames) {
     if (artistNames.isEmpty()) {
       return releaseRepository
-              .findAllByReleaseDateAfter(YESTERDAY)
-              .collect { convertToDto(it) }
+          .findAllByReleaseDateAfter(YESTERDAY)
+          .collect { convertToDto(it) }
     }
     else {
       return releaseRepository
-              .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
-              .collect { convertToDto(it) }
+          .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
+          .collect { convertToDto(it) }
     }
   }
 
@@ -89,13 +95,13 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange) {
     if (artistNames.isEmpty()) {
       return releaseRepository
-              .findAllByReleaseDateBetween(timeRange.from, timeRange.to)
-              .collect { convertToDto(it) }
+          .findAllByReleaseDateBetween(timeRange.from, timeRange.to)
+          .collect { convertToDto(it) }
     }
     else {
       return releaseRepository
-              .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
-              .collect { convertToDto(it) }
+          .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
+          .collect { convertToDto(it) }
     }
   }
 
