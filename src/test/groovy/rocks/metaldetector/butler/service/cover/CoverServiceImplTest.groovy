@@ -7,7 +7,7 @@ class CoverServiceImplTest extends Specification {
   CoverServiceImpl underTest = new CoverServiceImpl(metalArchivesCoverFetcher: Mock(CoverFetcher),
                                                     localCoverPersistenceService: Mock(CoverPersistenceService))
 
-  def "coverFethcer is called to get the url of the release cover"() {
+  def "coverFetcher is called to get the url of the release cover"() {
     given:
     def sourceUrl = new URL("http://www.internet.com")
 
