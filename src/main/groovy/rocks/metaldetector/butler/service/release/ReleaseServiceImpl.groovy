@@ -7,12 +7,15 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.TimeRange
+import rocks.metaldetector.butler.model.importjob.ImportJobEntity
+import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
+import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ReleaseDto
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 @Slf4j
@@ -24,6 +27,9 @@ class ReleaseServiceImpl implements ReleaseService {
   ReleaseRepository releaseRepository
 
   @Autowired
+  ImportJobRepository importJobRepository
+
+  @Autowired
   ReleaseImportService metalArchivesReleaseImportService
 
   final Closure<PageRequest> pageableSupplier = { int page, int size ->
@@ -33,8 +39,20 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional
-  ReleaseImportResponse importFromExternalSources() {
-    return metalArchivesReleaseImportService.importReleases()
+  CreateImportJobResponse importFromExternalSources() {
+    ImportJobEntity importJobEntity = createImportJob()
+    metalArchivesReleaseImportService.importReleases(importJobEntity.id)
+    CreateImportJobResponse response = new CreateImportJobResponse(jobId: importJobEntity.jobId)
+    return response
+  }
+
+  private ImportJobEntity createImportJob() {
+    ImportJobEntity importJobEntity = new ImportJobEntity(
+            jobId: UUID.randomUUID(),
+            startTime: LocalDateTime.now()
+    )
+    importJobEntity = importJobRepository.save(importJobEntity)
+    return importJobEntity
   }
 
   @Override

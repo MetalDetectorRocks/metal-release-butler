@@ -9,11 +9,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.accept.ContentNegotiationManager
 import org.springframework.web.servlet.HandlerExceptionResolver
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport
-import rocks.metaldetector.butler.config.constants.Endpoints
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.release.ReleaseService
+import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ReleaseDto
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
 import rocks.metaldetector.butler.web.dto.ReleasesResponse
@@ -25,9 +24,11 @@ import java.time.LocalDate
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.OK
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
+import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
+import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
+import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
 
 class ReleasesRestControllerTest extends Specification {
 
@@ -51,7 +52,7 @@ class ReleasesRestControllerTest extends Specification {
     given:
     def artists = [ARTIST_NAME]
     def releasesRequest = new ReleasesRequest(artists: artists)
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
@@ -66,7 +67,7 @@ class ReleasesRestControllerTest extends Specification {
   def "Requesting unpaginated releases endpoint with valid request should return ok"() {
     given:
     def releasesRequest = new ReleasesRequest(artists: [ARTIST_NAME])
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
@@ -83,7 +84,7 @@ class ReleasesRestControllerTest extends Specification {
     given:
     def expectedReleases = getReleaseDtosForTimeRangeTest()
     def releasesRequest = new ReleasesRequest(artists: [ARTIST_NAME])
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
@@ -104,7 +105,7 @@ class ReleasesRestControllerTest extends Specification {
     def to = LocalDate.of(2020, 2, 1)
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequest(artists: artists, dateFrom: from, dateTo: to)
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
@@ -123,7 +124,7 @@ class ReleasesRestControllerTest extends Specification {
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequest(artists: artists, dateFrom: from, dateTo: to)
     def expectedReleases = [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
@@ -143,7 +144,7 @@ class ReleasesRestControllerTest extends Specification {
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequest(artists: artists, dateFrom: from, dateTo: to)
     def expectedReleases = [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
@@ -160,7 +161,7 @@ class ReleasesRestControllerTest extends Specification {
   @Unroll
   "Requesting unpaginated releases with bad request should not call releases service"() {
     given:
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(body))
@@ -180,7 +181,7 @@ class ReleasesRestControllerTest extends Specification {
   @Unroll
   "Requesting unpaginated releases with bad request should return bad request"() {
     given:
-    def request = post(Endpoints.RELEASES + Endpoints.UNPAGINATED)
+    def request = post(RELEASES_UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(body))
@@ -200,7 +201,7 @@ class ReleasesRestControllerTest extends Specification {
     given:
     def artists = [ARTIST_NAME]
     def releasesRequest = new ReleasesRequestPaginated(artists: artists, page: 1, size: 10)
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
@@ -219,7 +220,7 @@ class ReleasesRestControllerTest extends Specification {
     given:
     def expectedReleases = getReleaseDtosForTimeRangeTest()
     def releasesRequest = new ReleasesRequestPaginated(artists: [ARTIST_NAME], page: 1, size: 10)
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
@@ -236,7 +237,7 @@ class ReleasesRestControllerTest extends Specification {
     given:
     def expectedReleases = getReleaseDtosForTimeRangeTest()
     def releasesRequest = new ReleasesRequestPaginated(artists: [ARTIST_NAME], page: 1, size: 10)
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
@@ -256,7 +257,7 @@ class ReleasesRestControllerTest extends Specification {
     given:
     def expectedReleases = getReleaseDtosForTimeRangeTest()
     def releasesRequest = new ReleasesRequestPaginated(artists: [ARTIST_NAME], page: 1, size: 10)
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
@@ -276,7 +277,7 @@ class ReleasesRestControllerTest extends Specification {
     def expectedPages = 3
     def expectedReleases = getReleaseDtosForPaginationTest()
     def releasesRequest = new ReleasesRequestPaginated(artists: [ARTIST_NAME], page: 1, size: 2)
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
@@ -298,7 +299,7 @@ class ReleasesRestControllerTest extends Specification {
     def to = LocalDate.of(2020, 2, 1)
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, dateTo: to, page: 1, size: 10)
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
@@ -320,7 +321,7 @@ class ReleasesRestControllerTest extends Specification {
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, dateTo: to, page: 1, size: 10)
     def expectedReleases = [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
@@ -340,7 +341,7 @@ class ReleasesRestControllerTest extends Specification {
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, dateTo: to, page: 1, size: 10)
     def expectedReleases = [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
@@ -357,7 +358,7 @@ class ReleasesRestControllerTest extends Specification {
   @Unroll
   "Requesting releases with bad request should return bad request"() {
     given:
-    def request = post(Endpoints.RELEASES)
+    def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(body))
@@ -387,24 +388,9 @@ class ReleasesRestControllerTest extends Specification {
                                           page: 1, size: 10)]
   }
 
-  def "Requesting import endpoint with correct action should return ok"() {
+  def "Creating import job should call release service"() {
     given:
-    def request = get(Endpoints.RELEASES)
-        .accept(MediaType.APPLICATION_JSON)
-        .param("action", "import")
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == OK.value()
-  }
-
-  def "Requesting import endpoint with correct action should call releases service"() {
-    given:
-    def request = get(Endpoints.RELEASES)
-        .accept(MediaType.APPLICATION_JSON)
-        .param("action", "import")
+    def request = post(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
 
     when:
     mockMvc.perform(request).andReturn()
@@ -413,49 +399,21 @@ class ReleasesRestControllerTest extends Specification {
     1 * underTest.releaseService.importFromExternalSources()
   }
 
-  def "Requesting import endpoint with correct action should return import result"() {
+  def "Creating import job should return result from release service"() {
     given:
-    def request = get(Endpoints.RELEASES)
-        .accept(MediaType.APPLICATION_JSON)
-        .param("action", "import")
-    def importResultDto = new ReleaseImportResponse(totalCountRequested: 666, totalCountImported: 666)
-    underTest.releaseService.importFromExternalSources() >> importResultDto
+    def request = post(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
+    def response = new CreateImportJobResponse(jobId: UUID.randomUUID())
+    underTest.releaseService.importFromExternalSources() >> response
 
     when:
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    ReleaseImportResponse importResponse = objectMapper.readValue(result.response.getContentAsString(), ReleaseImportResponse)
-    importResponse.totalCountRequested == importResultDto.totalCountRequested
+    CreateImportJobResponse importJobResponse = objectMapper.readValue(result.response.contentAsString, CreateImportJobResponse)
+    importJobResponse == response
 
     and:
-    importResponse.totalCountImported == importResultDto.totalCountImported
-  }
-
-  def "Requesting import endpoint with any other action should return bad request"() {
-    given:
-    def request = get(Endpoints.RELEASES)
-        .accept(MediaType.APPLICATION_JSON)
-        .param("action", "download")
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == BAD_REQUEST.value()
-  }
-
-  def "Requesting import endpoint with any other action should not call releases service"() {
-    given:
-    def request = get(Endpoints.RELEASES)
-        .accept(MediaType.APPLICATION_JSON)
-        .param("action", "download")
-
-    when:
-    mockMvc.perform(request).andReturn()
-
-    then:
-    0 * underTest.releaseService.importFromExternalSources()
+    result.response.status == OK.value()
   }
 
   private static List<ReleaseDto> getReleaseDtosForTimeRangeTest() {

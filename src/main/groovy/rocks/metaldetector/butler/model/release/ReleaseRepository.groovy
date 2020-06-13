@@ -3,9 +3,11 @@ package rocks.metaldetector.butler.model.release
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.stereotype.Repository
 
 import java.time.LocalDate
 
+@Repository
 interface ReleaseRepository extends JpaRepository<ReleaseEntity, Long> {
 
   Page<ReleaseEntity> findAllByReleaseDateAfter(LocalDate date, Pageable pageable)
@@ -35,7 +37,5 @@ interface ReleaseRepository extends JpaRepository<ReleaseEntity, Long> {
   long countByReleaseDateBetween(LocalDate from, LocalDate to)
 
   long countByArtistInAndReleaseDateBetween(Iterable<String> artistNames, LocalDate from, LocalDate to)
-
-  int deleteByReleaseDateAfter(LocalDate date)
 
 }

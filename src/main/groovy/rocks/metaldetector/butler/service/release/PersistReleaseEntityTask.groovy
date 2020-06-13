@@ -6,9 +6,9 @@ import rocks.metaldetector.butler.service.cover.CoverService
 
 class PersistReleaseEntityTask implements Runnable {
 
-  private ReleaseEntity releaseEntity
-  private CoverService coverService
-  private ReleaseRepository releaseRepository
+  ReleaseEntity releaseEntity
+  CoverService coverService
+  ReleaseRepository releaseRepository
 
   @Override
   void run() {
