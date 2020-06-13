@@ -28,7 +28,7 @@ class MetalArchivesReleaseImporterTest extends Specification {
   )
 
   def setup() {
-    underTest.importJobRepository.findById(_) >> Optional.of(new ImportJobEntity())
+    underTest.importJobRepository.findById(*_) >> Optional.of(new ImportJobEntity())
   }
 
   def "rest client is called once on import"() {

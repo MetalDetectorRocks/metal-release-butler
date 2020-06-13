@@ -13,12 +13,13 @@ import spock.lang.Specification
 
 class MetalHammerReleaseImporterTest extends Specification {
 
-  MetalHammerReleaseImporter underTest = new MetalHammerReleaseImporter(restClient: Mock(MetalHammerRestClient),
-                                                                        httpBuilderFunction: Mock(HTTPBuilderFunction),
-                                                                        metalHammerReleaseEntityConverter: Mock(MetalHammerReleaseEntityConverter),
-                                                                        importJobRepository: Mock(ImportJobRepository),
-                                                                        importJobTransformer: Mock(ImportJobTransformer),
-                                                                        releaseRepository: Mock(ReleaseRepository))
+  MetalHammerReleaseImporter underTest = new MetalHammerReleaseImporter(
+      restClient: Mock(MetalHammerRestClient),
+      httpBuilderFunction: Mock(HTTPBuilderFunction),
+      metalHammerReleaseEntityConverter: Mock(MetalHammerReleaseEntityConverter),
+      importJobRepository: Mock(ImportJobRepository),
+      importJobTransformer: Mock(ImportJobTransformer),
+      releaseRepository: Mock(ReleaseRepository))
 
   def setup() {
     underTest.importJobRepository.findById(*_) >> Optional.of(new ImportJobEntity())
