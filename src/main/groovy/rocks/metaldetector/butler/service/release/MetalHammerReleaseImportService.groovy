@@ -1,9 +1,11 @@
 package rocks.metaldetector.butler.service.release
 
 import groovy.util.logging.Slf4j
+import org.springframework.scheduling.annotation.Async
 import groovy.xml.XmlSlurper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.Converter
@@ -29,8 +31,9 @@ class MetalHammerReleaseImportService implements ReleaseImportService {
     this.xmlSlurper = new XmlSlurper()
   }
 
+  @Async
   @Override
-  ReleaseImportResponse importReleases() {
+  ImportJobResponse importReleases() {
     def rawReleasesPage = restClient.requestReleases()
     def releaseEntities = metalHammerReleaseEntityConverter.convert(rawReleasesPage)
 

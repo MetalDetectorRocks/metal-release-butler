@@ -63,5 +63,4 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
     // method is used for sorting and removing duplicates
     return this.releaseDate <=> other.releaseDate ?: this.artist <=> other.artist ?: this.albumTitle <=> other.albumTitle
   }
-
 }

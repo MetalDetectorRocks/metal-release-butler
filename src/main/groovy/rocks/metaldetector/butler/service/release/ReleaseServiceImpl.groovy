@@ -7,12 +7,15 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.TimeRange
+import rocks.metaldetector.butler.model.importjob.ImportJobEntity
+import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
+import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ReleaseDto
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
 @Slf4j
@@ -22,6 +25,9 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Autowired
   ReleaseRepository releaseRepository
+
+  @Autowired
+  ImportJobRepository importJobRepository
 
   @Autowired
   ReleaseImportService metalArchivesReleaseImportService
@@ -36,11 +42,20 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional
-  ReleaseImportResponse importFromExternalSources() {
-    def metalHammerImportResponse = metalHammerReleaseImportService.importReleases()
-    def metalArchivesImportResponse = metalArchivesReleaseImportService.importReleases()
-    return new ReleaseImportResponse(metalHammerImportResponse.totalCountRequested + metalArchivesImportResponse.totalCountRequested,
-                                     metalArchivesImportResponse.totalCountImported + metalArchivesImportResponse.totalCountImported)
+  CreateImportJobResponse importFromExternalSources() {
+    ImportJobEntity importJobEntity = createImportJob()
+    metalArchivesReleaseImportService.importReleases(importJobEntity.id)
+    CreateImportJobResponse response = new CreateImportJobResponse(jobId: importJobEntity.jobId)
+    return response
+  }
+
+  private ImportJobEntity createImportJob() {
+    ImportJobEntity importJobEntity = new ImportJobEntity(
+            jobId: UUID.randomUUID(),
+            startTime: LocalDateTime.now()
+    )
+    importJobEntity = importJobRepository.save(importJobEntity)
+    return importJobEntity
   }
 
   @Override
@@ -49,13 +64,13 @@ class ReleaseServiceImpl implements ReleaseService {
     PageRequest pageRequest = pageableSupplier.call(page, size)
     if (artistNames.isEmpty()) {
       return releaseRepository
-          .findAllByReleaseDateAfter(YESTERDAY, pageRequest)
-          .collect { convertToDto(it) }
+              .findAllByReleaseDateAfter(YESTERDAY, pageRequest)
+              .collect { convertToDto(it) }
     }
     else {
       return releaseRepository
-          .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, pageRequest)
-          .collect { convertToDto(it) }
+              .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, pageRequest)
+              .collect { convertToDto(it) }
     }
   }
 
@@ -65,13 +80,13 @@ class ReleaseServiceImpl implements ReleaseService {
     PageRequest pageRequest = pageableSupplier.call(page, size)
     if (artistNames.isEmpty()) {
       return releaseRepository
-          .findAllByReleaseDateBetween(timeRange.from, timeRange.to, pageRequest)
-          .collect { convertToDto(it) }
+              .findAllByReleaseDateBetween(timeRange.from, timeRange.to, pageRequest)
+              .collect { convertToDto(it) }
     }
     else {
       return releaseRepository
-          .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, pageRequest)
-          .collect { convertToDto(it) }
+              .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, pageRequest)
+              .collect { convertToDto(it) }
     }
   }
 
@@ -80,13 +95,13 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames) {
     if (artistNames.isEmpty()) {
       return releaseRepository
-          .findAllByReleaseDateAfter(YESTERDAY)
-          .collect { convertToDto(it) }
+              .findAllByReleaseDateAfter(YESTERDAY)
+              .collect { convertToDto(it) }
     }
     else {
       return releaseRepository
-          .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
-          .collect { convertToDto(it) }
+              .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
+              .collect { convertToDto(it) }
     }
   }
 
@@ -95,13 +110,13 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange) {
     if (artistNames.isEmpty()) {
       return releaseRepository
-          .findAllByReleaseDateBetween(timeRange.from, timeRange.to)
-          .collect { convertToDto(it) }
+              .findAllByReleaseDateBetween(timeRange.from, timeRange.to)
+              .collect { convertToDto(it) }
     }
     else {
       return releaseRepository
-          .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
-          .collect { convertToDto(it) }
+              .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
+              .collect { convertToDto(it) }
     }
   }
 

@@ -4,46 +4,36 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.release.ReleaseService
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
+import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
 import rocks.metaldetector.butler.web.dto.ReleasesResponse
 
 import javax.validation.Valid
 
+import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
-import static rocks.metaldetector.butler.config.constants.Endpoints.UNPAGINATED
+import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
 
 @RestController
-@RequestMapping(RELEASES)
 class ReleasesRestController {
-
-  static final IMPORT_ACTION = "import"
 
   @Autowired
   ReleaseService releaseService
 
-  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = IMPORT_JOB, produces = MediaType.APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-  ResponseEntity<ReleaseImportResponse> importReleases(@RequestParam("action") String action) {
-    if (action == IMPORT_ACTION) {
-      ReleaseImportResponse response = releaseService.importFromExternalSources()
-      return ResponseEntity.ok(response)
-    }
-    else {
-      throw new IllegalArgumentException("Only query param 'action=import' is supported for GET request!")
-    }
+  ResponseEntity<CreateImportJobResponse> createImportJob() {
+    CreateImportJobResponse response = releaseService.importFromExternalSources()
+    return ResponseEntity.ok(response)
   }
 
-  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = RELEASES, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_USER')")
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request) {
     def releases
@@ -68,7 +58,7 @@ class ReleasesRestController {
     return ResponseEntity.ok(response)
   }
 
-  @PostMapping(path = [UNPAGINATED], consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = RELEASES_UNPAGINATED, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request) {
     def releases
