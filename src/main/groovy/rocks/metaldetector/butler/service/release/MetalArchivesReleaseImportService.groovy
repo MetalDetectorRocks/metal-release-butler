@@ -2,15 +2,20 @@ package rocks.metaldetector.butler.service.release
 
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Service
+import rocks.metaldetector.butler.model.importjob.ImportJobEntity
+import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.Converter
 import rocks.metaldetector.butler.service.cover.CoverService
+import rocks.metaldetector.butler.service.transformer.ImportJobTransformer
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
+import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
+import java.time.LocalDateTime
 import java.util.concurrent.Future
 
 @Service
@@ -19,6 +24,9 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
 
   @Autowired
   ReleaseRepository releaseRepository
+
+  @Autowired
+  ImportJobRepository importJobRepository
 
   @Autowired
   MetalArchivesRestClient restClient
@@ -32,15 +40,29 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
   @Autowired
   ThreadPoolTaskExecutor releaseEntityPersistenceThreadPool
 
+  @Autowired
+  ImportJobTransformer importJobTransformer
+
+  @Async
   @Override
-  ReleaseImportResponse importReleases() {
+  ImportJobResponse importReleases(Long internalJobId) {
     // query metal archives
     def upcomingReleasesRawData = restClient.requestReleases()
 
     // convert raw string data into ReleaseEntity
     List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
 
-    // insert new releases
+    // persist releases incl. cover download
+    int inserted = persistReleaseEntities(releaseEntities)
+
+    // update import job
+    ImportJobEntity importJobEntity = updateImportJob(internalJobId, upcomingReleasesRawData.size(), inserted)
+
+    log.info("Import of new releases is done!")
+    return importJobTransformer.transform(importJobEntity)
+  }
+
+  private int persistReleaseEntities(List<ReleaseEntity> releaseEntities) {
     int inserted = 0
     List<Future> futures = []
 
@@ -52,7 +74,7 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
     }
 
     futures*.get()
-    return new ReleaseImportResponse(totalCountRequested: upcomingReleasesRawData.size(), totalCountImported: inserted)
+    return inserted
   }
 
   private PersistReleaseEntityTask createPersistReleaseEntityTask(ReleaseEntity releaseEntity) {
@@ -61,5 +83,14 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
             coverService: coverService,
             releaseRepository: releaseRepository
     )
+  }
+
+  private ImportJobEntity updateImportJob(Long internalJobId, int totalCountRequested, int totalCountImported) {
+    ImportJobEntity importJobEntity = importJobRepository.findById(internalJobId).get()
+    importJobEntity.totalCountRequested = totalCountRequested
+    importJobEntity.totalCountImported = totalCountImported
+    importJobEntity.endTime = LocalDateTime.now()
+
+    return importJobRepository.save(importJobEntity)
   }
 }
