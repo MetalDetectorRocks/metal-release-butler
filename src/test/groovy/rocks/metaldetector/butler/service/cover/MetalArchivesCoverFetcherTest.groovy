@@ -32,7 +32,7 @@ class MetalArchivesCoverFetcherTest extends Specification {
 
   def "URL containing release cover link is returned"() {
     given:
-    def mockReleasePageResource = new ClassPathResource("mock-release-page.html")
+    def mockReleasePageResource = new ClassPathResource("mock-release-page-metal-archives.html")
     def mockReleasePage = new XmlSlurper().parse(mockReleasePageResource.inputStream)
     underTest.httpBuilderFunction.apply(requestUrl) >> mockHttpBuilder
     mockHttpBuilder.get(*_) >> mockReleasePage
