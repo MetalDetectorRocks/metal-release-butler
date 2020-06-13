@@ -19,9 +19,10 @@ import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
 class ReleaseServiceTest extends Specification {
 
   ReleaseServiceImpl underTest = new ReleaseServiceImpl(
-          releaseRepository: Mock(ReleaseRepository),
-          importJobRepository: Mock(ImportJobRepository),
-          metalArchivesReleaseImportService: Mock(MetalArchivesReleaseImporter)
+      releaseRepository: Mock(ReleaseRepository),
+      importJobRepository: Mock(ImportJobRepository),
+      metalArchivesReleaseImportService: Mock(MetalArchivesReleaseImporter),
+      metalHammerReleaseImportService: Mock(MetalHammerReleaseImporter)
   )
 
   static LocalDate NOW = LocalDate.now()
@@ -38,6 +39,15 @@ class ReleaseServiceTest extends Specification {
 
     then:
     1 * underTest.metalArchivesReleaseImportService.importReleases(*_)
+
+    then:
+    1 * underTest.importJobRepository.save({
+      assert it.jobId != null
+      assert it.startTime != null
+    }) >> new ImportJobEntity(jobId: UUID.randomUUID())
+
+    then:
+    1 * underTest.metalHammerReleaseImportService.importReleases(*_)
   }
 
   def "importFromExternalSources: should pass internal import job id to metalArchivesReleaseImportService"() {
@@ -50,6 +60,9 @@ class ReleaseServiceTest extends Specification {
 
     then:
     1 * underTest.metalArchivesReleaseImportService.importReleases(id)
+
+    and:
+    1 * underTest.metalHammerReleaseImportService.importReleases(id)
   }
 
   def "importFromExternalSources: should return response with import job id"() {
@@ -61,7 +74,7 @@ class ReleaseServiceTest extends Specification {
     def result = underTest.importFromExternalSources()
 
     then:
-    result == new CreateImportJobResponse(jobId: jobId)
+    result == new CreateImportJobResponse(jobIds: [jobId, jobId])
   }
 
   def "find all upcoming releases for #artists (paginated)"() {
@@ -75,14 +88,14 @@ class ReleaseServiceTest extends Specification {
 
     then:
     1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(_, artists, _) >> new PageImpl<>([
-            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
-            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+        ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+        ReleaseEntityFactory.createReleaseEntity("A2", NOW)
     ])
 
     and:
-    results ==  [
-            ReleaseDtoFactory.createReleaseDto("A1", NOW),
-            ReleaseDtoFactory.createReleaseDto("A2", NOW)
+    results == [
+        ReleaseDtoFactory.createReleaseDto("A1", NOW),
+        ReleaseDtoFactory.createReleaseDto("A2", NOW)
     ]
   }
 
@@ -97,14 +110,14 @@ class ReleaseServiceTest extends Specification {
 
     then:
     1 * underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> new PageImpl<>([
-            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
-            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+        ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+        ReleaseEntityFactory.createReleaseEntity("A2", NOW)
     ])
 
     and:
     results == [
-            ReleaseDtoFactory.createReleaseDto("A1", NOW),
-            ReleaseDtoFactory.createReleaseDto("A2", NOW)
+        ReleaseDtoFactory.createReleaseDto("A1", NOW),
+        ReleaseDtoFactory.createReleaseDto("A2", NOW)
     ]
   }
 
@@ -117,14 +130,14 @@ class ReleaseServiceTest extends Specification {
 
     then:
     1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(_, artists) >> [
-            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
-            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+        ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+        ReleaseEntityFactory.createReleaseEntity("A2", NOW)
     ]
 
     and:
     results == [
-            ReleaseDtoFactory.createReleaseDto("A1", NOW),
-            ReleaseDtoFactory.createReleaseDto("A2", NOW)
+        ReleaseDtoFactory.createReleaseDto("A1", NOW),
+        ReleaseDtoFactory.createReleaseDto("A2", NOW)
     ]
   }
 
@@ -134,14 +147,14 @@ class ReleaseServiceTest extends Specification {
 
     then:
     1 * underTest.releaseRepository.findAllByReleaseDateAfter(_) >> [
-            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
-            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+        ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+        ReleaseEntityFactory.createReleaseEntity("A2", NOW)
     ]
 
     and:
     results == [
-            ReleaseDtoFactory.createReleaseDto("A1", NOW),
-            ReleaseDtoFactory.createReleaseDto("A2", NOW)
+        ReleaseDtoFactory.createReleaseDto("A1", NOW),
+        ReleaseDtoFactory.createReleaseDto("A2", NOW)
     ]
   }
 

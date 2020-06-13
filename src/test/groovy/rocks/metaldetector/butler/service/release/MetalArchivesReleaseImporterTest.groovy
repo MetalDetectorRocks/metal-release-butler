@@ -103,27 +103,6 @@ class MetalArchivesReleaseImporterTest extends Specification {
     0 * underTest.releaseEntityPersistenceThreadPool.submit(_)
   }
 
-  def "should update the corresponding import job"() {
-    given:
-    def internalJobId = 666
-    def importJobEntityMock = new ImportJobEntity()
-    underTest.restClient.requestReleases() >> [new String[0]]
-    underTest.releaseEntityConverter.convert(_) >> [new ReleaseEntity()]
-
-    when:
-    underTest.importReleases(internalJobId)
-
-    then:
-    1 * underTest.importJobRepository.findById(internalJobId) >> Optional.of(importJobEntityMock)
-
-    then:
-    1 * underTest.importJobRepository.save({ args ->
-      assert args.totalCountRequested == 1
-      assert args.totalCountImported == 1
-      assert args.endTime
-    })
-  }
-
   def "should update import job with correct values for 'totalCountRequested' and 'totalCountImported'"() {
     given:
     underTest.restClient.requestReleases() >> [new String[0], new String[0]]
