@@ -5,8 +5,8 @@ import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
-import rocks.metaldetector.butler.service.transformer.ImportJobTransformer
 import rocks.metaldetector.butler.service.converter.MetalArchivesReleaseEntityConverter
+import rocks.metaldetector.butler.service.transformer.ImportJobTransformer
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification
@@ -16,9 +16,9 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory.createReleaseEntity
 
-class MetalArchivesReleaseImportServiceTest extends Specification {
+class MetalArchivesReleaseImporterTest extends Specification {
 
-  MetalArchivesReleaseImportService underTest = new MetalArchivesReleaseImportService(
+  MetalArchivesReleaseImporter underTest = new MetalArchivesReleaseImporter(
       releaseRepository: Mock(ReleaseRepository),
       restClient: Mock(MetalArchivesRestClient),
       releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),

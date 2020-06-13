@@ -402,7 +402,7 @@ class ReleasesRestControllerTest extends Specification {
   def "Creating import job should return result from release service"() {
     given:
     def request = post(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
-    def response = new CreateImportJobResponse(jobId: UUID.randomUUID())
+    def response = new CreateImportJobResponse(jobIds: [UUID.randomUUID()])
     underTest.releaseService.importFromExternalSources() >> response
 
     when:

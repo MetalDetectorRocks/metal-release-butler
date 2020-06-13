@@ -21,7 +21,7 @@ class ReleaseServiceTest extends Specification {
   ReleaseServiceImpl underTest = new ReleaseServiceImpl(
           releaseRepository: Mock(ReleaseRepository),
           importJobRepository: Mock(ImportJobRepository),
-          metalArchivesReleaseImportService: Mock(ReleaseImportService)
+          metalArchivesReleaseImportService: Mock(MetalArchivesReleaseImporter)
   )
 
   static LocalDate NOW = LocalDate.now()

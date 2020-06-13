@@ -1,39 +1,39 @@
 package rocks.metaldetector.butler.service.release
 
 import groovy.util.logging.Slf4j
-import org.springframework.scheduling.annotation.Async
 import groovy.xml.XmlSlurper
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import rocks.metaldetector.butler.web.dto.ImportJobResponse
+import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.release.ReleaseEntity
-import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.Converter
+import rocks.metaldetector.butler.service.cover.HTTPBuilderFunction
 import rocks.metaldetector.butler.supplier.metalhammer.MetalHammerRestClient
-import rocks.metaldetector.butler.web.dto.ReleaseImportResponse
+import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
 @Service
 @Slf4j
-class MetalHammerReleaseImportService implements ReleaseImportService {
-
-  @Autowired
-  ReleaseRepository releaseRepository
+class MetalHammerReleaseImporter extends ReleaseImporter {
 
   @Autowired
   MetalHammerRestClient restClient
+
+  @Autowired
+  HTTPBuilderFunction httpBuilderFunction
 
   @Autowired
   Converter<String, List<ReleaseEntity>> metalHammerReleaseEntityConverter
 
   final XmlSlurper xmlSlurper
 
-  MetalHammerReleaseImportService() {
+  MetalHammerReleaseImporter() {
     this.xmlSlurper = new XmlSlurper()
   }
 
   @Async
   @Override
-  ImportJobResponse importReleases() {
+  ImportJobResponse importReleases(Long internalJobId) {
     def rawReleasesPage = restClient.requestReleases()
     def releaseEntities = metalHammerReleaseEntityConverter.convert(rawReleasesPage)
 
@@ -45,6 +45,9 @@ class MetalHammerReleaseImportService implements ReleaseImportService {
       }
     }
 
-    return new ReleaseImportResponse(totalCountRequested: releaseEntities.size(), totalCountImported: inserted)
+    ImportJobEntity importJobEntity = updateImportJob(internalJobId, releaseEntities.size(), inserted)
+
+    log.info("Import of new releases completed for Metal Archives!")
+    return importJobTransformer.transform(importJobEntity)
   }
 }

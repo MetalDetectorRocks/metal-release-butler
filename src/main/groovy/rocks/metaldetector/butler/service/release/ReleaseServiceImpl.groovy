@@ -30,10 +30,10 @@ class ReleaseServiceImpl implements ReleaseService {
   ImportJobRepository importJobRepository
 
   @Autowired
-  ReleaseImportService metalArchivesReleaseImportService
+  MetalArchivesReleaseImporter metalArchivesReleaseImportService
 
   @Autowired
-  ReleaseImportService metalHammerReleaseImportService
+  MetalHammerReleaseImporter metalHammerReleaseImportService
 
   final Closure<PageRequest> pageableSupplier = { int page, int size ->
     // Since the page is index-based we decrement the value by 1
@@ -43,9 +43,11 @@ class ReleaseServiceImpl implements ReleaseService {
   @Override
   @Transactional
   CreateImportJobResponse importFromExternalSources() {
-    ImportJobEntity importJobEntity = createImportJob()
-    metalArchivesReleaseImportService.importReleases(importJobEntity.id)
-    CreateImportJobResponse response = new CreateImportJobResponse(jobId: importJobEntity.jobId)
+    ImportJobEntity metalArchivesImportJob = createImportJob()
+    metalArchivesReleaseImportService.importReleases(metalArchivesImportJob.id)
+    ImportJobEntity metalHammerImportJob = createImportJob()
+    metalHammerReleaseImportService.importReleases(metalHammerImportJob.id)
+    CreateImportJobResponse response = new CreateImportJobResponse(jobIds: [metalArchivesImportJob.jobId, metalHammerImportJob.jobId])
     return response
   }
 
