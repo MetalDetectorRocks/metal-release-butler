@@ -15,6 +15,8 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 
 class ReleaseServiceTest extends Specification {
 
@@ -35,6 +37,7 @@ class ReleaseServiceTest extends Specification {
     1 * underTest.importJobRepository.save({
       assert it.jobId != null
       assert it.startTime != null
+      assert it.source == METAL_ARCHIVES
     }) >> new ImportJobEntity(jobId: UUID.randomUUID())
 
     then:
@@ -44,6 +47,7 @@ class ReleaseServiceTest extends Specification {
     1 * underTest.importJobRepository.save({
       assert it.jobId != null
       assert it.startTime != null
+      assert it.source == METAL_HAMMER_DE
     }) >> new ImportJobEntity(jobId: UUID.randomUUID())
 
     then:
