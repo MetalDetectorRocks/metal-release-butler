@@ -4,11 +4,11 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
-import static rocks.metaldetector.butler.supplier.metalhammer.MetalHammerRestClient.UPCOMING_RELEASES_URL
+import static rocks.metaldetector.butler.supplier.metalhammer.MetalHammerWebCrawler.UPCOMING_RELEASES_URL
 
-class MetalHammerRestClientTest extends Specification {
+class MetalHammerWebCrawlerTest extends Specification {
 
-  MetalHammerRestClient underTest = new MetalHammerRestClient(restTemplate: Mock(RestTemplate))
+  MetalHammerWebCrawler underTest = new MetalHammerWebCrawler(restTemplate: Mock(RestTemplate))
   ResponseEntity responseMock = Mock(ResponseEntity)
 
   def "RestTemplate is called with correct URL"() {

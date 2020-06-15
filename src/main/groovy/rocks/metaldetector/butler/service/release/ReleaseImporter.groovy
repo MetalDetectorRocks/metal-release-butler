@@ -2,7 +2,6 @@ package rocks.metaldetector.butler.service.release
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
-import org.springframework.stereotype.Service
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseRepository
@@ -11,7 +10,6 @@ import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
 import java.time.LocalDateTime
 
-@Service
 abstract class ReleaseImporter {
 
   @Autowired

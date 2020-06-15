@@ -7,14 +7,14 @@ import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter
 import rocks.metaldetector.butler.service.cover.HTTPBuilderFunction
 import rocks.metaldetector.butler.service.transformer.ImportJobTransformer
-import rocks.metaldetector.butler.supplier.metalhammer.MetalHammerRestClient
+import rocks.metaldetector.butler.supplier.metalhammer.MetalHammerWebCrawler
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification
 
 class MetalHammerReleaseImporterTest extends Specification {
 
   MetalHammerReleaseImporter underTest = new MetalHammerReleaseImporter(
-      restClient: Mock(MetalHammerRestClient),
+      restClient: Mock(MetalHammerWebCrawler),
       httpBuilderFunction: Mock(HTTPBuilderFunction),
       metalHammerReleaseEntityConverter: Mock(MetalHammerReleaseEntityConverter),
       importJobRepository: Mock(ImportJobRepository),

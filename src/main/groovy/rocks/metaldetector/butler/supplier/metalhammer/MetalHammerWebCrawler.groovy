@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 @Slf4j
-class MetalHammerRestClient {
+class MetalHammerWebCrawler {
 
   static final String UPCOMING_RELEASES_URL = "https://www.metal-hammer.de/neue-metal-alben-kommende-veroeffentlichungen-1032003"
 

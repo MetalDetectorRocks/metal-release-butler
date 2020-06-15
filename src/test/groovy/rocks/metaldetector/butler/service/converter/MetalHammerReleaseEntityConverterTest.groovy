@@ -7,6 +7,15 @@ import spock.lang.Unroll
 
 import java.time.LocalDate
 
+import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.AUTUMN_ENGLISH
+import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.AUTUMN_GERMAN
+import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.SPRING_ENGLISH
+import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.SUMMER_ENGLISH
+import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.SUMMER_GERMAN
+import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.WINTER_ENGLISH
+import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.WINTER_GERMAN
+import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.getSPRING_GERMAN
+
 class MetalHammerReleaseEntityConverterTest extends Specification {
 
   MetalHammerReleaseEntityConverter underTest = new MetalHammerReleaseEntityConverter()
@@ -67,7 +76,7 @@ class MetalHammerReleaseEntityConverterTest extends Specification {
     "for the love of metal live" | "For The Love Of Metal Live"
   }
 
-  def "Current year is set for release date"() {
+  def "Current year is set for release date if nothing else is provided"() {
     given:
     def releaseEntityBuilder = ReleaseEntity.builder()
     def dateString = "6.6."
@@ -78,6 +87,19 @@ class MetalHammerReleaseEntityConverterTest extends Specification {
     then:
     def releaseEntity = releaseEntityBuilder.build()
     releaseEntity.releaseDate == LocalDate.of(LocalDate.now().year, 6, 6)
+  }
+
+  def "Correct year is set for release date if provided"() {
+    given:
+    def releaseEntityBuilder = ReleaseEntity.builder()
+    def dateString = "6.6.2020"
+
+    when:
+    underTest.setDate(releaseEntityBuilder, dateString)
+
+    then:
+    def releaseEntity = releaseEntityBuilder.build()
+    releaseEntity.releaseDate == LocalDate.of(2020, 6, 6)
   }
 
   def "If only a year is given estimated release date is set"() {
@@ -94,7 +116,7 @@ class MetalHammerReleaseEntityConverterTest extends Specification {
   }
 
   @Unroll
-  "If season #dateString is given estimated release date is set"() {
+  "If season '#dateString' is given estimated release date '#expectedDateString' is set"() {
     given:
     def releaseEntityBuilder = ReleaseEntity.builder()
 
@@ -103,9 +125,13 @@ class MetalHammerReleaseEntityConverterTest extends Specification {
 
     then:
     def releaseEntity = releaseEntityBuilder.build()
-    releaseEntity.estimatedReleaseDate == dateString
+    releaseEntity.estimatedReleaseDate == expectedDateString
 
     where:
-    dateString << ["Frühling", "Sommer", "Herbst", "Winter"]
+    dateString    | expectedDateString
+    SPRING_GERMAN | SPRING_ENGLISH
+    SUMMER_GERMAN | SUMMER_ENGLISH
+    AUTUMN_GERMAN | AUTUMN_ENGLISH
+    WINTER_GERMAN | WINTER_ENGLISH
   }
 }

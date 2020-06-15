@@ -9,7 +9,7 @@ import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.service.converter.Converter
 import rocks.metaldetector.butler.service.cover.HTTPBuilderFunction
-import rocks.metaldetector.butler.supplier.metalhammer.MetalHammerRestClient
+import rocks.metaldetector.butler.supplier.metalhammer.MetalHammerWebCrawler
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
 @Service
@@ -17,7 +17,7 @@ import rocks.metaldetector.butler.web.dto.ImportJobResponse
 class MetalHammerReleaseImporter extends ReleaseImporter {
 
   @Autowired
-  MetalHammerRestClient restClient
+  MetalHammerWebCrawler restClient
 
   @Autowired
   HTTPBuilderFunction httpBuilderFunction
@@ -47,7 +47,7 @@ class MetalHammerReleaseImporter extends ReleaseImporter {
 
     ImportJobEntity importJobEntity = updateImportJob(internalJobId, releaseEntities.size(), inserted)
 
-    log.info("Import of new releases completed for Metal Archives!")
+    log.info("Import of new releases completed for Metal Hammer!")
     return importJobTransformer.transform(importJobEntity)
   }
 }

@@ -24,6 +24,6 @@ class AppConfig {
 
   @Bean
   ThreadPoolTaskExecutor releaseEntityPersistenceThreadPool() {
-    return new ThreadPoolTaskExecutor(corePoolSize: 5)
+    return new ThreadPoolTaskExecutor(corePoolSize: 4)
   }
 }

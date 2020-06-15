@@ -18,6 +18,14 @@ class MetalHammerReleaseEntityConverter implements Converter<String, List<Releas
   private static final String DATE_REGEX = "\\."
   private static final String YEAR_REGEX = "^[0-9]+\$"
   private static final String ESTIMATED_DATE_REGEX = "^[A-zÜü]+\$"
+  static final String SPRING_GERMAN = "Frühling"
+  static final String SUMMER_GERMAN = "Sommer"
+  static final String AUTUMN_GERMAN = "Herbst"
+  static final String WINTER_GERMAN = "Winter"
+  static final String SPRING_ENGLISH = "Spring"
+  static final String SUMMER_ENGLISH = "Summer"
+  static final String AUTUMN_ENGLISH = "Autumn"
+  static final String WINTER_ENGLISH = "Winter"
 
   final XmlSlurper xmlSlurper
 
@@ -49,7 +57,8 @@ class MetalHammerReleaseEntityConverter implements Converter<String, List<Releas
       def first = nameParts[1]
       def last = nameParts[0]
       builder.artist("$first $last")
-    } else {
+    }
+    else {
       builder.artist(artistString)
     }
   }
@@ -61,10 +70,31 @@ class MetalHammerReleaseEntityConverter implements Converter<String, List<Releas
   private void setDate(def builder, String dateString) {
     if (dateString.contains(".")) {
       def dayAndMonth = dateString.split(DATE_REGEX)
-      builder.releaseDate(LocalDate.of(LocalDate.now().getYear(), dayAndMonth[1] as int, dayAndMonth[0] as int))
+      if (dayAndMonth.size() == 2) {
+        builder.releaseDate(LocalDate.of(LocalDate.now().getYear(), dayAndMonth[1] as int, dayAndMonth[0] as int))
+      }
+      else if (dayAndMonth.size() == 3) {
+        builder.releaseDate(LocalDate.of(dayAndMonth[2] as int, dayAndMonth[1] as int, dayAndMonth[0] as int))
+      }
     }
-    else if (dateString.matches(YEAR_REGEX) || dateString.matches(ESTIMATED_DATE_REGEX)) {
+    else if (dateString.matches(YEAR_REGEX)) {
       builder.estimatedReleaseDate(dateString)
+    }
+    else if (dateString.matches(ESTIMATED_DATE_REGEX)) {
+      setEstimatedReleaseDate(builder, dateString)
+    }
+  }
+
+  private void setEstimatedReleaseDate(def builder, String dateString) {
+    switch (dateString) {
+      case SPRING_GERMAN: builder.estimatedReleaseDate(SPRING_ENGLISH)
+        break
+      case SUMMER_GERMAN: builder.estimatedReleaseDate(SUMMER_ENGLISH)
+        break
+      case AUTUMN_GERMAN: builder.estimatedReleaseDate(AUTUMN_ENGLISH)
+        break
+      case WINTER_GERMAN: builder.estimatedReleaseDate(WINTER_ENGLISH)
+        break
     }
   }
 }
