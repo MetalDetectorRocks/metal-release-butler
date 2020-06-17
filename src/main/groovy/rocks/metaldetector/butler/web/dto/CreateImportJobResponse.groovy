@@ -5,5 +5,5 @@ import groovy.transform.Canonical
 @Canonical
 class CreateImportJobResponse {
 
-  UUID jobId
+  List<UUID> jobIds
 }

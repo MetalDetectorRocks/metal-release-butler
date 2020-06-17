@@ -6,27 +6,17 @@ import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Service
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
-import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
-import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.Converter
 import rocks.metaldetector.butler.service.cover.CoverService
-import rocks.metaldetector.butler.service.transformer.ImportJobTransformer
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
-import java.time.LocalDateTime
 import java.util.concurrent.Future
 
 @Service
 @Slf4j
-class MetalArchivesReleaseImportService implements ReleaseImportService {
-
-  @Autowired
-  ReleaseRepository releaseRepository
-
-  @Autowired
-  ImportJobRepository importJobRepository
+class MetalArchivesReleaseImporter extends ReleaseImporter {
 
   @Autowired
   MetalArchivesRestClient restClient
@@ -39,9 +29,6 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
 
   @Autowired
   ThreadPoolTaskExecutor releaseEntityPersistenceThreadPool
-
-  @Autowired
-  ImportJobTransformer importJobTransformer
 
   @Async
   @Override
@@ -58,7 +45,7 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
     // update import job
     ImportJobEntity importJobEntity = updateImportJob(internalJobId, upcomingReleasesRawData.size(), inserted)
 
-    log.info("Import of new releases is done!")
+    log.info("Import of new releases completed for Metal Archives!")
     return importJobTransformer.transform(importJobEntity)
   }
 
@@ -83,14 +70,5 @@ class MetalArchivesReleaseImportService implements ReleaseImportService {
             coverService: coverService,
             releaseRepository: releaseRepository
     )
-  }
-
-  private ImportJobEntity updateImportJob(Long internalJobId, int totalCountRequested, int totalCountImported) {
-    ImportJobEntity importJobEntity = importJobRepository.findById(internalJobId).get()
-    importJobEntity.totalCountRequested = totalCountRequested
-    importJobEntity.totalCountImported = totalCountImported
-    importJobEntity.endTime = LocalDateTime.now()
-
-    return importJobRepository.save(importJobEntity)
   }
 }

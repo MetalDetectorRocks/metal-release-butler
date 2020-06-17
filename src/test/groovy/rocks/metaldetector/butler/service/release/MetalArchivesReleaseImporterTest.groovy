@@ -5,7 +5,7 @@ import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
-import rocks.metaldetector.butler.service.converter.ReleaseEntityConverter
+import rocks.metaldetector.butler.service.converter.MetalArchivesReleaseEntityConverter
 import rocks.metaldetector.butler.service.transformer.ImportJobTransformer
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
@@ -16,19 +16,19 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory.createReleaseEntity
 
-class MetalArchivesReleaseImportServiceTest extends Specification {
+class MetalArchivesReleaseImporterTest extends Specification {
 
-  MetalArchivesReleaseImportService underTest = new MetalArchivesReleaseImportService(
-          releaseRepository: Mock(ReleaseRepository),
-          importJobRepository: Mock(ImportJobRepository),
-          restClient: Mock(MetalArchivesRestClient),
-          releaseEntityConverter: Mock(ReleaseEntityConverter),
-          releaseEntityPersistenceThreadPool: Mock(ThreadPoolTaskExecutor),
-          importJobTransformer: Mock(ImportJobTransformer)
+  MetalArchivesReleaseImporter underTest = new MetalArchivesReleaseImporter(
+      releaseRepository: Mock(ReleaseRepository),
+      restClient: Mock(MetalArchivesRestClient),
+      releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
+      releaseEntityPersistenceThreadPool: Mock(ThreadPoolTaskExecutor),
+      importJobRepository: Mock(ImportJobRepository),
+      importJobTransformer: Mock(ImportJobTransformer)
   )
 
   def setup() {
-    underTest.importJobRepository.findById(_) >> Optional.of(new ImportJobEntity())
+    underTest.importJobRepository.findById(*_) >> Optional.of(new ImportJobEntity())
   }
 
   def "rest client is called once on import"() {
@@ -101,27 +101,6 @@ class MetalArchivesReleaseImportServiceTest extends Specification {
 
     and:
     0 * underTest.releaseEntityPersistenceThreadPool.submit(_)
-  }
-
-  def "should update the corresponding import job"() {
-    given:
-    def internalJobId = 666
-    def importJobEntityMock = new ImportJobEntity()
-    underTest.restClient.requestReleases() >> [new String[0]]
-    underTest.releaseEntityConverter.convert(_) >> [new ReleaseEntity()]
-
-    when:
-    underTest.importReleases(internalJobId)
-
-    then:
-    1 * underTest.importJobRepository.findById(internalJobId) >> Optional.of(importJobEntityMock)
-
-    then:
-    1 * underTest.importJobRepository.save({ args ->
-      assert args.totalCountRequested == 1
-      assert args.totalCountImported == 1
-      assert args.endTime
-    })
   }
 
   def "should update import job with correct values for 'totalCountRequested' and 'totalCountImported'"() {
