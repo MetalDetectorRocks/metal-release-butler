@@ -1,0 +1,23 @@
+html blabla
+
+<table width="328">
+    <tbody>
+    <tr>
+        <td width="116"><span style="text-decoration: underline;"><strong>Band</strong></span></td>
+        <td width="145"><span style="text-decoration: underline;"><strong>Album</strong></span></td>
+        <td width="67"><span style="text-decoration: underline;"><strong>VÖ-Datum</strong></span></td>
+    </tr>
+    <tr>
+        <td width="116">Darkthrone</td>
+        <td width="145">TRANSILVANIAN HUNGER</td>
+        <td width="67">6.6.</td>
+    </tr>
+    <tr>
+        <td width="116">Mayhem</td>
+        <td>DE MYSTERIIS DOM SATHANAS</td>
+        <td>7.7.</td>
+    </tr>
+    </tbody>
+</table>
+
+html blabla

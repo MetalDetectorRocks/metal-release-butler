@@ -14,13 +14,13 @@ import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHI
 
 @Component
 @Slf4j
-class ReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>> {
+class MetalArchivesReleaseEntityConverter implements Converter<String[], List<ReleaseEntity>> {
 
   static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.US)
 
   final XmlSlurper xmlSlurper
 
-  ReleaseEntityConverter() {
+  MetalArchivesReleaseEntityConverter() {
     xmlSlurper = new XmlSlurper()
   }
 

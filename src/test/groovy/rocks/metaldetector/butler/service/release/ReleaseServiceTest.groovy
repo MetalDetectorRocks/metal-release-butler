@@ -15,13 +15,16 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 
 class ReleaseServiceTest extends Specification {
 
   ReleaseServiceImpl underTest = new ReleaseServiceImpl(
-          releaseRepository: Mock(ReleaseRepository),
-          importJobRepository: Mock(ImportJobRepository),
-          metalArchivesReleaseImportService: Mock(ReleaseImportService)
+      releaseRepository: Mock(ReleaseRepository),
+      importJobRepository: Mock(ImportJobRepository),
+      metalArchivesReleaseImportService: Mock(MetalArchivesReleaseImporter),
+      metalHammerReleaseImportService: Mock(MetalHammerReleaseImporter)
   )
 
   static LocalDate NOW = LocalDate.now()
@@ -34,10 +37,21 @@ class ReleaseServiceTest extends Specification {
     1 * underTest.importJobRepository.save({
       assert it.jobId != null
       assert it.startTime != null
+      assert it.source == METAL_ARCHIVES
     }) >> new ImportJobEntity(jobId: UUID.randomUUID())
 
     then:
     1 * underTest.metalArchivesReleaseImportService.importReleases(*_)
+
+    then:
+    1 * underTest.importJobRepository.save({
+      assert it.jobId != null
+      assert it.startTime != null
+      assert it.source == METAL_HAMMER_DE
+    }) >> new ImportJobEntity(jobId: UUID.randomUUID())
+
+    then:
+    1 * underTest.metalHammerReleaseImportService.importReleases(*_)
   }
 
   def "importFromExternalSources: should pass internal import job id to metalArchivesReleaseImportService"() {
@@ -50,6 +64,9 @@ class ReleaseServiceTest extends Specification {
 
     then:
     1 * underTest.metalArchivesReleaseImportService.importReleases(id)
+
+    and:
+    1 * underTest.metalHammerReleaseImportService.importReleases(id)
   }
 
   def "importFromExternalSources: should return response with import job id"() {
@@ -61,7 +78,7 @@ class ReleaseServiceTest extends Specification {
     def result = underTest.importFromExternalSources()
 
     then:
-    result == new CreateImportJobResponse(jobId: jobId)
+    result == new CreateImportJobResponse(jobIds: [jobId, jobId])
   }
 
   def "find all upcoming releases for #artists (paginated)"() {
@@ -80,7 +97,7 @@ class ReleaseServiceTest extends Specification {
     ])
 
     and:
-    results ==  [
+    results == [
             ReleaseDtoFactory.createReleaseDto("A1", NOW),
             ReleaseDtoFactory.createReleaseDto("A2", NOW)
     ]
