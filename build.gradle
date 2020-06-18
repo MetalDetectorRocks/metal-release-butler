@@ -23,6 +23,7 @@ def jsonwebtokenVersion = '0.9.1'
 def httpBuilderVersion = '0.7.1'
 def commonsIoVersion = '2.6'
 def awsSdkVersion = '1.11.801'
+def awsSdkSwfLibrariesVersion = '1.11.22'
 
 configurations {
   developmentOnly
@@ -62,6 +63,7 @@ dependencies {
   annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
   implementation "io.jsonwebtoken:jjwt:$jsonwebtokenVersion"
   implementation "com.amazonaws:aws-java-sdk:$awsSdkVersion"
+  implementation "com.amazonaws:aws-java-sdk-swf-libraries:$awsSdkSwfLibrariesVersion"
 
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
     exclude group: 'junit', module: 'junit'
@@ -73,11 +75,13 @@ dependencies {
 
 ext {
   dependencyVersions = ["commons-lang:commons-lang:2.4",
+                        "commons-logging:commons-logging:1.1.3",
                         "org.junit:junit-bom:5.7.0-M1",
                         "org.ow2.asm:asm:8.0.1",
-                        "org.objenesis:objenesis:3.1"]
-  dependencyGroupVersions = ["org.codehaus.groovy": groovyVersion,
-                             "com.amazonaws"      : awsSdkVersion]
+                        "org.objenesis:objenesis:3.1",
+                        "com.amazonaws:aws-java-sdk-simpleworkflow:$awsSdkVersion",
+                        "com.amazonaws:aws-java-sdk:$awsSdkVersion"]
+  dependencyGroupVersions = ["org.codehaus.groovy": groovyVersion]
 }
 
 allprojects {

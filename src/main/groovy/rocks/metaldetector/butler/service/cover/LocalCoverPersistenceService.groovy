@@ -2,6 +2,7 @@ package rocks.metaldetector.butler.service.cover
 
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.FilenameUtils
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
 import java.nio.channels.Channels
@@ -13,6 +14,7 @@ import java.nio.file.Paths
 
 @Slf4j
 @Service
+@Profile(["default"])
 class LocalCoverPersistenceService implements CoverPersistenceService {
 
   static final String IMAGES_FOLDER_PATH = "images/"

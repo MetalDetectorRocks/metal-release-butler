@@ -5,7 +5,7 @@ import spock.lang.Specification
 class CoverServiceImplTest extends Specification {
 
   CoverServiceImpl underTest = new CoverServiceImpl(metalArchivesCoverFetcher: Mock(CoverFetcher),
-                                                    localCoverPersistenceService: Mock(CoverPersistenceService))
+                                                    coverPersistenceService: Mock(CoverPersistenceService))
 
   def "coverFetcher is called to get the url of the release cover"() {
     given:
@@ -28,7 +28,7 @@ class CoverServiceImplTest extends Specification {
     def result = underTest.transfer(sourceUrl)
 
     then:
-    1 * underTest.localCoverPersistenceService.persistCover(sourceUrl) >> expectedPath
+    1 * underTest.coverPersistenceService.persistCover(sourceUrl) >> expectedPath
 
     and:
     result == expectedPath
@@ -42,7 +42,7 @@ class CoverServiceImplTest extends Specification {
     def result = underTest.transfer(sourceUrl)
 
     then:
-    0 * underTest.localCoverPersistenceService.persistCover(*_)
+    0 * underTest.coverPersistenceService.persistCover(*_)
 
     and:
     !result
