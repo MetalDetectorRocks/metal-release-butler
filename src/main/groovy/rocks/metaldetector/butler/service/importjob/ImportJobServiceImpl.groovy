@@ -23,6 +23,9 @@ class ImportJobServiceImpl implements ImportJobService {
   ImportJobRepository importJobRepository
 
   @Autowired
+  ImportJobTransformer importJobTransformer
+
+  @Autowired
   MetalArchivesReleaseImporter metalArchivesReleaseImportService
 
   @Autowired
@@ -41,10 +44,10 @@ class ImportJobServiceImpl implements ImportJobService {
 
   @Override
   List<ImportJobResponse> findAllImportJobResults() {
-    // ToDo DanielW
-    return null
+    return importJobRepository.findAll().collect {
+      importJobTransformer.transform(it)
+    }
   }
-
 
   private ImportJobEntity createImportJob(ReleaseSource source) {
     ImportJobEntity importJobEntity = new ImportJobEntity(
