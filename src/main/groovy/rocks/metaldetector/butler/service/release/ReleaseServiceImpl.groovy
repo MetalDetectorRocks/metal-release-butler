@@ -7,19 +7,11 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.TimeRange
-import rocks.metaldetector.butler.model.importjob.ImportJobEntity
-import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
-import rocks.metaldetector.butler.model.release.ReleaseSource
-import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 
 import java.time.LocalDate
-import java.time.LocalDateTime
-
-import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
-import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 
 @Service
 @Slf4j
@@ -30,39 +22,9 @@ class ReleaseServiceImpl implements ReleaseService {
   @Autowired
   ReleaseRepository releaseRepository
 
-  @Autowired
-  ImportJobRepository importJobRepository
-
-  @Autowired
-  MetalArchivesReleaseImporter metalArchivesReleaseImportService
-
-  @Autowired
-  MetalHammerReleaseImporter metalHammerReleaseImportService
-
   final Closure<PageRequest> pageableSupplier = { int page, int size ->
     // Since the page is index-based we decrement the value by 1
     return PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle"))
-  }
-
-  @Override
-  @Transactional
-  CreateImportJobResponse importFromExternalSources() {
-    ImportJobEntity metalArchivesImportJob = createImportJob(METAL_ARCHIVES)
-    metalArchivesReleaseImportService.importReleases(metalArchivesImportJob.id)
-    ImportJobEntity metalHammerImportJob = createImportJob(METAL_HAMMER_DE)
-    metalHammerReleaseImportService.importReleases(metalHammerImportJob.id)
-    CreateImportJobResponse response = new CreateImportJobResponse(jobIds: [metalArchivesImportJob.jobId, metalHammerImportJob.jobId])
-    return response
-  }
-
-  private ImportJobEntity createImportJob(ReleaseSource source) {
-    ImportJobEntity importJobEntity = new ImportJobEntity(
-        jobId: UUID.randomUUID(),
-        startTime: LocalDateTime.now(),
-        source: source
-    )
-    importJobEntity = importJobRepository.save(importJobEntity)
-    return importJobEntity
   }
 
   @Override

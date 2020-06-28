@@ -12,5 +12,6 @@ class ImportJobResponse {
   int totalCountImported
   LocalDateTime startTime
   LocalDateTime endTime
+  String source
 
 }

@@ -1,7 +1,10 @@
-package rocks.metaldetector.butler.service.transformer
+package rocks.metaldetector.butler.service.importjob
 
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
+import rocks.metaldetector.butler.model.release.ReleaseSource
+import rocks.metaldetector.butler.service.importjob.ImportJobTransformer
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.time.LocalDateTime
 
@@ -72,5 +75,20 @@ class ImportJobTransformerTest extends Specification {
 
     then:
     result.endTime == endTime
+  }
+
+  @Unroll
+  "should transform 'source'"() {
+    given:
+    def importJobEntity = new ImportJobEntity(source: givenSource)
+
+    when:
+    def result = underTest.transform(importJobEntity)
+
+    then:
+    result.source == givenSource.toString()
+
+    where:
+    givenSource << ReleaseSource.values()
   }
 }

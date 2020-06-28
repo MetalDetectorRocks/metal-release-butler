@@ -6,7 +6,8 @@ import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter
 import rocks.metaldetector.butler.service.cover.HTTPBuilderFunction
-import rocks.metaldetector.butler.service.transformer.ImportJobTransformer
+import rocks.metaldetector.butler.service.importjob.MetalHammerReleaseImporter
+import rocks.metaldetector.butler.service.importjob.ImportJobTransformer
 import rocks.metaldetector.butler.supplier.metalhammer.MetalHammerWebCrawler
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification

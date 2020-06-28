@@ -6,7 +6,8 @@ import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.MetalArchivesReleaseEntityConverter
-import rocks.metaldetector.butler.service.transformer.ImportJobTransformer
+import rocks.metaldetector.butler.service.importjob.MetalArchivesReleaseImporter
+import rocks.metaldetector.butler.service.importjob.ImportJobTransformer
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification

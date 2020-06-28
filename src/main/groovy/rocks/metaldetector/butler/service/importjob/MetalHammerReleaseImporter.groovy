@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.service.release
+package rocks.metaldetector.butler.service.importjob
 
 import groovy.util.logging.Slf4j
 import groovy.xml.XmlSlurper

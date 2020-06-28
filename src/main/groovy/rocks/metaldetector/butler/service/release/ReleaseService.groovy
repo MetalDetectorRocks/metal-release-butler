@@ -6,8 +6,6 @@ import rocks.metaldetector.butler.web.dto.ReleaseDto
 
 interface ReleaseService {
 
-  CreateImportJobResponse importFromExternalSources()
-
   List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames, int page, int size)
 
   List<ReleaseDto> findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, int page, int size)
