@@ -17,7 +17,6 @@ import spock.lang.Specification
 
 import static org.mockito.Mockito.reset
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
 
@@ -69,17 +68,6 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     result.response.status == HttpStatus.OK.value()
   }
 
-  def "Admin can access import endpoint"() {
-    given:
-    def request = post(IMPORT_JOB).header("Authorization", "Bearer " + testAdminToken)
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == HttpStatus.OK.value()
-  }
-
   def "Admin can access unpaginated releases endpoint"() {
     given:
     def requestBody = new ReleasesRequest(artists: [])
@@ -94,17 +82,6 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
     then:
     result.response.status == HttpStatus.OK.value()
-  }
-
-  def "User cannot access import endpoint"() {
-    given:
-    def request = post(IMPORT_JOB).header("Authorization", "Bearer " + testUserToken)
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == HttpStatus.FORBIDDEN.value()
   }
 
   def "User cannot access unpaginated releases endpoint"() {

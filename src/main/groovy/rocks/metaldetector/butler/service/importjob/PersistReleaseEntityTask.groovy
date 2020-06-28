@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.service.release
+package rocks.metaldetector.butler.service.importjob
 
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository

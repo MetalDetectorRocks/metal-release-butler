@@ -3,7 +3,8 @@ package rocks.metaldetector.butler.service.release
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseRepository
-import rocks.metaldetector.butler.service.transformer.ImportJobTransformer
+import rocks.metaldetector.butler.service.importjob.ReleaseImporter
+import rocks.metaldetector.butler.service.importjob.ImportJobTransformer
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification
 

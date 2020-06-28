@@ -2,16 +2,12 @@ package rocks.metaldetector.butler.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import org.springframework.context.support.StaticApplicationContext
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import org.springframework.web.accept.ContentNegotiationManager
-import org.springframework.web.servlet.HandlerExceptionResolver
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.release.ReleaseService
-import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
+import rocks.metaldetector.butler.testutil.WithExceptionResolver
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
@@ -26,11 +22,10 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.OK
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
-import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
 
-class ReleasesRestControllerTest extends Specification {
+class ReleasesRestControllerTest extends Specification implements WithExceptionResolver {
 
   static final String ARTIST_NAME = "A1"
 
@@ -388,34 +383,6 @@ class ReleasesRestControllerTest extends Specification {
                                           page: 1, size: 10)]
   }
 
-  def "Creating import job should call release service"() {
-    given:
-    def request = post(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
-
-    when:
-    mockMvc.perform(request).andReturn()
-
-    then:
-    1 * underTest.releaseService.importFromExternalSources()
-  }
-
-  def "Creating import job should return result from release service"() {
-    given:
-    def request = post(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
-    def response = new CreateImportJobResponse(jobIds: [UUID.randomUUID()])
-    underTest.releaseService.importFromExternalSources() >> response
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    CreateImportJobResponse importJobResponse = objectMapper.readValue(result.response.contentAsString, CreateImportJobResponse)
-    importJobResponse == response
-
-    and:
-    result.response.status == OK.value()
-  }
-
   private static List<ReleaseDto> getReleaseDtosForTimeRangeTest() {
     return [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31)),
             ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 2, 28))]
@@ -427,15 +394,5 @@ class ReleasesRestControllerTest extends Specification {
             ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 3, 31)),
             ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 4, 28)),
             ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 5, 28))]
-  }
-
-  private HandlerExceptionResolver exceptionResolver() {
-    def applicationContext = new StaticApplicationContext()
-    applicationContext.registerSingleton("exceptionHandler", RestExceptionHandler)
-
-    def webMvcConfigurationSupport = new WebMvcConfigurationSupport()
-    webMvcConfigurationSupport.setApplicationContext(applicationContext)
-
-    return webMvcConfigurationSupport.handlerExceptionResolver(new ContentNegotiationManager())
   }
 }

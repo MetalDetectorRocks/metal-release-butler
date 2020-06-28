@@ -7,6 +7,8 @@ import rocks.metaldetector.butler.model.release.ReleaseSource
 
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import java.time.LocalDateTime
 
 @Entity(name = "import_jobs")
@@ -30,6 +32,7 @@ class ImportJobEntity extends BaseEntity {
   LocalDateTime endTime
 
   @Column(name = "source", nullable = false)
+  @Enumerated(EnumType.STRING)
   ReleaseSource source
 
 }

@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.service.transformer
+package rocks.metaldetector.butler.service.importjob
 
 import org.springframework.stereotype.Service
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
@@ -15,6 +15,7 @@ class ImportJobTransformer {
               totalCountImported: importJobEntity.totalCountImported,
               startTime: importJobEntity.startTime,
               endTime: importJobEntity.endTime,
+              source: importJobEntity.source
       )
     }
 

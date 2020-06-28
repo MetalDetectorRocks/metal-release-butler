@@ -9,14 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.release.ReleaseService
-import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ReleasesRequest
 import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
 import rocks.metaldetector.butler.web.dto.ReleasesResponse
 
 import javax.validation.Valid
 
-import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
 
@@ -25,13 +23,6 @@ class ReleasesRestController {
 
   @Autowired
   ReleaseService releaseService
-
-  @PostMapping(path = IMPORT_JOB, produces = MediaType.APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-  ResponseEntity<CreateImportJobResponse> createImportJob() {
-    CreateImportJobResponse response = releaseService.importFromExternalSources()
-    return ResponseEntity.ok(response)
-  }
 
   @PostMapping(path = RELEASES, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_USER')")
