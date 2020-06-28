@@ -12,6 +12,7 @@ import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import spock.lang.Specification
 
 import static org.mockito.Mockito.reset
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 
@@ -30,6 +31,28 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
 
   void tearDown() {
     reset(releaseService)
+  }
+
+  def "Admin can GET on import endpoint"() {
+    given:
+    def request = get(IMPORT_JOB).header("Authorization", "Bearer " + testAdminToken)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == HttpStatus.OK.value()
+  }
+
+  def "User cannot GET on import endpoint"() {
+    given:
+    def request = get(IMPORT_JOB).header("Authorization", "Bearer " + testUserToken)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == HttpStatus.FORBIDDEN.value()
   }
 
   def "Admin can POST on import endpoint"() {
@@ -53,6 +76,4 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
     then:
     result.response.status == HttpStatus.FORBIDDEN.value()
   }
-
-  // ToDo DanielW: Test getAllImportJobResults
 }

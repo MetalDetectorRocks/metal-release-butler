@@ -1,36 +1,56 @@
 package rocks.metaldetector.butler.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import rocks.metaldetector.butler.service.importjob.ImportJobService
 import rocks.metaldetector.butler.testutil.WithExceptionResolver
 import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
+import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification
 
-import java.text.SimpleDateFormat
-
 import static org.springframework.http.HttpStatus.OK
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 
 class ImportJobRestControllerTest extends Specification implements WithExceptionResolver {
 
-  ImportJobRestController underTest
-  MockMvc mockMvc
-  ObjectMapper objectMapper
+  ImportJobRestController underTest = new ImportJobRestController(importJobService: Mock(ImportJobService))
+  MockMvc mockMvc = MockMvcBuilders.standaloneSetup(underTest, exceptionResolver()).build()
+  ObjectMapper objectMapper = new ObjectMapper()
 
-  void setup() {
-    underTest = new ImportJobRestController(importJobService: Mock(ImportJobService))
-    mockMvc = MockMvcBuilders.standaloneSetup(underTest, exceptionResolver()).build()
+  def "Getting all import job results should call ImportJobService"() {
+    given:
+    def request = get(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
 
-    objectMapper = new ObjectMapper(dateFormat: new SimpleDateFormat("yyyy-MM-dd"))
-    objectMapper.registerModule(new JavaTimeModule())
+    when:
+    mockMvc.perform(request).andReturn()
+
+    then:
+    1 * underTest.importJobService.findAllImportJobResults()
   }
 
-  def "Creating import job should call release service"() {
+  def "Getting all import job results should return result from ImportJobServicee"() {
+    given:
+    def request = get(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
+    def response = new ImportJobResponse(jobId: UUID.randomUUID())
+    underTest.importJobService.findAllImportJobResults() >> [response]
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    ImportJobResponse[] importJobResponse = objectMapper.readValue(result.response.contentAsString, ImportJobResponse[])
+    importJobResponse.size() == 1
+    importJobResponse[0] == response
+
+    and:
+    result.response.status == OK.value()
+  }
+
+  def "Creating import job should call ImportJobService"() {
     given:
     def request = post(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
 
@@ -41,7 +61,7 @@ class ImportJobRestControllerTest extends Specification implements WithException
     1 * underTest.importJobService.importFromExternalSources()
   }
 
-  def "Creating import job should return result from release service"() {
+  def "Creating import job should return result from ImportJobService"() {
     given:
     def request = post(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
     def response = new CreateImportJobResponse(jobIds: [UUID.randomUUID()])
@@ -57,6 +77,4 @@ class ImportJobRestControllerTest extends Specification implements WithException
     and:
     result.response.status == OK.value()
   }
-
-  // ToDo DanielW: Test getAllImportJobResults
 }
