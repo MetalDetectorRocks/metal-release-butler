@@ -1,36 +1,30 @@
 package rocks.metaldetector.butler.service.release
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
-import rocks.metaldetector.butler.model.importjob.ImportJobEntity
-import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.MetalArchivesReleaseEntityConverter
+import rocks.metaldetector.butler.service.cover.CoverService
+import rocks.metaldetector.butler.service.importjob.ImportResult
 import rocks.metaldetector.butler.service.importjob.MetalArchivesReleaseImporter
-import rocks.metaldetector.butler.service.importjob.ImportJobTransformer
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
-import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory.createReleaseEntity
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
 
 class MetalArchivesReleaseImporterTest extends Specification {
 
   MetalArchivesReleaseImporter underTest = new MetalArchivesReleaseImporter(
-      releaseRepository: Mock(ReleaseRepository),
-      restClient: Mock(MetalArchivesRestClient),
-      releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
-      releaseEntityPersistenceThreadPool: Mock(ThreadPoolTaskExecutor),
-      importJobRepository: Mock(ImportJobRepository),
-      importJobTransformer: Mock(ImportJobTransformer)
+          restClient: Mock(MetalArchivesRestClient),
+          coverService: Mock(CoverService),
+          releaseRepository: Mock(ReleaseRepository),
+          releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
+          releaseEntityPersistenceThreadPool: Mock(ThreadPoolTaskExecutor)
   )
-
-  def setup() {
-    underTest.importJobRepository.findById(*_) >> Optional.of(new ImportJobEntity())
-  }
 
   def "rest client is called once on import"() {
     when:
@@ -56,6 +50,22 @@ class MetalArchivesReleaseImporterTest extends Specification {
             [],
             [new String[0], new String[0]]
     ]
+  }
+
+  def "Duplicates are filtered out before the database query checks whether the release already exists"() {
+    given:
+    underTest.restClient.requestReleases() >> [new String[0], new String[0], new String[0]]
+    underTest.releaseEntityConverter.convert(_) >>> [
+            [new ReleaseEntity(artist: "Darkthrone", albumTitle: "Transilvanian Hunger", releaseDate: LocalDate.of(1994, 10, 10))],
+            [new ReleaseEntity(artist: "Darkthrone", albumTitle: "Transilvanian Hunger", releaseDate: LocalDate.of(1994, 10, 10))],
+            [new ReleaseEntity(artist: "Darkthrone", albumTitle: "Panzerfaust", releaseDate: LocalDate.of(1994, 10, 10))],
+    ]
+
+    when:
+    underTest.importReleases()
+
+    then:
+    2 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_)
   }
 
   def "new releases are submitted to persistence thread pool"() {
@@ -104,40 +114,24 @@ class MetalArchivesReleaseImporterTest extends Specification {
     0 * underTest.releaseEntityPersistenceThreadPool.submit(_)
   }
 
-  def "should update import job with correct values for 'totalCountRequested' and 'totalCountImported'"() {
+  def "should return ImportResult with correct values for 'totalCountRequested' and 'totalCountImported'"() {
     given:
     underTest.restClient.requestReleases() >> [new String[0], new String[0]]
-    underTest.releaseEntityConverter.convert(_) >> [
-            createReleaseEntity("Metallica", LocalDate.now())
+    underTest.releaseEntityConverter.convert(_) >>> [
+            [createReleaseEntity("Metallica", LocalDate.now())],
+            [createReleaseEntity("Slayer", LocalDate.now())]
     ]
     underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >>> [true, false]
 
     when:
-    underTest.importReleases()
+    def importResult = underTest.importReleases()
 
     then:
-    1 * underTest.importJobRepository.save({ args ->
-      assert args.totalCountRequested == 2
-      assert args.totalCountImported == 1
-      assert args.endTime
-    })
+    importResult == new ImportResult(totalCountRequested: 2, totalCountImported: 1)
   }
 
-  def "should use ImportJobTransformer to transform ImportJobEntity that is used as result"() {
-    given:
-    def importJobEntityMock = new ImportJobEntity()
-    def transformedResponse = new ImportJobResponse()
-    underTest.restClient.requestReleases() >> [new String[0]]
-    underTest.releaseEntityConverter.convert(*_) >> [new ReleaseEntity()]
-    underTest.importJobRepository.save(*_) >> importJobEntityMock
-
-    when:
-    def result = underTest.importReleases()
-
-    then:
-    1 * underTest.importJobTransformer.transform(importJobEntityMock) >> transformedResponse
-
-    and:
-    result == transformedResponse
+  def "should return METAL_ARCHIVES as release source"() {
+    expect:
+    underTest.getReleaseSource() == METAL_ARCHIVES
   }
 }

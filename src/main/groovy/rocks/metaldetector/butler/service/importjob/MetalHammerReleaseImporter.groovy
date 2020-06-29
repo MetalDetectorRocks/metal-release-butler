@@ -1,53 +1,53 @@
 package rocks.metaldetector.butler.service.importjob
 
 import groovy.util.logging.Slf4j
-import groovy.xml.XmlSlurper
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
-import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.release.ReleaseEntity
+import rocks.metaldetector.butler.model.release.ReleaseRepository
+import rocks.metaldetector.butler.model.release.ReleaseSource
 import rocks.metaldetector.butler.service.converter.Converter
-import rocks.metaldetector.butler.service.cover.HTTPBuilderFunction
 import rocks.metaldetector.butler.supplier.metalhammer.MetalHammerWebCrawler
-import rocks.metaldetector.butler.web.dto.ImportJobResponse
+
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 
 @Service
 @Slf4j
-class MetalHammerReleaseImporter extends ReleaseImporter {
+class MetalHammerReleaseImporter implements ReleaseImporter {
 
   @Autowired
-  MetalHammerWebCrawler restClient
+  MetalHammerWebCrawler webCrawler
 
   @Autowired
-  HTTPBuilderFunction httpBuilderFunction
+  ReleaseRepository releaseRepository
 
   @Autowired
   Converter<String, List<ReleaseEntity>> metalHammerReleaseEntityConverter
 
-  final XmlSlurper xmlSlurper
-
-  MetalHammerReleaseImporter() {
-    this.xmlSlurper = new XmlSlurper()
-  }
-
-  @Async
   @Override
-  ImportJobResponse importReleases(Long internalJobId) {
-    def rawReleasesPage = restClient.requestReleases()
+  ImportResult importReleases() {
+    def rawReleasesPage = webCrawler.requestReleases()
     def releaseEntities = metalHammerReleaseEntityConverter.convert(rawReleasesPage)
+    int totalCountRequested = releaseEntities.size()
 
     int inserted = 0
-    releaseEntities.each { ReleaseEntity releaseEntity ->
+    releaseEntities.unique().each { ReleaseEntity releaseEntity ->
       if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)) {
         releaseRepository.save(releaseEntity)
         inserted++
       }
     }
 
-    ImportJobEntity importJobEntity = updateImportJob(internalJobId, releaseEntities.size(), inserted)
-
     log.info("Import of new releases completed for Metal Hammer!")
-    return importJobTransformer.transform(importJobEntity)
+
+    return new ImportResult(
+            totalCountRequested: totalCountRequested,
+            totalCountImported: inserted
+    )
+  }
+
+  @Override
+  ReleaseSource getReleaseSource() {
+    return METAL_HAMMER_DE
   }
 }

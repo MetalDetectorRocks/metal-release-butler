@@ -2,21 +2,22 @@ package rocks.metaldetector.butler.service.importjob
 
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Service
-import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.release.ReleaseEntity
+import rocks.metaldetector.butler.model.release.ReleaseRepository
+import rocks.metaldetector.butler.model.release.ReleaseSource
 import rocks.metaldetector.butler.service.converter.Converter
 import rocks.metaldetector.butler.service.cover.CoverService
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
-import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
 import java.util.concurrent.Future
 
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
+
 @Service
 @Slf4j
-class MetalArchivesReleaseImporter extends ReleaseImporter {
+class MetalArchivesReleaseImporter implements ReleaseImporter {
 
   @Autowired
   MetalArchivesRestClient restClient
@@ -25,28 +26,36 @@ class MetalArchivesReleaseImporter extends ReleaseImporter {
   CoverService coverService
 
   @Autowired
+  ReleaseRepository releaseRepository
+
+  @Autowired
   Converter<String[], List<ReleaseEntity>> releaseEntityConverter
 
   @Autowired
   ThreadPoolTaskExecutor releaseEntityPersistenceThreadPool
 
-  @Async
   @Override
-  ImportJobResponse importReleases(Long internalJobId) {
+  ImportResult importReleases() {
     // query metal archives
     def upcomingReleasesRawData = restClient.requestReleases()
 
     // convert raw string data into ReleaseEntity
-    List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
+    List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }.unique()
 
     // persist releases incl. cover download
     int inserted = persistReleaseEntities(releaseEntities)
 
-    // update import job
-    ImportJobEntity importJobEntity = updateImportJob(internalJobId, upcomingReleasesRawData.size(), inserted)
-
     log.info("Import of new releases completed for Metal Archives!")
-    return importJobTransformer.transform(importJobEntity)
+
+    return new ImportResult(
+            totalCountRequested: upcomingReleasesRawData.size(),
+            totalCountImported: inserted
+    )
+  }
+
+  @Override
+  ReleaseSource getReleaseSource() {
+    return METAL_ARCHIVES
   }
 
   private int persistReleaseEntities(List<ReleaseEntity> releaseEntities) {
