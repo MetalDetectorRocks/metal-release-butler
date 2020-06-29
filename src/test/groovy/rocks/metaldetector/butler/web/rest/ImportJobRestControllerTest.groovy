@@ -6,7 +6,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import rocks.metaldetector.butler.service.importjob.ImportJobService
 import rocks.metaldetector.butler.testutil.WithExceptionResolver
-import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification
 
@@ -61,20 +60,14 @@ class ImportJobRestControllerTest extends Specification implements WithException
     1 * underTest.importJobService.importFromExternalSources()
   }
 
-  def "Creating import job should return result from ImportJobService"() {
+  def "Creating import job should return OK"() {
     given:
     def request = post(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
-    def response = new CreateImportJobResponse(jobIds: [UUID.randomUUID()])
-    underTest.importJobService.importFromExternalSources() >> response
 
     when:
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    CreateImportJobResponse importJobResponse = objectMapper.readValue(result.response.contentAsString, CreateImportJobResponse)
-    importJobResponse == response
-
-    and:
     result.response.status == OK.value()
   }
 }

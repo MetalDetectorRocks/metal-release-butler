@@ -1,7 +1,6 @@
 package rocks.metaldetector.butler.service.release
 
 import rocks.metaldetector.butler.model.TimeRange
-import rocks.metaldetector.butler.web.dto.CreateImportJobResponse
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 
 interface ReleaseService {
