@@ -14,3 +14,6 @@ server:
 
 bucket4j:
   enabled: true
+
+aws:
+  bucket-name: rocks.metal-detector.s3.images

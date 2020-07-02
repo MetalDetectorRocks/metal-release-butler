@@ -9,7 +9,7 @@ import spock.lang.Specification
 @ActiveProfiles("prod")
 class MetalReleaseButlerApplicationProdIT extends Specification implements WithIntegrationTestConfig {
 
-  def "Should load the application context with preview profile"() {
+  def "Should load the application context with prod profile"() {
     expect:
     true
   }

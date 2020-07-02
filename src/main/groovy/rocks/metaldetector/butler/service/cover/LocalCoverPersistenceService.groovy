@@ -48,7 +48,7 @@ class LocalCoverPersistenceService implements CoverPersistenceService {
   }
 
   private String persistLocally(URL coverUrl) {
-    def imagePath = IMAGES_FOLDER_PATH + FilenameUtils.getName(coverUrl.getPath())
+    def imagePath = IMAGES_FOLDER_PATH + UUID.randomUUID() + "." + FilenameUtils.getExtension(coverUrl.getPath())
     ReadableByteChannel readableByteChannel = Channels.newChannel(coverUrl.openStream())
     FileOutputStream fileOutputStream = new FileOutputStream(imagePath)
     FileChannel fileChannel = fileOutputStream.getChannel()
