@@ -2,14 +2,14 @@ package rocks.metaldetector.butler.service.importjob
 
 import org.springframework.stereotype.Service
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
-import rocks.metaldetector.butler.web.dto.ImportJobResponse
+import rocks.metaldetector.butler.web.dto.ImportJobDto
 
 @Service
 class ImportJobTransformer {
 
-  ImportJobResponse transform(ImportJobEntity importJobEntity) {
+  ImportJobDto transform(ImportJobEntity importJobEntity) {
     if (importJobEntity) {
-      return new ImportJobResponse(
+      return new ImportJobDto(
               jobId: importJobEntity.jobId,
               totalCountRequested: importJobEntity.totalCountRequested,
               totalCountImported: importJobEntity.totalCountImported,

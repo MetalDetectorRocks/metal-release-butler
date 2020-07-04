@@ -6,6 +6,7 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import rocks.metaldetector.butler.service.importjob.ImportJobService
 import rocks.metaldetector.butler.testutil.WithExceptionResolver
+import rocks.metaldetector.butler.web.dto.ImportJobDto
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification
 
@@ -31,19 +32,19 @@ class ImportJobRestControllerTest extends Specification implements WithException
     1 * underTest.importJobService.findAllImportJobResults()
   }
 
-  def "Getting all import job results should return result from ImportJobServicee"() {
+  def "Getting all import job results should return wrapped result from ImportJobServicee"() {
     given:
     def request = get(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
-    def response = new ImportJobResponse(jobId: UUID.randomUUID())
-    underTest.importJobService.findAllImportJobResults() >> [response]
+    def importJobDto = new ImportJobDto(jobId: UUID.randomUUID())
+    underTest.importJobService.findAllImportJobResults() >> [importJobDto]
 
     when:
     def result = mockMvc.perform(request).andReturn()
 
     then:
-    ImportJobResponse[] importJobResponse = objectMapper.readValue(result.response.contentAsString, ImportJobResponse[])
-    importJobResponse.size() == 1
-    importJobResponse[0] == response
+    ImportJobResponse importJobResponse = objectMapper.readValue(result.response.contentAsString, ImportJobResponse)
+    importJobResponse.importJobs.size() == 1
+    importJobResponse.importJobs[0] == importJobDto
 
     and:
     result.response.status == OK.value()
