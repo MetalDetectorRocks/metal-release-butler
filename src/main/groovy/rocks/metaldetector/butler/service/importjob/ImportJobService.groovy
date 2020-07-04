@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.importjob.ImportJobRepository
 import rocks.metaldetector.butler.model.release.ReleaseSource
-import rocks.metaldetector.butler.web.dto.ImportJobResponse
+import rocks.metaldetector.butler.web.dto.ImportJobDto
 
 import javax.annotation.PostConstruct
 import java.time.LocalDateTime
@@ -49,7 +49,7 @@ class ImportJobService {
   }
 
   @Transactional
-  List<ImportJobResponse> findAllImportJobResults() {
+  List<ImportJobDto> findAllImportJobResults() {
     return importJobRepository.findAll().collect {
       importJobTransformer.transform(it)
     }
