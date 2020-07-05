@@ -12,11 +12,11 @@ class CoverServiceImpl implements CoverService {
   CoverFetcher metalArchivesCoverFetcher
 
   @Autowired
-  CoverPersistenceService localCoverPersistenceService
+  CoverPersistenceService coverPersistenceService
 
   @Override
   String transfer(URL sourceUrl) {
     def coverUrl = metalArchivesCoverFetcher.fetchCoverUrl(sourceUrl)
-    return coverUrl ? localCoverPersistenceService.persistCover(coverUrl) : null
+    return coverUrl ? coverPersistenceService.persistCover(coverUrl) : null
   }
 }
