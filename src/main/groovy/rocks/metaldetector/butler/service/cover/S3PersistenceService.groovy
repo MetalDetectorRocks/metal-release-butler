@@ -2,7 +2,9 @@ package rocks.metaldetector.butler.service.cover
 
 import com.amazonaws.SdkClientException
 import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.services.s3.model.ObjectMetadata
+import com.amazonaws.services.s3.model.PutObjectRequest
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.FilenameUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -10,15 +12,15 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
-import java.time.LocalDate
-
 @Slf4j
 @Service
 @Profile(["preview", "prod"])
 class S3PersistenceService implements CoverPersistenceService {
 
-  static final String PATH = "images/"
-  static final int EXPIRATION_PERIOD_IN_MONTHS = 6
+  public static final String PATH = "images/"
+
+  @Value('${aws.s3-host}')
+  String awsS3Host
 
   @Value('${aws.bucket-name}')
   String bucketName
@@ -28,19 +30,36 @@ class S3PersistenceService implements CoverPersistenceService {
 
   @Override
   String persistCover(URL coverUrl) {
+    def coverUrlAsString = coverUrl.toExternalForm()
     def key = PATH + UUID.randomUUID() + "." + FilenameUtils.getExtension(coverUrl.getPath())
-    def metadata = new ObjectMetadata(
-        contentLength: coverUrl.openStream().bytes.length,
-        contentType: fetchContentType(coverUrl),
-        expirationTime: new Date(LocalDate.now().plusMonths(EXPIRATION_PERIOD_IN_MONTHS).toEpochDay()))
     try {
-      amazonS3Client.putObject(bucketName, key, coverUrl.openStream(), metadata)
-      return amazonS3Client.getUrl(bucketName, key).toExternalForm()
+      log.info("Upload cover from '" + coverUrlAsString + "'")
+      PutObjectRequest request = createPutObjectRequest(key, coverUrl)
+      amazonS3Client.putObject(request)
+
+      URL s3Url = amazonS3Client.getUrl(bucketName, key)
+      return "${awsS3Host}/${bucketName}${s3Url.path}"
     }
     catch (SdkClientException ex) {
-      log.warn("Could not upload cover from '${coverUrl}'", ex)
+      log.warn("Could not upload cover from '${coverUrlAsString}'", ex)
       return null
     }
+  }
+
+  private createPutObjectRequest(String key, URL coverUrl) {
+    return new PutObjectRequest(
+            bucketName,
+            key,
+            coverUrl.openStream(),
+            createObjectMetaData(coverUrl)
+    ).withCannedAcl(CannedAccessControlList.PublicRead)
+  }
+
+  private ObjectMetadata createObjectMetaData(URL coverUrl) {
+    return new ObjectMetadata(
+            contentLength: coverUrl.openStream().bytes.length,
+            contentType: fetchContentType(coverUrl)
+    )
   }
 
   private String fetchContentType(URL url) {
