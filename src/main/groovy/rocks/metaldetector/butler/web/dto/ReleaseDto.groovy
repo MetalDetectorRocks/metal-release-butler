@@ -1,6 +1,7 @@
 package rocks.metaldetector.butler.web.dto
 
 import groovy.transform.Canonical
+import groovy.transform.builder.Builder
 import rocks.metaldetector.butler.model.release.ReleaseEntityRecordState
 import rocks.metaldetector.butler.model.release.ReleaseSource
 import rocks.metaldetector.butler.model.release.ReleaseType
@@ -8,6 +9,7 @@ import rocks.metaldetector.butler.model.release.ReleaseType
 import java.time.LocalDate
 
 @Canonical
+@Builder
 class ReleaseDto {
 
   String artist
@@ -21,5 +23,6 @@ class ReleaseDto {
   String metalArchivesAlbumUrl
   ReleaseSource source
   ReleaseEntityRecordState state
+  String coverUrl
 
 }
