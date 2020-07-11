@@ -3,11 +3,13 @@ package rocks.metaldetector.butler
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseEntityRecordState
-import rocks.metaldetector.butler.model.release.ReleaseSource
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
+import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 
 class DtoFactory {
 
@@ -15,12 +17,18 @@ class DtoFactory {
 
     static ReleaseEntity createReleaseEntity(String artist, LocalDate releaseDate) {
       return new ReleaseEntity(
-              artist: artist,
-              albumTitle: "T",
-              releaseDate: releaseDate,
-              state: ReleaseEntityRecordState.OK,
-              estimatedReleaseDate: "releaseDate",
-              additionalArtists: artist
+          artist: artist,
+          albumTitle: "T",
+          releaseDate: releaseDate,
+          state: ReleaseEntityRecordState.OK,
+          estimatedReleaseDate: "releaseDate",
+          additionalArtists: artist,
+          source: METAL_ARCHIVES,
+          genre: "genre",
+          type: FULL_LENGTH,
+          metalArchivesAlbumUrl: new URL("http://www.internet.de"),
+          metalArchivesArtistUrl: new URL("http://www.internet2.de"),
+          coverUrl: "coverUrl"
       )
     }
   }
@@ -29,12 +37,12 @@ class DtoFactory {
 
     static ImportJobEntity createImportJobEntity() {
       return new ImportJobEntity(
-              jobId: UUID.randomUUID(),
-              totalCountRequested: 666,
-              totalCountImported: 666,
-              startTime: LocalDateTime.now(),
-              endTime: LocalDateTime.now(),
-              source: ReleaseSource.METAL_ARCHIVES
+          jobId: UUID.randomUUID(),
+          totalCountRequested: 666,
+          totalCountImported: 666,
+          startTime: LocalDateTime.now(),
+          endTime: LocalDateTime.now(),
+          source: METAL_ARCHIVES
       )
     }
   }
@@ -43,12 +51,18 @@ class DtoFactory {
 
     static ReleaseDto createReleaseDto(String artist, LocalDate releaseDate) {
       return new ReleaseDto(
-              artist: artist,
-              additionalArtists: [artist],
-              albumTitle: "T",
-              releaseDate: releaseDate,
-              estimatedReleaseDate: "releaseDate",
-              state: ReleaseEntityRecordState.OK
+          artist: artist,
+          additionalArtists: [artist],
+          albumTitle: "T",
+          releaseDate: releaseDate,
+          estimatedReleaseDate: "releaseDate",
+          state: ReleaseEntityRecordState.OK,
+          source: METAL_ARCHIVES,
+          genre: "genre",
+          type: FULL_LENGTH,
+          metalArchivesAlbumUrl: new URL("http://www.internet.de").toExternalForm(),
+          metalArchivesArtistUrl: new URL("http://www.internet2.de").toExternalForm(),
+          coverUrl: "coverUrl"
       )
     }
   }
