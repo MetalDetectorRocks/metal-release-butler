@@ -11,13 +11,5 @@ class ReleasesRequest {
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   LocalDate dateFrom
 
-  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-  LocalDate dateTo
-
-  Iterable<String> artists
-
-  Iterable<String> getArtists() {
-    return artists ?: Collections.emptyList() as Iterable<String>
-  }
-
 }
+// ToDo DanielW: Cleanup object instantiation in tests etc.

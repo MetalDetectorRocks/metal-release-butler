@@ -54,14 +54,11 @@ class ReleasesRestController {
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request) {
     def releases
 
-    if (request.dateFrom == null && request.dateTo == null) {
-      releases = releaseService.findAllUpcomingReleases(request.artists)
-    }
-    else if (request.dateFrom != null && request.dateTo != null) {
-      releases = releaseService.findAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo))
+    if (request.dateFrom == null) {
+      releases = releaseService.findAllUpcomingReleases([])
     }
     else {
-      throw new IllegalArgumentException("The parameters 'dateFrom' and 'dateTo' must both have a valid date value in the format YYYY-MM-DD.")
+      releases = releaseService.findAllReleasesSince([], TimeRange.of(request.dateFrom, null)) // ToDo DanielW: Create method
     }
 
     def response = new ReleasesResponse(currentPage: 1, size: releases.size(),
