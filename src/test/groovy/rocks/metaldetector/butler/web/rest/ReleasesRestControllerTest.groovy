@@ -56,7 +56,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllUpcomingReleases(artists)
+    1 * underTest.releaseService.findAllUpcomingReleases(artists) >> []
   }
 
   def "Requesting unpaginated releases endpoint with valid request should return ok"() {
@@ -66,7 +66,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
         .contentType(MediaType.APPLICATION_JSON)
         .accept(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
-    underTest.releaseService.findAllUpcomingReleases(_) >> getReleaseDtosForTimeRangeTest()
+    underTest.releaseService.findAllUpcomingReleases(_) >> getReleaseDtos()
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -77,7 +77,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
 
   def "Requesting unpaginated releases endpoint with valid request should return releases"() {
     given:
-    def expectedReleases = getReleaseDtosForTimeRangeTest()
+    def expectedReleases = getReleaseDtos()
     def releasesRequest = new ReleasesRequest(artists: [ARTIST_NAME])
     def request = post(RELEASES_UNPAGINATED)
         .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +109,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(from, to))
+    1 * underTest.releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(from, to)) >> []
   }
 
   def "Requesting unpaginated releases endpoint with valid request with time range should return ok"() {
@@ -153,6 +153,62 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     releasesResponse.releases == expectedReleases
   }
 
+  def "Requesting unpaginated releases endpoint with valid request with only 'dateFrom' should call releases service"() {
+    given:
+    def from = LocalDate.of(2020, 1, 1)
+    def artists = [ARTIST_NAME]
+    def requestDto = new ReleasesRequest(artists: artists, dateFrom: from)
+    def request = post(RELEASES_UNPAGINATED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(requestDto))
+
+    when:
+    mockMvc.perform(request).andReturn()
+
+    then:
+    1 * underTest.releaseService.findAllReleasesSince(artists, from) >> []
+  }
+
+  def "Requesting unpaginated releases endpoint with valid request with only 'dateFrom' should return ok"() {
+    given:
+    def from = LocalDate.of(2020, 1, 1)
+    def artists = [ARTIST_NAME]
+    def requestDto = new ReleasesRequest(artists: artists, dateFrom: from)
+    def expectedReleases = [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
+    def request = post(RELEASES_UNPAGINATED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(requestDto))
+    underTest.releaseService.findAllReleasesSince(*_) >> expectedReleases
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == OK.value()
+  }
+
+  def "Requesting unpaginated releases endpoint with valid request with only 'dateFrom' should return releases"() {
+    given:
+    def from = LocalDate.of(2020, 1, 1)
+    def artists = [ARTIST_NAME]
+    def requestDto = new ReleasesRequest(artists: artists, dateFrom: from)
+    def expectedReleases = [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31))]
+    def request = post(RELEASES_UNPAGINATED)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(requestDto))
+    underTest.releaseService.findAllReleasesSince(*_) >> expectedReleases
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    ReleasesResponse releasesResponse = objectMapper.readValue(result.response.getContentAsString(), ReleasesResponse)
+    releasesResponse.releases == expectedReleases
+  }
+
   @Unroll
   "Requesting unpaginated releases with bad request should not call releases service"() {
     given:
@@ -170,6 +226,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
 
     where:
     body << ["",
+             null,
              new ReleasesRequest(artists: [ARTIST_NAME], dateFrom: null, dateTo: LocalDate.of(2020, 2, 1))]
   }
 
@@ -189,6 +246,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
 
     where:
     body << ["",
+             null,
              new ReleasesRequest(artists: [ARTIST_NAME], dateFrom: null, dateTo: LocalDate.of(2020, 2, 1))]
   }
 
@@ -213,7 +271,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
 
   def "Requesting releases endpoint with valid request should return ok"() {
     given:
-    def expectedReleases = getReleaseDtosForTimeRangeTest()
+    def expectedReleases = getReleaseDtos()
     def releasesRequest = new ReleasesRequestPaginated(artists: [ARTIST_NAME], page: 1, size: 10)
     def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
@@ -230,7 +288,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
 
   def "Requesting releases endpoint with valid request should return releases"() {
     given:
-    def expectedReleases = getReleaseDtosForTimeRangeTest()
+    def expectedReleases = getReleaseDtos()
     def releasesRequest = new ReleasesRequestPaginated(artists: [ARTIST_NAME], page: 1, size: 10)
     def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
@@ -250,7 +308,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
 
   def "Requesting releases endpoint with valid request should return requested pagination"() {
     given:
-    def expectedReleases = getReleaseDtosForTimeRangeTest()
+    def expectedReleases = getReleaseDtos()
     def releasesRequest = new ReleasesRequestPaginated(artists: [ARTIST_NAME], page: 1, size: 10)
     def request = post(RELEASES)
         .contentType(MediaType.APPLICATION_JSON)
@@ -370,6 +428,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
 
     where:
     body << ["",
+             null,
              new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: null, dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 10),
              new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1),
                                           dateTo: LocalDate.of(2020, 2, 1), page: 0, size: 10),
@@ -383,7 +442,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
                                           page: 1, size: 10)]
   }
 
-  private static List<ReleaseDto> getReleaseDtosForTimeRangeTest() {
+  private static List<ReleaseDto> getReleaseDtos() {
     return [ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 1, 31)),
             ReleaseDtoFactory.createReleaseDto(ARTIST_NAME, LocalDate.of(2020, 2, 28))]
   }

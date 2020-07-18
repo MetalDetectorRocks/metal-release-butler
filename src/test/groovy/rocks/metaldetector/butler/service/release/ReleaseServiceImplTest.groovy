@@ -256,6 +256,61 @@ class ReleaseServiceImplTest extends Specification {
     1 * underTest.releaseTransformer.transform(releaseEntities[1])
   }
 
+  def "findAllReleasesSince: releaseRepository is called with the given date"() {
+    given:
+    def date = LocalDate.now()
+
+    when:
+    underTest.findAllReleasesSince([], date)
+
+    then:
+    1 * underTest.releaseRepository.findAllByReleaseDateAfter(date)
+  }
+
+  def "findAllReleasesSince: releaseRepository is called with the given date and artists"() {
+    given:
+    def date = LocalDate.now()
+    def artists = ["Metallica"]
+
+    when:
+    underTest.findAllReleasesSince(artists, date)
+
+    then:
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(date, artists)
+  }
+
+  def "findAllReleasesSince: releaseTransformer is called for every entity (no artists to filter)"() {
+    given:
+    def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+                           ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
+    underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> releaseEntities
+
+    when:
+    underTest.findAllReleasesSince([], LocalDate.now())
+
+    then:
+    1 * underTest.releaseTransformer.transform(releaseEntities[0])
+
+    then:
+    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+  }
+
+  def "findAllReleasesSince: releaseTransformer is called for every entity (with artists to filter)"() {
+    given:
+    def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+                           ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
+    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(*_) >> releaseEntities
+
+    when:
+    underTest.findAllReleasesSince(["A1"], LocalDate.now())
+
+    then:
+    1 * underTest.releaseTransformer.transform(releaseEntities[0])
+
+    then:
+    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+  }
+
   @Unroll
   "count all upcoming releases for #artists"() {
     when:

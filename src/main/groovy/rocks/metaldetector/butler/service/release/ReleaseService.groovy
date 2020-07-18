@@ -3,6 +3,8 @@ package rocks.metaldetector.butler.service.release
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 
+import java.time.LocalDate
+
 interface ReleaseService {
 
   List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames, int page, int size)
@@ -12,6 +14,8 @@ interface ReleaseService {
   List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames)
 
   List<ReleaseDto> findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange)
+
+  List<ReleaseDto> findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom)
 
   long totalCountAllUpcomingReleases(Iterable<String> artistNames)
 
