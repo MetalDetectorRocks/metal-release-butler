@@ -7,7 +7,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.TimeRange
-import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 
@@ -22,6 +21,9 @@ class ReleaseServiceImpl implements ReleaseService {
   @Autowired
   ReleaseRepository releaseRepository
 
+  @Autowired
+  ReleaseTransformer releaseTransformer
+
   final Closure<PageRequest> pageableSupplier = { int page, int size ->
     // Since the page is index-based we decrement the value by 1
     return PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle"))
@@ -34,12 +36,12 @@ class ReleaseServiceImpl implements ReleaseService {
     if (artistNames.isEmpty()) {
       return releaseRepository
           .findAllByReleaseDateAfter(YESTERDAY, pageRequest)
-          .collect { convertToDto(it) }
+          .collect { releaseTransformer.transform(it) }
     }
     else {
       return releaseRepository
           .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, pageRequest)
-          .collect { convertToDto(it) }
+          .collect { releaseTransformer.transform(it) }
     }
   }
 
@@ -50,12 +52,12 @@ class ReleaseServiceImpl implements ReleaseService {
     if (artistNames.isEmpty()) {
       return releaseRepository
           .findAllByReleaseDateBetween(timeRange.from, timeRange.to, pageRequest)
-          .collect { convertToDto(it) }
+          .collect { releaseTransformer.transform(it) }
     }
     else {
       return releaseRepository
           .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, pageRequest)
-          .collect { convertToDto(it) }
+          .collect { releaseTransformer.transform(it) }
     }
   }
 
@@ -65,12 +67,12 @@ class ReleaseServiceImpl implements ReleaseService {
     if (artistNames.isEmpty()) {
       return releaseRepository
           .findAllByReleaseDateAfter(YESTERDAY)
-          .collect { convertToDto(it) }
+          .collect { releaseTransformer.transform(it) }
     }
     else {
       return releaseRepository
           .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
-          .collect { convertToDto(it) }
+          .collect { releaseTransformer.transform(it) }
     }
   }
 
@@ -80,12 +82,12 @@ class ReleaseServiceImpl implements ReleaseService {
     if (artistNames.isEmpty()) {
       return releaseRepository
           .findAllByReleaseDateBetween(timeRange.from, timeRange.to)
-          .collect { convertToDto(it) }
+          .collect { releaseTransformer.transform(it) }
     }
     else {
       return releaseRepository
           .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
-          .collect { convertToDto(it) }
+          .collect { releaseTransformer.transform(it) }
     }
   }
 
@@ -109,21 +111,5 @@ class ReleaseServiceImpl implements ReleaseService {
     else {
       return releaseRepository.countByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
     }
-  }
-
-  private ReleaseDto convertToDto(ReleaseEntity releaseEntity) {
-    return new ReleaseDto(
-        artist: releaseEntity.artist,
-        additionalArtists: releaseEntity.additionalArtists,
-        albumTitle: releaseEntity.albumTitle,
-        releaseDate: releaseEntity.releaseDate,
-        estimatedReleaseDate: releaseEntity.estimatedReleaseDate,
-        genre: releaseEntity.genre,
-        type: releaseEntity.type,
-        metalArchivesAlbumUrl: releaseEntity.metalArchivesAlbumUrl,
-        metalArchivesArtistUrl: releaseEntity.metalArchivesArtistUrl,
-        source: releaseEntity.source,
-        state: releaseEntity.state
-    )
   }
 }
