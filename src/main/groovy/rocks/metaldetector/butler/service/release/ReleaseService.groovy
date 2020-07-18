@@ -13,6 +13,8 @@ interface ReleaseService {
 
   List<ReleaseDto> findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange)
 
+  List<ReleaseDto> findAllReleasesSince(int days)
+
   long totalCountAllUpcomingReleases(Iterable<String> artistNames)
 
   long totalCountAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange)

@@ -54,11 +54,11 @@ class ReleasesRestController {
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request) {
     def releases
 
-    if (request.dateFrom == null) {
+    if (request.sincePastDays == 0) {
       releases = releaseService.findAllUpcomingReleases([])
     }
     else {
-      releases = releaseService.findAllReleasesSince([], TimeRange.of(request.dateFrom, null)) // ToDo DanielW: Create method
+      releases = releaseService.findAllReleasesSince(request.sincePastDays)
     }
 
     def response = new ReleasesResponse(currentPage: 1, size: releases.size(),

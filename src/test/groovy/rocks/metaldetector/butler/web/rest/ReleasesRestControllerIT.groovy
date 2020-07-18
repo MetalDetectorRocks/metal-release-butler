@@ -70,7 +70,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   def "Admin can access unpaginated releases endpoint"() {
     given:
-    def requestBody = new ReleasesRequest(artists: [])
+    def requestBody = new ReleasesRequest()
     def request = post(RELEASES_UNPAGINATED)
         .content(objectMapper.writeValueAsString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
@@ -86,7 +86,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   def "User cannot access unpaginated releases endpoint"() {
     given:
-    def requestBody = new ReleasesRequest(artists: [])
+    def requestBody = new ReleasesRequest()
     def request = post(RELEASES_UNPAGINATED)
         .content(objectMapper.writeValueAsString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)

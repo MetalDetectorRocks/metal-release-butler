@@ -257,6 +257,34 @@ class ReleaseServiceImplTest extends Specification {
   }
 
   @Unroll
+  "findAllReleasesSince: releaseRepository is called with a correct date (day: #day)"() {
+    when:
+    underTest.findAllReleasesSince(day)
+
+    then:
+    1 * underTest.releaseRepository.findAllByReleaseDateAfter(LocalDate.now().minusDays(day))
+
+    where:
+    day << [-10, 0, 10]
+  }
+
+  def "findAllReleasesSince: releaseTransformer is called for every entity"() {
+    given:
+    def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+                           ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
+    underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> releaseEntities
+
+    when:
+    underTest.findAllReleasesSince(1)
+
+    then:
+    1 * underTest.releaseTransformer.transform(releaseEntities[0])
+
+    then:
+    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+  }
+
+  @Unroll
   "count all upcoming releases for #artists"() {
     when:
     long result = underTest.totalCountAllUpcomingReleases(artists)

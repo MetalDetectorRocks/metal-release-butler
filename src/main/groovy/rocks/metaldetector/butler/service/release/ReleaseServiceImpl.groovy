@@ -92,6 +92,14 @@ class ReleaseServiceImpl implements ReleaseService {
   }
 
   @Override
+  List<ReleaseDto> findAllReleasesSince(int days) {
+    LocalDate dateFrom = LocalDate.now().minusDays(days)
+    return releaseRepository
+            .findAllByReleaseDateAfter(dateFrom)
+            .collect { releaseTransformer.transform(it) }
+  }
+
+  @Override
   @Transactional(readOnly = true)
   long totalCountAllUpcomingReleases(Iterable<String> artistNames) {
     if (artistNames.isEmpty()) {
