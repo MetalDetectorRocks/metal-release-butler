@@ -60,8 +60,11 @@ class ReleasesRestController {
     else if (request.dateFrom != null && request.dateTo != null) {
       releases = releaseService.findAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo))
     }
+    else if (request.dateFrom != null) {
+      releases = releaseService.findAllReleasesSince(request.artists, request.dateFrom)
+    }
     else {
-      throw new IllegalArgumentException("The parameters 'dateFrom' and 'dateTo' must both have a valid date value in the format YYYY-MM-DD.")
+      throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' (YYYY-MM-DD) or only for 'dateFrom'.")
     }
 
     def response = new ReleasesResponse(currentPage: 1, size: releases.size(),
