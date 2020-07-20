@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
-@Profile(["preview", "prod"])
+@Profile(["dev", "preview", "prod"])
 class S3PersistenceService implements CoverPersistenceService {
 
   public static final String PATH = "images/"

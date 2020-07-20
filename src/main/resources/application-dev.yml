@@ -1,0 +1,19 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+  tomcat:
+    accesslog:
+      enabled: false
+
+bucket4j:
+  enabled: true
+
+aws:
+  bucket-name: dev.rocks.metal-detector.s3.images

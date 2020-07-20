@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Profile
 import static com.amazonaws.regions.Regions.EU_CENTRAL_1
 
 @Configuration
-@Profile(["preview", "prod"])
+@Profile(["dev", "preview", "prod"])
 class AwsConfig {
 
   @Value('${aws.access-key}')
