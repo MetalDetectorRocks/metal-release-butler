@@ -2,6 +2,7 @@ package rocks.metaldetector.butler.config
 
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -17,6 +18,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 @EnableCaching
 class AppConfig {
 
+  @Autowired
+  ConcurrencyConfig concurrencyConfig
+
   @Bean
   JwtParser jwtParser() {
     Jwts.parser()
@@ -24,6 +28,6 @@ class AppConfig {
 
   @Bean
   ThreadPoolTaskExecutor releaseEntityPersistenceThreadPool() {
-    return new ThreadPoolTaskExecutor(corePoolSize: 4)
+    return new ThreadPoolTaskExecutor(corePoolSize: concurrencyConfig.releaseImportPoolSize)
   }
 }

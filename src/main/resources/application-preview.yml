@@ -12,6 +12,9 @@ server:
     accesslog:
       enabled: false
 
+concurrency:
+  release-import-pool-size: ${RELEASE_IMPORT_CORE_POOL_SIZE}
+
 bucket4j:
   enabled: true
 
