@@ -2,6 +2,7 @@ package rocks.metaldetector.butler.model.release
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.data.domain.Sort
 import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -19,6 +20,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   static ReleaseEntity release1 = ReleaseEntityFactory.createReleaseEntity("A1", LocalDate.of(2020, 1, 1))
   static ReleaseEntity release2 = ReleaseEntityFactory.createReleaseEntity("A2", LocalDate.of(2020, 2, 1))
   static ReleaseEntity release3 = ReleaseEntityFactory.createReleaseEntity("A3", LocalDate.of(2020, 3, 1))
+  static Sort sorting = Sort.by(Sort.Direction.ASC, "releaseDate")
 
   void setup() {
     def releases = [release1, release2, release3]
@@ -32,7 +34,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   @Unroll
   "Find all after #date"() {
     when:
-    List<ReleaseEntity> results = underTest.findAllByReleaseDateAfter(date)
+    List<ReleaseEntity> results = underTest.findAllByReleaseDateAfter(date, sorting)
 
     then:
     results == expectedReleases
@@ -48,7 +50,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   @Unroll
   "Find all between #from and #to"() {
     when:
-    List<ReleaseEntity> results = underTest.findAllByReleaseDateBetween(from, to)
+    List<ReleaseEntity> results = underTest.findAllByReleaseDateBetween(from, to, sorting)
 
     then:
     results == expectedReleases
@@ -63,7 +65,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   @Unroll
   "Find all after #date and artist in #artists"() {
     when:
-    List<ReleaseEntity> results = underTest.findAllByReleaseDateAfterAndArtistIn(date, artists)
+    List<ReleaseEntity> results = underTest.findAllByReleaseDateAfterAndArtistIn(date, artists, sorting)
 
     then:
     results == expectedReleases
@@ -78,7 +80,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   @Unroll
   "Find all between #from and #to and artist in #artists"() {
     when:
-    List<ReleaseEntity> results = underTest.findAllByArtistInAndReleaseDateBetween(artists, from, to)
+    List<ReleaseEntity> results = underTest.findAllByArtistInAndReleaseDateBetween(artists, from, to, sorting)
 
     then:
     results == expectedReleases
