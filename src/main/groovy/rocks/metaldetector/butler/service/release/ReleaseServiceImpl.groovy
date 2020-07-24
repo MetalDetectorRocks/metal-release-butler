@@ -24,9 +24,11 @@ class ReleaseServiceImpl implements ReleaseService {
   @Autowired
   ReleaseTransformer releaseTransformer
 
+  final Sort sorting = Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle")
+
   final Closure<PageRequest> pageableSupplier = { int page, int size ->
     // Since the page is index-based we decrement the value by 1
-    return PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle"))
+    return PageRequest.of(page - 1, size, sorting)
   }
 
   @Override
@@ -66,12 +68,12 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllUpcomingReleases(Iterable<String> artistNames) {
     if (artistNames.isEmpty()) {
       return releaseRepository
-          .findAllByReleaseDateAfter(YESTERDAY)
+          .findAllByReleaseDateAfter(YESTERDAY, sorting)
           .collect { releaseTransformer.transform(it) }
     }
     else {
       return releaseRepository
-          .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames)
+          .findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, sorting)
           .collect { releaseTransformer.transform(it) }
     }
   }
@@ -81,12 +83,12 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange) {
     if (artistNames.isEmpty()) {
       return releaseRepository
-          .findAllByReleaseDateBetween(timeRange.from, timeRange.to)
+          .findAllByReleaseDateBetween(timeRange.from, timeRange.to, sorting)
           .collect { releaseTransformer.transform(it) }
     }
     else {
       return releaseRepository
-          .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to)
+          .findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, sorting)
           .collect { releaseTransformer.transform(it) }
     }
   }
@@ -95,12 +97,12 @@ class ReleaseServiceImpl implements ReleaseService {
   List<ReleaseDto> findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom) {
     if (artistNames.isEmpty()) {
       return releaseRepository
-              .findAllByReleaseDateAfter(dateFrom)
+              .findAllByReleaseDateAfter(dateFrom, sorting)
               .collect { releaseTransformer.transform(it) }
     }
     else {
       return releaseRepository
-              .findAllByReleaseDateAfterAndArtistIn(dateFrom, artistNames)
+              .findAllByReleaseDateAfterAndArtistIn(dateFrom, artistNames, sorting)
               .collect { releaseTransformer.transform(it) }
     }
   }
