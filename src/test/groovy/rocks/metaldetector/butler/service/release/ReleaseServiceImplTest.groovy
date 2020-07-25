@@ -21,6 +21,7 @@ class ReleaseServiceImplTest extends Specification {
   )
 
   static final LocalDate NOW = LocalDate.now()
+  static final Sort sorting = Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle")
 
   def "findAllUpcomingReleases paginated: if artistNames is empty all releases are requested from releaseRepository"() {
     given:
@@ -150,12 +151,12 @@ class ReleaseServiceImplTest extends Specification {
     1 * underTest.releaseTransformer.transform(releaseEntities[1])
   }
 
-  def "findAllUpcomingReleases: if artistNames is empty all releases are requested from releaseRepository"() {
+  def "findAllUpcomingReleases: if artistNames is empty all releases are requested from releaseRepository with specified sorting"() {
     when:
     underTest.findAllUpcomingReleases([])
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfter(NOW - 1) >> []
+    1 * underTest.releaseRepository.findAllByReleaseDateAfter(NOW - 1, sorting) >> []
   }
 
   def "findAllUpcomingReleases: if artistNames is empty releaseTransformer is called for every entity"() {
@@ -174,7 +175,7 @@ class ReleaseServiceImplTest extends Specification {
     1 * underTest.releaseTransformer.transform(releaseEntities[1])
   }
 
-  def "findAllUpcomingReleases: if artistNames is not empty all given artist's releases are requested from releaseRepository"() {
+  def "findAllUpcomingReleases: if artistNames is not empty all given artist's releases are requested from releaseRepository with specified sorting"() {
     given:
     def artistNames = ["A1"]
 
@@ -182,7 +183,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllUpcomingReleases(artistNames)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(NOW - 1, artistNames) >> []
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(NOW - 1, artistNames, sorting) >> []
   }
 
   def "findAllUpcomingReleases: if artistNames is not empty releaseTransformer is called for every entity"() {
@@ -201,7 +202,7 @@ class ReleaseServiceImplTest extends Specification {
     1 * underTest.releaseTransformer.transform(releaseEntities[1])
   }
 
-  def "findAllReleasesForTimeRange: if artistNames is empty all releases are requested from releaseRepository"() {
+  def "findAllReleasesForTimeRange: if artistNames is empty all releases are requested from releaseRepository with specified sorting"() {
     given:
     def timerange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
 
@@ -209,7 +210,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllReleasesForTimeRange([], timerange)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateBetween(timerange.from, timerange.to) >> []
+    1 * underTest.releaseRepository.findAllByReleaseDateBetween(timerange.from, timerange.to, sorting) >> []
   }
 
   def "findAllReleasesForTimeRange: if artistNames is empty releaseTransformer is called for every entity"() {
@@ -228,7 +229,7 @@ class ReleaseServiceImplTest extends Specification {
     1 * underTest.releaseTransformer.transform(releaseEntities[1])
   }
 
-  def "findAllReleasesForTimeRange: if artistNames is not empty all given artist's releases are requested from releaseRepository"() {
+  def "findAllReleasesForTimeRange: if artistNames is not empty all given artist's releases are requested from releaseRepository with specified sorting"() {
     given:
     def artistNames = ["A1"]
     def timerange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
@@ -237,7 +238,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllReleasesForTimeRange(artistNames, timerange)
 
     then:
-    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timerange.from, timerange.to) >> []
+    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timerange.from, timerange.to, sorting) >> []
   }
 
   def "findAllReleasesForTimeRange: if artistNames is not empty releaseTransformer is called for every entity"() {
@@ -256,7 +257,7 @@ class ReleaseServiceImplTest extends Specification {
     1 * underTest.releaseTransformer.transform(releaseEntities[1])
   }
 
-  def "findAllReleasesSince: releaseRepository is called with the given date"() {
+  def "findAllReleasesSince: releaseRepository is called with the given date and specified sorting"() {
     given:
     def date = LocalDate.now()
 
@@ -264,10 +265,10 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllReleasesSince([], date)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfter(date)
+    1 * underTest.releaseRepository.findAllByReleaseDateAfter(date, sorting)
   }
 
-  def "findAllReleasesSince: releaseRepository is called with the given date and artists"() {
+  def "findAllReleasesSince: releaseRepository is called with the given date, artists and sorting"() {
     given:
     def date = LocalDate.now()
     def artists = ["Metallica"]
@@ -276,7 +277,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllReleasesSince(artists, date)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(date, artists)
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(date, artists, sorting)
   }
 
   def "findAllReleasesSince: releaseTransformer is called for every entity (no artists to filter)"() {
