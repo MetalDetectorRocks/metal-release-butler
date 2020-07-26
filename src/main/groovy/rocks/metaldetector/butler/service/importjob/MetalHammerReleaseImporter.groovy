@@ -50,4 +50,9 @@ class MetalHammerReleaseImporter implements ReleaseImporter {
   ReleaseSource getReleaseSource() {
     return METAL_HAMMER_DE
   }
+
+  @Override
+  void retryCoverDownload() {
+    // do nothing, no covers for metal hammer available (yet)
+  }
 }

@@ -108,4 +108,9 @@ class MetalHammerReleaseImporterTest extends Specification {
     expect:
     underTest.getReleaseSource() == METAL_HAMMER_DE
   }
+
+  def "do nothing on retry cover download"() {
+    expect:
+    underTest.retryCoverDownload()
+  }
 }

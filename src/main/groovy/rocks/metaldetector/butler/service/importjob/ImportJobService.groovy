@@ -24,7 +24,7 @@ class ImportJobService {
   ImportJobTransformer importJobTransformer
 
   @Autowired
-  ReleaseImporterWithCover metalArchivesReleaseImporter
+  ReleaseImporter metalArchivesReleaseImporter
 
   @Autowired
   ReleaseImporter metalHammerReleaseImporter

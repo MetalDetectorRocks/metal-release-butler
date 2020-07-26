@@ -160,5 +160,8 @@ class MetalArchivesReleaseImporterTest extends Specification {
       assert args.coverService == underTest.coverService
       assert args.releaseRepository == underTest.releaseRepository
     })
+
+    then:
+    0 * underTest.releaseEntityPersistenceThreadPool.submit(*_)
   }
 }

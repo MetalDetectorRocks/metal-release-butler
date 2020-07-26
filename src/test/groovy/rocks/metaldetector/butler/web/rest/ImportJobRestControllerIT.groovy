@@ -78,7 +78,7 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
     result.response.status == HttpStatus.FORBIDDEN.value()
   }
 
-  def "Admin can POST on cover endpoint"() {
+  def "Admin can POST on cover reload endpoint"() {
     given:
     def request = post(COVER_JOB).header("Authorization", "Bearer " + testAdminToken)
 
@@ -89,7 +89,7 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
     result.response.status == HttpStatus.OK.value()
   }
 
-  def "User cannot POST on cover endpoint"() {
+  def "User cannot POST on cover reload endpoint"() {
     given:
     def request = post(COVER_JOB).header("Authorization", "Bearer " + testUserToken)
 
