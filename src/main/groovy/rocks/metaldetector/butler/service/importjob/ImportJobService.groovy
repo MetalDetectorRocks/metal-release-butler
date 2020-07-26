@@ -24,7 +24,7 @@ class ImportJobService {
   ImportJobTransformer importJobTransformer
 
   @Autowired
-  ReleaseImporter metalArchivesReleaseImporter
+  ReleaseImporterWithCover metalArchivesReleaseImporter
 
   @Autowired
   ReleaseImporter metalHammerReleaseImporter
@@ -46,6 +46,11 @@ class ImportJobService {
       ImportResult importResult = releaseImporter.importReleases()
       updateImportJob(job, importResult)
     }
+  }
+
+  @Async
+  void retryCoverDownload() {
+    metalArchivesReleaseImporter.retryCoverDownload()
   }
 
   @Transactional

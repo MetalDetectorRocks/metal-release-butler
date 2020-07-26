@@ -13,6 +13,7 @@ import spock.lang.Specification
 import static org.springframework.http.HttpStatus.OK
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static rocks.metaldetector.butler.config.constants.Endpoints.COVER_JOB
 import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 
 class ImportJobRestControllerTest extends Specification implements WithExceptionResolver {
@@ -64,6 +65,28 @@ class ImportJobRestControllerTest extends Specification implements WithException
   def "Creating import job should return OK"() {
     given:
     def request = post(IMPORT_JOB).accept(MediaType.APPLICATION_JSON)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == OK.value()
+  }
+
+  def "Retrying cover download should call ImportJobService"() {
+    given:
+    def request = post(COVER_JOB).accept(MediaType.APPLICATION_JSON)
+
+    when:
+    mockMvc.perform(request).andReturn()
+
+    then:
+    1 * underTest.importJobService.retryCoverDownload()
+  }
+
+  def "Retrying cover download  should return OK"() {
+    given:
+    def request = post(COVER_JOB).accept(MediaType.APPLICATION_JSON)
 
     when:
     def result = mockMvc.perform(request).andReturn()

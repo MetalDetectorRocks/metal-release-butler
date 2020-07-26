@@ -150,4 +150,12 @@ class ImportJobServiceTest extends Specification {
     then:
     result == createdJobEntity
   }
+
+  def "should call metalArchivesImport on retryCoverDownload"() {
+    when:
+    underTest.retryCoverDownload()
+
+    then:
+    1 * underTest.metalArchivesReleaseImporter.retryCoverDownload()
+  }
 }

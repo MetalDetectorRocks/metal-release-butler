@@ -17,7 +17,7 @@ import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHI
 
 @Service
 @Slf4j
-class MetalArchivesReleaseImporter implements ReleaseImporter {
+class MetalArchivesReleaseImporter implements ReleaseImporterWithCover {
 
   @Autowired
   MetalArchivesRestClient restClient
@@ -48,14 +48,27 @@ class MetalArchivesReleaseImporter implements ReleaseImporter {
     log.info("Import of new releases completed for Metal Archives!")
 
     return new ImportResult(
-            totalCountRequested: upcomingReleasesRawData.size(),
-            totalCountImported: inserted
+        totalCountRequested: upcomingReleasesRawData.size(),
+        totalCountImported: inserted
     )
   }
 
   @Override
   ReleaseSource getReleaseSource() {
     return METAL_ARCHIVES
+  }
+
+  @Override
+  void retryCoverDownload() {
+    List<Future> futures = []
+    releaseRepository.findAll()
+        .findAll { releaseEntity ->
+          releaseEntity.source == METAL_ARCHIVES && !releaseEntity.coverUrl
+        }
+        .each { releaseEntity ->
+          futures << releaseEntityPersistenceThreadPool.submit(createPersistReleaseEntityTask(releaseEntity))
+        }
+    futures*.get()
   }
 
   private int persistReleaseEntities(List<ReleaseEntity> releaseEntities) {
@@ -75,9 +88,9 @@ class MetalArchivesReleaseImporter implements ReleaseImporter {
 
   private PersistReleaseEntityTask createPersistReleaseEntityTask(ReleaseEntity releaseEntity) {
     return new PersistReleaseEntityTask(
-            releaseEntity: releaseEntity,
-            coverService: coverService,
-            releaseRepository: releaseRepository
+        releaseEntity: releaseEntity,
+        coverService: coverService,
+        releaseRepository: releaseRepository
     )
   }
 }

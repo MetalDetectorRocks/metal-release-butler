@@ -14,6 +14,7 @@ import spock.lang.Specification
 import static org.mockito.Mockito.reset
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static rocks.metaldetector.butler.config.constants.Endpoints.COVER_JOB
 import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 
 @SpringBootTest
@@ -69,6 +70,28 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
   def "User cannot POST on import endpoint"() {
     given:
     def request = post(IMPORT_JOB).header("Authorization", "Bearer " + testUserToken)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == HttpStatus.FORBIDDEN.value()
+  }
+
+  def "Admin can POST on cover endpoint"() {
+    given:
+    def request = post(COVER_JOB).header("Authorization", "Bearer " + testAdminToken)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == HttpStatus.OK.value()
+  }
+
+  def "User cannot POST on cover endpoint"() {
+    given:
+    def request = post(COVER_JOB).header("Authorization", "Bearer " + testUserToken)
 
     when:
     def result = mockMvc.perform(request).andReturn()
