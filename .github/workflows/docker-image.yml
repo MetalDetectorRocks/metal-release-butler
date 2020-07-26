@@ -21,7 +21,7 @@ jobs:
       - name: Execute gradle task 'bootJar'
         uses: eskatos/gradle-command-action@v1
         with:
-          gradle-version: 6.3
+          gradle-version: 6.5.1
           arguments: clean bootJar
       - name: Publish to DockerHub
         uses: docker/build-push-action@v1

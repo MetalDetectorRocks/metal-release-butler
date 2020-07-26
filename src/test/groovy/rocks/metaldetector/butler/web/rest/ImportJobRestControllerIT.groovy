@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.TokenFactory
-import rocks.metaldetector.butler.service.release.ReleaseService
+import rocks.metaldetector.butler.service.importjob.ImportJobService
 import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import spock.lang.Specification
 
@@ -21,7 +21,7 @@ import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 class ImportJobRestControllerIT extends Specification implements WithIntegrationTestConfig {
 
   @SpringBean
-  ReleaseService releaseService = Mock()
+  ImportJobService importJobService = Mock()
 
   @Autowired
   MockMvc mockMvc
@@ -30,7 +30,7 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
   String testUserToken = TokenFactory.generateUserTestToken()
 
   void tearDown() {
-    reset(releaseService)
+    reset(importJobService)
   }
 
   def "Admin can GET on import endpoint"() {
