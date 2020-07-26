@@ -17,7 +17,7 @@ import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHI
 
 @Service
 @Slf4j
-class MetalArchivesReleaseImporter implements ReleaseImporterWithCover {
+class MetalArchivesReleaseImporter implements ReleaseImporter {
 
   @Autowired
   MetalArchivesRestClient restClient

@@ -84,7 +84,7 @@ class ImportJobRestControllerTest extends Specification implements WithException
     1 * underTest.importJobService.retryCoverDownload()
   }
 
-  def "Retrying cover download  should return OK"() {
+  def "Retrying cover download should return OK"() {
     given:
     def request = post(COVER_JOB).accept(MediaType.APPLICATION_JSON)
 

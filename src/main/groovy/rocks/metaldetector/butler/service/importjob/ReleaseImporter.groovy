@@ -8,4 +8,6 @@ interface ReleaseImporter {
 
   ReleaseSource getReleaseSource()
 
+  void retryCoverDownload()
+
 }
