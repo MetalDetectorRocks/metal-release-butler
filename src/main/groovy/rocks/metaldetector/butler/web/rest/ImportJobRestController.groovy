@@ -11,6 +11,7 @@ import rocks.metaldetector.butler.service.importjob.ImportJobService
 import rocks.metaldetector.butler.web.dto.ImportJobDto
 import rocks.metaldetector.butler.web.dto.ImportJobResponse
 
+import static rocks.metaldetector.butler.config.constants.Endpoints.COVER_JOB
 import static rocks.metaldetector.butler.config.constants.Endpoints.IMPORT_JOB
 
 @RestController
@@ -31,6 +32,13 @@ class ImportJobRestController {
   @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<Void> createImportJob() {
     importJobService.importFromExternalSources()
+    return ResponseEntity.ok().build()
+  }
+
+  @PostMapping(path = COVER_JOB, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+  ResponseEntity<Void> retryCoverDownload() {
+    importJobService.retryCoverDownload()
     return ResponseEntity.ok().build()
   }
 }

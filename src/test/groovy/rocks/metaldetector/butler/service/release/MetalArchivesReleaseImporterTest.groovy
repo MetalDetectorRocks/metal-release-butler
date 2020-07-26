@@ -15,15 +15,16 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory.createReleaseEntity
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 
 class MetalArchivesReleaseImporterTest extends Specification {
 
   MetalArchivesReleaseImporter underTest = new MetalArchivesReleaseImporter(
-          restClient: Mock(MetalArchivesRestClient),
-          coverService: Mock(CoverService),
-          releaseRepository: Mock(ReleaseRepository),
-          releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
-          releaseEntityPersistenceThreadPool: Mock(ThreadPoolTaskExecutor)
+      restClient: Mock(MetalArchivesRestClient),
+      coverService: Mock(CoverService),
+      releaseRepository: Mock(ReleaseRepository),
+      releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
+      releaseEntityPersistenceThreadPool: Mock(ThreadPoolTaskExecutor)
   )
 
   def "rest client is called once on import"() {
@@ -47,8 +48,8 @@ class MetalArchivesReleaseImporterTest extends Specification {
 
     where:
     releases << [
-            [],
-            [new String[0], new String[0]]
+        [],
+        [new String[0], new String[0]]
     ]
   }
 
@@ -56,9 +57,9 @@ class MetalArchivesReleaseImporterTest extends Specification {
     given:
     underTest.restClient.requestReleases() >> [new String[0], new String[0], new String[0]]
     underTest.releaseEntityConverter.convert(_) >>> [
-            [new ReleaseEntity(artist: "Darkthrone", albumTitle: "Transilvanian Hunger", releaseDate: LocalDate.of(1994, 10, 10))],
-            [new ReleaseEntity(artist: "Darkthrone", albumTitle: "Transilvanian Hunger", releaseDate: LocalDate.of(1994, 10, 10))],
-            [new ReleaseEntity(artist: "Darkthrone", albumTitle: "Panzerfaust", releaseDate: LocalDate.of(1994, 10, 10))],
+        [new ReleaseEntity(artist: "Darkthrone", albumTitle: "Transilvanian Hunger", releaseDate: LocalDate.of(1994, 10, 10))],
+        [new ReleaseEntity(artist: "Darkthrone", albumTitle: "Transilvanian Hunger", releaseDate: LocalDate.of(1994, 10, 10))],
+        [new ReleaseEntity(artist: "Darkthrone", albumTitle: "Panzerfaust", releaseDate: LocalDate.of(1994, 10, 10))],
     ]
 
     when:
@@ -118,8 +119,8 @@ class MetalArchivesReleaseImporterTest extends Specification {
     given:
     underTest.restClient.requestReleases() >> [new String[0], new String[0]]
     underTest.releaseEntityConverter.convert(_) >>> [
-            [createReleaseEntity("Metallica", LocalDate.now())],
-            [createReleaseEntity("Slayer", LocalDate.now())]
+        [createReleaseEntity("Metallica", LocalDate.now())],
+        [createReleaseEntity("Slayer", LocalDate.now())]
     ]
     underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >>> [true, false]
 
@@ -133,5 +134,31 @@ class MetalArchivesReleaseImporterTest extends Specification {
   def "should return METAL_ARCHIVES as release source"() {
     expect:
     underTest.getReleaseSource() == METAL_ARCHIVES
+  }
+
+  def "should call releaseRepository on retryCoverDownload"() {
+    when:
+    underTest.retryCoverDownload()
+
+    then:
+    1 * underTest.releaseRepository.findAll()
+  }
+
+  def "all metal archives releases without cover url are added to thread pool"() {
+    given:
+    def release1 = new ReleaseEntity(artist: "A", source: METAL_ARCHIVES)
+    def release2 = new ReleaseEntity(artist: "B", source: METAL_HAMMER_DE)
+    def release3 = new ReleaseEntity(artist: "C", source: METAL_ARCHIVES, coverUrl: "i'm an url")
+    underTest.releaseRepository.findAll() >> [release1, release2, release3]
+
+    when:
+    underTest.retryCoverDownload()
+
+    then:
+    1 * underTest.releaseEntityPersistenceThreadPool.submit({ args ->
+      assert args.releaseEntity == release1
+      assert args.coverService == underTest.coverService
+      assert args.releaseRepository == underTest.releaseRepository
+    })
   }
 }
