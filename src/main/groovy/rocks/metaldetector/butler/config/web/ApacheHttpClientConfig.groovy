@@ -27,9 +27,9 @@ import static java.util.concurrent.TimeUnit.MINUTES
 @Configuration
 class ApacheHttpClientConfig {
 
-  private static final int MAX_ROUTE_CONNECTIONS     = 40
-  private static final int MAX_TOTAL_CONNECTIONS     = 40
-  private static final int MAX_LOCALHOST_CONNECTIONS = 80
+  private static final int MAX_ROUTE_CONNECTIONS     = 2
+  private static final int MAX_TOTAL_CONNECTIONS     = 5
+  private static final int MAX_LOCALHOST_CONNECTIONS = 10
 
   final int port
 
@@ -93,7 +93,7 @@ class ApacheHttpClientConfig {
   TaskScheduler taskScheduler() {
     ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler()
     scheduler.threadNamePrefix = "idleMonitor"
-    scheduler.poolSize = 5
+    scheduler.poolSize = 1
     return scheduler
   }
 

@@ -8,7 +8,7 @@
         <expiry>
             <ttl unit="seconds">3600</ttl>
         </expiry>
-        <heap unit="entries">50</heap>
+        <heap unit="kB">512</heap>
         <jsr107:mbeans enable-statistics="true"/>
     </cache>
 
