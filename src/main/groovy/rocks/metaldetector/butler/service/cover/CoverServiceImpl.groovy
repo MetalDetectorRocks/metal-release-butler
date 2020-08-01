@@ -16,7 +16,9 @@ class CoverServiceImpl implements CoverService {
 
   @Override
   String transfer(URL sourceUrl) {
-    def coverUrl = metalArchivesCoverFetcher.fetchCoverUrl(sourceUrl)
-    return coverUrl ? coverPersistenceService.persistCover(coverUrl) : null
+    if (sourceUrl) {
+      def coverUrl = metalArchivesCoverFetcher.fetchCoverUrl(sourceUrl)
+      return coverUrl ? coverPersistenceService.persistCover(coverUrl) : null
+    }
   }
 }
