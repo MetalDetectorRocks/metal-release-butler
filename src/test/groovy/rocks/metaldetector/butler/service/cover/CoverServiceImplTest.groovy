@@ -47,4 +47,15 @@ class CoverServiceImplTest extends Specification {
     and:
     !result
   }
+
+  def "if source url is null nothing is called and null returned"() {
+    when:
+    def result = underTest.transfer(null)
+
+    then:
+    0 * underTest.coverPersistenceService.persistCover(*_)
+
+    and:
+    !result
+  }
 }
