@@ -12,7 +12,11 @@ spring:
     url: ${DATASOURCE_URL}
     driver-class-name: org.postgresql.Driver
     hikari:
-      max-lifetime: 1200000
+      minimumIdle: 2
+      maximumPoolSize: 5
+      max-lifetime: 2000000
+      connectionTimeout: 30000
+      idle-timeout: 30000
     data: classpath:schema.sql
     platform: postgres
     initialization-mode: always
