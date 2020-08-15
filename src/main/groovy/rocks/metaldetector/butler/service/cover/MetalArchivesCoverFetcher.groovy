@@ -41,7 +41,7 @@ class MetalArchivesCoverFetcher implements CoverFetcher {
 
   private def handleErrorAndTryAgain(Exception e, HTTPBuilder httpBuilder) {
     if (currentAttempt < MAX_ATTEMPTS) {
-      log.warn("Error during fetching the release page '${httpBuilder.uri}' (${e.message}). I will wait 1 second and try again.")
+      log.info("Error during fetching the release page '${httpBuilder.uri}' (${e.message}). I will wait 1 second and try again.")
       TimeUnit.SECONDS.sleep(1)
       return fetchReleasePage(httpBuilder)
     }

@@ -35,7 +35,7 @@ class MetalArchivesRestClient {
       }
       catch (Exception e) {
         if (++attempt < MAX_ATTEMPTS) {
-          log.warn("Error during fetching releases (iDisplayStart=${startOfRange}). I will try again.")
+          log.info("Error during fetching releases (iDisplayStart=${startOfRange}). I will try again.")
           continue
         }
         else {
