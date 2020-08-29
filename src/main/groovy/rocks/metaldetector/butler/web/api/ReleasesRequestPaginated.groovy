@@ -1,4 +1,4 @@
-package rocks.metaldetector.butler.web.dto
+package rocks.metaldetector.butler.web.api
 
 import groovy.transform.Canonical
 import org.springframework.format.annotation.DateTimeFormat

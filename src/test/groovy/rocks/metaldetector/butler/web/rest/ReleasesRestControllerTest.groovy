@@ -8,10 +8,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.testutil.WithExceptionResolver
+import rocks.metaldetector.butler.web.api.ReleasesRequest
+import rocks.metaldetector.butler.web.api.ReleasesRequestPaginated
+import rocks.metaldetector.butler.web.api.ReleasesResponse
 import rocks.metaldetector.butler.web.dto.ReleaseDto
-import rocks.metaldetector.butler.web.dto.ReleasesRequest
-import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
-import rocks.metaldetector.butler.web.dto.ReleasesResponse
 import spock.lang.Specification
 import spock.lang.Unroll
 
