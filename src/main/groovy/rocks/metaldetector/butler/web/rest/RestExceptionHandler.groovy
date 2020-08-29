@@ -11,7 +11,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
-import rocks.metaldetector.butler.web.dto.ErrorResponse
+import rocks.metaldetector.butler.web.api.ErrorResponse
 
 import javax.validation.ValidationException
 

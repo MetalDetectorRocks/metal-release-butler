@@ -6,8 +6,8 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import rocks.metaldetector.butler.service.importjob.ImportJobService
 import rocks.metaldetector.butler.testutil.WithExceptionResolver
+import rocks.metaldetector.butler.web.api.ImportJobResponse
 import rocks.metaldetector.butler.web.dto.ImportJobDto
-import rocks.metaldetector.butler.web.dto.ImportJobResponse
 import spock.lang.Specification
 
 import static org.springframework.http.HttpStatus.OK

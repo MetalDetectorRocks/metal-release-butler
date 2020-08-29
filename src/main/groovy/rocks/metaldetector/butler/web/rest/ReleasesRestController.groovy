@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.release.ReleaseService
-import rocks.metaldetector.butler.web.dto.ReleasesRequest
-import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
-import rocks.metaldetector.butler.web.dto.ReleasesResponse
+import rocks.metaldetector.butler.web.api.ReleasesRequest
+import rocks.metaldetector.butler.web.api.ReleasesRequestPaginated
+import rocks.metaldetector.butler.web.api.ReleasesResponse
 
 import javax.validation.Valid
 
