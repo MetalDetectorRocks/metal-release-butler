@@ -1,10 +1,8 @@
-package rocks.metaldetector.butler.service.release
+package rocks.metaldetector.butler.service.importjob
 
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter
-import rocks.metaldetector.butler.service.importjob.ImportResult
-import rocks.metaldetector.butler.service.importjob.MetalHammerReleaseImporter
 import rocks.metaldetector.butler.supplier.metalhammer.MetalHammerWebCrawler
 import spock.lang.Specification
 
