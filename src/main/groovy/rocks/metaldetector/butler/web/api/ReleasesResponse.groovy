@@ -6,10 +6,7 @@ import rocks.metaldetector.butler.web.dto.ReleaseDto
 @Canonical
 class ReleasesResponse {
 
-  int currentPage
-  int size
-  int totalPages
-  long totalReleases
+  Pagination pagination
   Iterable<ReleaseDto> releases
 
 }

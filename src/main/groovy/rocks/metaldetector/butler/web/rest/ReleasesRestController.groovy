@@ -27,49 +27,38 @@ class ReleasesRestController {
   @PostMapping(path = RELEASES, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_USER')")
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request) {
-    def releases
-    def totalReleases
-
+    def releasesResponse
     if (request.dateFrom == null && request.dateTo == null) {
-      totalReleases = releaseService.totalCountAllUpcomingReleases(request.artists)
-      releases = releaseService.findAllUpcomingReleases(request.artists, request.page, request.size)
+      releasesResponse = releaseService.findAllUpcomingReleases(request.artists, request.page, request.size)
     }
     else if (request.dateFrom != null && request.dateTo != null) {
       TimeRange timeRange = TimeRange.of(request.dateFrom, request.dateTo)
-      totalReleases = releaseService.totalCountAllReleasesForTimeRange(request.artists, timeRange)
-      releases = releaseService.findAllReleasesForTimeRange(request.artists, timeRange, request.page, request.size)
+      releasesResponse = releaseService.findAllReleasesForTimeRange(request.artists, timeRange, request.page, request.size)
     }
     else {
       throw new IllegalArgumentException("The parameters 'dateFrom' and 'dateTo' must both have a valid date value in the format YYYY-MM-DD.")
     }
 
-    def response = new ReleasesResponse(currentPage: request.getPage(), size: request.getSize(),
-                                        totalPages: Math.ceil(totalReleases / request.getSize()),
-                                        totalReleases: totalReleases, releases: releases)
-    return ResponseEntity.ok(response)
+    return ResponseEntity.ok(releasesResponse)
   }
 
   @PostMapping(path = RELEASES_UNPAGINATED, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request) {
-    def releases
-
+    def releasesResponse
     if (request.dateFrom == null && request.dateTo == null) {
-      releases = releaseService.findAllUpcomingReleases(request.artists)
+      releasesResponse = releaseService.findAllUpcomingReleases(request.artists)
     }
     else if (request.dateFrom != null && request.dateTo != null) {
-      releases = releaseService.findAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo))
+      releasesResponse = releaseService.findAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo))
     }
     else if (request.dateFrom != null) {
-      releases = releaseService.findAllReleasesSince(request.artists, request.dateFrom)
+      releasesResponse = releaseService.findAllReleasesSince(request.artists, request.dateFrom)
     }
     else {
-      throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' (YYYY-MM-DD) or only for 'dateFrom'.")
+      throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' or only for 'dateFrom' with format 'YYYY-MM-DD'.")
     }
 
-    def response = new ReleasesResponse(currentPage: 1, size: releases.size(),
-                                        totalPages: 1,
-                                        totalReleases: releases.size(), releases: releases)
-    return ResponseEntity.ok(response)
+    return ResponseEntity.ok(releasesResponse)
   }
 }

@@ -1,12 +1,10 @@
-package rocks.metaldetector.butler.service.release
+package rocks.metaldetector.butler.service.importjob
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.MetalArchivesReleaseEntityConverter
 import rocks.metaldetector.butler.service.cover.CoverService
-import rocks.metaldetector.butler.service.importjob.ImportResult
-import rocks.metaldetector.butler.service.importjob.MetalArchivesReleaseImporter
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 import spock.lang.Specification
 import spock.lang.Unroll

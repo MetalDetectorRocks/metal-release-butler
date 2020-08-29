@@ -1,13 +1,11 @@
 package rocks.metaldetector.butler.service.release
 
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import java.time.LocalDate
 
@@ -17,149 +15,137 @@ class ReleaseServiceImplTest extends Specification {
 
   ReleaseServiceImpl underTest = new ReleaseServiceImpl(
       releaseRepository: Mock(ReleaseRepository),
-      releaseTransformer: Mock(ReleaseTransformer)
+      releasesResponseTransformer: Mock(ReleasesResponseTransformer)
   )
 
   static final LocalDate NOW = LocalDate.now()
   static final Sort sorting = Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle")
 
-  def "findAllUpcomingReleases paginated: if artistNames is empty all releases are requested from releaseRepository"() {
+  def "findAllUpcomingReleases paginated: should request all releases from release repository if no artist names are given"() {
     given:
     def page = 1
     def size = 10
-    def expectedPageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle"))
+    def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
     underTest.findAllUpcomingReleases([], page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfter(NOW - 1, expectedPageRequest) >> Page.empty()
+    1 * underTest.releaseRepository.findAllByReleaseDateAfter(NOW - 1, expectedPageRequest)
   }
 
-  def "findAllUpcomingReleases paginated: if artistNames is empty releaseTransformer is called for every entity"() {
+  def "findAllUpcomingReleases paginated: should transform page result with ReleasesTransformer if no artist names are given"() {
     given:
-    def releaseEntities = [
-        ReleaseEntityFactory.createReleaseEntity("A1", NOW),
-        ReleaseEntityFactory.createReleaseEntity("A2", NOW)
-    ]
-    underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> new PageImpl(releaseEntities)
+    def pageResult = new PageImpl([
+            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+    ])
+    underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> pageResult
 
     when:
     underTest.findAllUpcomingReleases([], 1, 10)
 
     then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+    1 * underTest.releasesResponseTransformer.transformPage(pageResult)
   }
 
-  def "findAllUpcomingReleases paginated: if artistNames is not empty all given artist's releases are requested from releaseRepository"() {
+  def "findAllUpcomingReleases paginated: should request releases from release repository for given artists"() {
     given:
     def page = 1
     def size = 10
     def artistNames = ["A1"]
-    def expectedPageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle"))
+    def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
     underTest.findAllUpcomingReleases(artistNames, page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(NOW - 1, artistNames, expectedPageRequest) >> Page.empty()
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(NOW - 1, artistNames, expectedPageRequest)
   }
 
-  def "findAllUpcomingReleases paginated: if artistNames is not empty releaseTransformer is called for every entity"() {
+  def "findAllUpcomingReleases paginated: should transform page result with ReleasesTransformer if artist names are given"() {
     given:
-    def releaseEntities = [
-        ReleaseEntityFactory.createReleaseEntity("A1", NOW),
-        ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)
-    ]
-    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(*_) >> new PageImpl(releaseEntities)
+    def pageResult = new PageImpl([
+            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+    ])
+    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(*_) >> pageResult
 
     when:
     underTest.findAllUpcomingReleases(["A1"], 1, 10)
 
     then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+    1 * underTest.releasesResponseTransformer.transformPage(pageResult)
   }
 
-  def "findAllReleasesForTimeRange paginated: if artistNames is empty all releases are requested from releaseRepository"() {
+  def "findAllReleasesForTimeRange paginated: should request all releases from release repository if no artist names are given"() {
     given:
     def page = 1
     def size = 10
-    def timerange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
-    def expectedPageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle"))
+    def timeRange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
+    def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesForTimeRange([], timerange, page, size)
+    underTest.findAllReleasesForTimeRange([], timeRange, page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateBetween(timerange.from, timerange.to, expectedPageRequest) >> Page.empty()
+    1 * underTest.releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to, expectedPageRequest)
   }
 
-  def "findAllReleasesForTimeRange paginated: if artistNames is empty releaseTransformer is called for every entity"() {
+  def "findAllReleasesForTimeRange paginated: should transform page result with ReleasesTransformer if no artist names are given"() {
     given:
-    def releaseEntities = [
-        ReleaseEntityFactory.createReleaseEntity("A1", NOW),
-        ReleaseEntityFactory.createReleaseEntity("A2", NOW)
-    ]
-    underTest.releaseRepository.findAllByReleaseDateBetween(*_) >> new PageImpl(releaseEntities)
+    def pageResult = new PageImpl([
+            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+            ReleaseEntityFactory.createReleaseEntity("A2", NOW)
+    ])
+    underTest.releaseRepository.findAllByReleaseDateBetween(*_) >> pageResult
 
     when:
     underTest.findAllReleasesForTimeRange([], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), 1, 10)
 
     then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+    1 * underTest.releasesResponseTransformer.transformPage(pageResult)
   }
 
-  def "findAllReleasesForTimeRange paginated: if artistNames is not empty all given artist's releases are requested from releaseRepository"() {
+  def "findAllReleasesForTimeRange paginated: should request releases from release repository for given artists"() {
     given:
     def page = 1
     def size = 10
     def artistNames = ["A1"]
-    def timerange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
-    def expectedPageRequest = PageRequest.of(page - 1, size, Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle"))
+    def timeRange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
+    def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesForTimeRange(artistNames, timerange, page, size)
+    underTest.findAllReleasesForTimeRange(artistNames, timeRange, page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timerange.from, timerange.to, expectedPageRequest) >> Page.empty()
+    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, expectedPageRequest)
   }
 
-  def "findAllReleasesForTimeRange paginated: if artistNames is not empty releaseTransformer is called for every entity"() {
+  def "findAllReleasesForTimeRange paginated: should transform page result with ReleasesTransformer if artist names are given"() {
     given:
-    def releaseEntities = [
-        ReleaseEntityFactory.createReleaseEntity("A1", NOW),
-        ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)
-    ]
-    underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(*_) >> new PageImpl(releaseEntities)
+    def pageResult = new PageImpl([
+            ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+            ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)
+    ])
+    underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(*_) >> pageResult
 
     when:
     underTest.findAllReleasesForTimeRange(["A1"], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), 1, 10)
 
     then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+    1 * underTest.releasesResponseTransformer.transformPage(pageResult)
   }
 
-  def "findAllUpcomingReleases: if artistNames is empty all releases are requested from releaseRepository with specified sorting"() {
+  def "findAllUpcomingReleases: should request all upcoming releases from release repository if no artist names are given"() {
     when:
     underTest.findAllUpcomingReleases([])
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfter(NOW - 1, sorting) >> []
+    1 * underTest.releaseRepository.findAllByReleaseDateAfter(NOW - 1, sorting)
   }
 
-  def "findAllUpcomingReleases: if artistNames is empty releaseTransformer is called for every entity"() {
+  def "findAllUpcomingReleases: should transform release entities with ReleasesTransformer if no artist names are given"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
                            ReleaseEntityFactory.createReleaseEntity("A2", NOW)]
@@ -169,13 +155,10 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllUpcomingReleases([])
 
     then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+    1 * underTest.releasesResponseTransformer.transformReleaseEntities(releaseEntities)
   }
 
-  def "findAllUpcomingReleases: if artistNames is not empty all given artist's releases are requested from releaseRepository with specified sorting"() {
+  def "findAllUpcomingReleases: should request upcoming releases from release repository for given artists"() {
     given:
     def artistNames = ["A1"]
 
@@ -183,10 +166,10 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllUpcomingReleases(artistNames)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(NOW - 1, artistNames, sorting) >> []
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(NOW - 1, artistNames, sorting)
   }
 
-  def "findAllUpcomingReleases: if artistNames is not empty releaseTransformer is called for every entity"() {
+  def "findAllUpcomingReleases: should transform release entities with ReleasesTransformer if artist names are given"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
                            ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
@@ -196,24 +179,21 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllUpcomingReleases(["A1"])
 
     then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+    1 * underTest.releasesResponseTransformer.transformReleaseEntities(releaseEntities)
   }
 
-  def "findAllReleasesForTimeRange: if artistNames is empty all releases are requested from releaseRepository with specified sorting"() {
+  def "findAllReleasesForTimeRange: should request all releases for specified time range from release repository if no artist names are given"() {
     given:
-    def timerange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
+    def timeRange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
 
     when:
-    underTest.findAllReleasesForTimeRange([], timerange)
+    underTest.findAllReleasesForTimeRange([], timeRange)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateBetween(timerange.from, timerange.to, sorting) >> []
+    1 * underTest.releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to, sorting)
   }
 
-  def "findAllReleasesForTimeRange: if artistNames is empty releaseTransformer is called for every entity"() {
+  def "findAllReleasesForTimeRange: should transform release entities with ReleasesTransformer if no artist names are given"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
                            ReleaseEntityFactory.createReleaseEntity("A2", NOW)]
@@ -223,25 +203,22 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllReleasesForTimeRange([], TimeRange.of(LocalDate.now() - 1, LocalDate.now()))
 
     then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+    1 * underTest.releasesResponseTransformer.transformReleaseEntities(releaseEntities)
   }
 
-  def "findAllReleasesForTimeRange: if artistNames is not empty all given artist's releases are requested from releaseRepository with specified sorting"() {
+  def "findAllReleasesForTimeRange: should request all releases for specified time range from release repository for given artists"() {
     given:
     def artistNames = ["A1"]
-    def timerange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
+    def timeRange = TimeRange.of(LocalDate.now() - 1, LocalDate.now())
 
     when:
-    underTest.findAllReleasesForTimeRange(artistNames, timerange)
+    underTest.findAllReleasesForTimeRange(artistNames, timeRange)
 
     then:
-    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timerange.from, timerange.to, sorting) >> []
+    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, sorting)
   }
 
-  def "findAllReleasesForTimeRange: if artistNames is not empty releaseTransformer is called for every entity"() {
+  def "findAllReleasesForTimeRange: should transform release entities with ReleasesTransformer if artist names are given"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
                            ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
@@ -251,13 +228,10 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllReleasesForTimeRange(["A1"], TimeRange.of(LocalDate.now() - 1, LocalDate.now()))
 
     then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
+    1 * underTest.releasesResponseTransformer.transformReleaseEntities(releaseEntities)
   }
 
-  def "findAllReleasesSince: releaseRepository is called with the given date and specified sorting"() {
+  def "findAllReleasesSince: should request all releases since specified date from release repository if no artist names are given"() {
     given:
     def date = LocalDate.now()
 
@@ -268,7 +242,20 @@ class ReleaseServiceImplTest extends Specification {
     1 * underTest.releaseRepository.findAllByReleaseDateAfter(date, sorting)
   }
 
-  def "findAllReleasesSince: releaseRepository is called with the given date, artists and sorting"() {
+  def "findAllReleasesSince: should transform release entities with ReleasesTransformer if no artist names are given"() {
+    given:
+    def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
+                           ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
+    underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> releaseEntities
+
+    when:
+    underTest.findAllReleasesSince([], LocalDate.now())
+
+    then:
+    1 * underTest.releasesResponseTransformer.transformReleaseEntities(releaseEntities)
+  }
+
+  def "findAllReleasesSince: should request all releases since specified date from release repository for given artists"() {
     given:
     def date = LocalDate.now()
     def artists = ["Metallica"]
@@ -280,23 +267,7 @@ class ReleaseServiceImplTest extends Specification {
     1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(date, artists, sorting)
   }
 
-  def "findAllReleasesSince: releaseTransformer is called for every entity (no artists to filter)"() {
-    given:
-    def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
-                           ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
-    underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> releaseEntities
-
-    when:
-    underTest.findAllReleasesSince([], LocalDate.now())
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
-  }
-
-  def "findAllReleasesSince: releaseTransformer is called for every entity (with artists to filter)"() {
+  def "findAllReleasesSince: should transform release entities with ReleasesTransformer if artist names are given"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
                            ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
@@ -306,88 +277,6 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllReleasesSince(["A1"], LocalDate.now())
 
     then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[0])
-
-    then:
-    1 * underTest.releaseTransformer.transform(releaseEntities[1])
-  }
-
-  @Unroll
-  "count all upcoming releases for #artists"() {
-    when:
-    long result = underTest.totalCountAllUpcomingReleases(artists)
-
-    then:
-    1 * underTest.releaseRepository.countByArtistInAndReleaseDateAfter(artists, LocalDate.now() - 1) >> expectedNumber
-
-    and:
-    result == expectedNumber
-
-    where:
-    artists            | expectedNumber
-    ["A0", "A1", "A2"] | 3
-    ["A0", "A1"]       | 2
-  }
-
-  def "count all upcoming releases"() {
-    when:
-    long result = underTest.totalCountAllUpcomingReleases([])
-
-    then:
-    1 * underTest.releaseRepository.countByReleaseDateAfter(LocalDate.now() - 1) >> 1
-
-    and:
-    result == 1
-  }
-
-  def "count all upcoming releases for artists and timeRange calls releaseRepository"() {
-    given:
-    def artists = ["A1", "A2"]
-    def timeRange = TimeRange.of(LocalDate.of(2020, 1, 1),
-                                 LocalDate.of(2020, 2, 28))
-
-    when:
-    underTest.totalCountAllReleasesForTimeRange(artists, timeRange)
-
-    then:
-    1 * underTest.releaseRepository.countByArtistInAndReleaseDateBetween(artists, timeRange.from, timeRange.to)
-  }
-
-  def "count all upcoming releases for artists and timeRange return given value"() {
-    given:
-    def expectedNumber = 5
-    underTest.releaseRepository.countByArtistInAndReleaseDateBetween(*_) >> expectedNumber
-
-    when:
-    long result = underTest.totalCountAllReleasesForTimeRange(["A1"], TimeRange.of(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 2, 1)))
-
-    then:
-    result == expectedNumber
-  }
-
-  def "count all upcoming releases in timeRange calls releaseRepository"() {
-    given:
-    def from = LocalDate.of(2020, 1, 1)
-    def to = LocalDate.of(2020, 2, 1)
-
-    when:
-    underTest.totalCountAllReleasesForTimeRange([], TimeRange.of(from, to))
-
-    then:
-    1 * underTest.releaseRepository.countByReleaseDateBetween(from, to)
-  }
-
-  def "count all upcoming releases in timeRange returns given value"() {
-    given:
-    def from = LocalDate.of(2020, 1, 1)
-    def to = LocalDate.of(2020, 2, 1)
-    def expectedNumber = 5
-    underTest.releaseRepository.countByReleaseDateBetween(*_) >> expectedNumber
-
-    when:
-    long result = underTest.totalCountAllReleasesForTimeRange([], TimeRange.of(from, to))
-
-    then:
-    result == expectedNumber
+    1 * underTest.releasesResponseTransformer.transformReleaseEntities(releaseEntities)
   }
 }
