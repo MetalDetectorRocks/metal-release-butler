@@ -15,6 +15,10 @@ class DtoFactory {
 
   static class ReleaseEntityFactory {
 
+    static ReleaseEntity createReleaseEntity(String artist) {
+      return createReleaseEntity(artist, LocalDate.now())
+    }
+
     static ReleaseEntity createReleaseEntity(String artist, LocalDate releaseDate) {
       return new ReleaseEntity(
           artist: artist,
@@ -48,6 +52,10 @@ class DtoFactory {
   }
 
   static class ReleaseDtoFactory {
+
+    static ReleaseDto createReleaseDto(String artist) {
+      return createReleaseDto(artist, LocalDate.now())
+    }
 
     static ReleaseDto createReleaseDto(String artist, LocalDate releaseDate) {
       return new ReleaseDto(

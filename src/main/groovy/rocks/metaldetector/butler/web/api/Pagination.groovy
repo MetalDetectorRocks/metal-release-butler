@@ -1,14 +1,13 @@
-package rocks.metaldetector.butler.web.dto
+package rocks.metaldetector.butler.web.api
 
 import groovy.transform.Canonical
 
 @Canonical
-class ReleasesResponse {
+class Pagination {
 
   int currentPage
   int size
   int totalPages
   long totalReleases
-  Iterable<ReleaseDto> releases
 
 }

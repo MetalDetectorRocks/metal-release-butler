@@ -1,9 +1,8 @@
-package rocks.metaldetector.butler.service.release
+package rocks.metaldetector.butler.service.importjob
 
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.cover.CoverService
-import rocks.metaldetector.butler.service.importjob.PersistReleaseEntityTask
 import spock.lang.Specification
 
 class PersistReleaseEntityTaskTest extends Specification {

@@ -11,8 +11,8 @@ import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.TokenFactory
 import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
-import rocks.metaldetector.butler.web.dto.ReleasesRequest
-import rocks.metaldetector.butler.web.dto.ReleasesRequestPaginated
+import rocks.metaldetector.butler.web.api.ReleasesRequest
+import rocks.metaldetector.butler.web.api.ReleasesRequestPaginated
 import spock.lang.Specification
 
 import static org.mockito.Mockito.reset
