@@ -35,8 +35,11 @@ class ReleasesRestController {
       TimeRange timeRange = TimeRange.of(request.dateFrom, request.dateTo)
       releasesResponse = releaseService.findAllReleasesForTimeRange(request.artists, timeRange, request.page, request.size)
     }
+    else if (request.dateFrom != null) {
+      releasesResponse = releaseService.findAllReleasesSince(request.artists, request.dateFrom, request.page, request.size)
+    }
     else {
-      throw new IllegalArgumentException("The parameters 'dateFrom' and 'dateTo' must both have a valid date value in the format YYYY-MM-DD.")
+      throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' or only for 'dateFrom' with format 'YYYY-MM-DD'.")
     }
 
     return ResponseEntity.ok(releasesResponse)
