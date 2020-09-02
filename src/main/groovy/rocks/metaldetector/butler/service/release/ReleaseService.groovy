@@ -11,6 +11,8 @@ interface ReleaseService {
 
   ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, int page, int size)
 
+  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, int page, int size)
+
   ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames)
 
   ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange)

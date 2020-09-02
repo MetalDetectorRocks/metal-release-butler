@@ -55,6 +55,17 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional(readOnly = true)
+  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, int page, int size) {
+    PageRequest pageRequest = pageableSupplier.call(page, size)
+    def pageResult = artistNames.isEmpty()
+        ? releaseRepository.findAllByReleaseDateAfter(dateFrom, pageRequest)
+        : releaseRepository.findAllByReleaseDateAfterAndArtistIn(dateFrom, artistNames, pageRequest)
+
+    return releasesResponseTransformer.transformPage(pageResult)
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames) {
     def releaseEntities = artistNames.isEmpty()
             ? releaseRepository.findAllByReleaseDateAfter(YESTERDAY, sorting)
