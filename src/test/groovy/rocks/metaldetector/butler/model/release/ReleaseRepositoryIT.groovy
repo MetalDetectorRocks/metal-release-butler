@@ -94,15 +94,17 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   @Unroll
   "Release already exists"() {
     when:
-    boolean result = underTest.existsByArtistAndAlbumTitleAndReleaseDate(artist, albumTitle, releaseDate)
+    boolean result = underTest.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(artist, albumTitle, releaseDate)
 
     then:
     result == expectedResult
 
     where:
-    artist          | albumTitle          | releaseDate          | expectedResult
-    null            | null                | null                 | false
-    release1.artist | release1.albumTitle | release1.releaseDate | true
-    release2.artist | release1.albumTitle | release1.releaseDate | false
+    artist                        | albumTitle                        | releaseDate          | expectedResult
+    null                          | null                              | null                 | false
+    release1.artist               | release1.albumTitle               | release1.releaseDate | true
+    release1.artist.toLowerCase() | release1.albumTitle               | release1.releaseDate | true
+    release1.artist               | release1.albumTitle.toLowerCase() | release1.releaseDate | true
+    release2.artist               | release1.albumTitle               | release1.releaseDate | false
   }
 }

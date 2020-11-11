@@ -64,7 +64,7 @@ class MetalArchivesReleaseImporterTest extends Specification {
     underTest.importReleases()
 
     then:
-    2 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_)
+    2 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
   }
 
   def "new releases are submitted to persistence thread pool"() {
@@ -107,7 +107,7 @@ class MetalArchivesReleaseImporterTest extends Specification {
     underTest.importReleases()
 
     then:
-    1 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >> true
+    1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >> true
 
     and:
     0 * underTest.releaseEntityPersistenceThreadPool.submit(_)
@@ -120,7 +120,7 @@ class MetalArchivesReleaseImporterTest extends Specification {
         [createReleaseEntity("Metallica", LocalDate.now())],
         [createReleaseEntity("Slayer", LocalDate.now())]
     ]
-    underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >>> [true, false]
+    underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [true, false]
 
     when:
     def importResult = underTest.importReleases()

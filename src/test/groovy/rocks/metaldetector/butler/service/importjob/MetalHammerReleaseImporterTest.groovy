@@ -52,10 +52,10 @@ class MetalHammerReleaseImporterTest extends Specification {
     underTest.importReleases()
 
     then:
-    1 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release1.artist, release1.albumTitle, release1.releaseDate)
+    1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(release1.artist, release1.albumTitle, release1.releaseDate)
 
     and:
-    1 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(release2.artist, release2.albumTitle, release2.releaseDate)
+    1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(release2.artist, release2.albumTitle, release2.releaseDate)
   }
 
   def "each new release is saved"() {
@@ -64,7 +64,7 @@ class MetalHammerReleaseImporterTest extends Specification {
     def release2 = new ReleaseEntity(artist: "Mayhem")
     def releases = [release1, release2]
     underTest.metalHammerReleaseEntityConverter.convert(*_) >> releases
-    underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >>> [true, false]
+    underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [true, false]
 
     when:
     underTest.importReleases()
@@ -78,7 +78,7 @@ class MetalHammerReleaseImporterTest extends Specification {
   def "should return ImportResult  with correct values for 'totalCountRequested' and 'totalCountImported'"() {
     given:
     underTest.metalHammerReleaseEntityConverter.convert(*_) >> [new ReleaseEntity(artist: "Darkthrone"), new ReleaseEntity(artist: "Mayhem")]
-    underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_) >>> [true, false]
+    underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [true, false]
 
     when:
     def importResult = underTest.importReleases()
@@ -99,7 +99,7 @@ class MetalHammerReleaseImporterTest extends Specification {
     underTest.importReleases()
 
     then:
-    2 * underTest.releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(*_)
+    2 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
   }
 
   def "should return METAL_HAMMER_DE as release source"() {
