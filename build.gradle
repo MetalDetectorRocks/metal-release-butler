@@ -1,5 +1,5 @@
 plugins {
-  id 'org.springframework.boot' version '2.3.4.RELEASE'
+  id 'org.springframework.boot' version '2.3.5.RELEASE'
   id 'io.spring.dependency-management' version '1.0.10.RELEASE'
   id 'groovy'
   id 'jacoco'
@@ -15,14 +15,14 @@ springBoot {
 }
 
 def swaggerVersion = '3.0.0'
-def spockVersion = '2.0-M3-groovy-3.0'
+def spockVersion = '2.0-M4-groovy-3.0'
 def groovyVersion = '3.0.6'
 def postgresqlVersion = '42.2.18'
 def bucket4JVersion = '0.2.0'
 def jsonwebtokenVersion = '0.9.1'
 def httpBuilderVersion = '0.7.1'
 def commonsIoVersion = '2.8.0'
-def awsS3SdkVersion = '1.11.881'
+def awsS3SdkVersion = '1.11.897'
 
 configurations {
   developmentOnly
