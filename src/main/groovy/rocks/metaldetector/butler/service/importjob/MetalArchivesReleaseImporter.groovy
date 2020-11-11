@@ -76,7 +76,7 @@ class MetalArchivesReleaseImporter implements ReleaseImporter {
     List<Future> futures = []
 
     releaseEntities.each { ReleaseEntity releaseEntity ->
-      if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)) {
+      if (!releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)) {
         futures << releaseEntityPersistenceThreadPool.submit(createPersistReleaseEntityTask(releaseEntity))
         inserted++
       }

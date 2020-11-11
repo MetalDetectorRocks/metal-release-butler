@@ -32,7 +32,7 @@ class MetalHammerReleaseImporter implements ReleaseImporter {
 
     int inserted = 0
     releaseEntities.unique().each { ReleaseEntity releaseEntity ->
-      if (!releaseRepository.existsByArtistAndAlbumTitleAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)) {
+      if (!releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)) {
         releaseRepository.save(releaseEntity)
         inserted++
       }
