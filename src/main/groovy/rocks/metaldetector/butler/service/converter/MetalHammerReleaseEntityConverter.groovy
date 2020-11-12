@@ -8,7 +8,7 @@ import rocks.metaldetector.butler.model.release.ReleaseEntity
 
 import java.time.LocalDate
 
-import static rocks.metaldetector.butler.model.release.ReleaseEntityRecordState.NOT_SET
+import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 
 @Component
@@ -42,7 +42,7 @@ class MetalHammerReleaseEntityConverter implements Converter<String, List<Releas
         .collect {
           def builder = ReleaseEntity.builder()
               .source(METAL_HAMMER_DE)
-              .state(NOT_SET)
+              .state(OK)
           setArtist(builder, it.td[0].toString())
           setAlbumTitle(builder, it.td[1].toString())
           setDate(builder, it.td[2].toString())

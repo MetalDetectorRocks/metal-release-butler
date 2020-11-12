@@ -49,7 +49,7 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
 
   @Column(name = "state", nullable = false)
   @Enumerated(EnumType.STRING)
-  ReleaseEntityRecordState state
+  ReleaseEntityState state
 
   @Column(name = "cover_url", nullable = true)
   String coverUrl

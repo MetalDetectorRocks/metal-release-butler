@@ -9,7 +9,7 @@ import rocks.metaldetector.butler.model.release.ReleaseType
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import static rocks.metaldetector.butler.model.release.ReleaseEntityRecordState.NOT_SET
+import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
 
 @Component
@@ -61,7 +61,7 @@ class MetalArchivesReleaseEntityConverter implements Converter<String[], List<Re
               genre: genre,
               releaseDate: releaseDate,
               source: METAL_ARCHIVES,
-              state: NOT_SET
+              state: OK
       )
     }
 

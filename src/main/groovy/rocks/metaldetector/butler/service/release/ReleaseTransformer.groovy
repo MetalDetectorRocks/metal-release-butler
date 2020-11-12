@@ -9,6 +9,7 @@ class ReleaseTransformer {
 
   ReleaseDto transform(ReleaseEntity releaseEntity) {
     return ReleaseDto.builder()
+        .id(releaseEntity.id)
         .artist(releaseEntity.artist)
         .additionalArtists(releaseEntity.additionalArtists)
         .albumTitle(releaseEntity.albumTitle)

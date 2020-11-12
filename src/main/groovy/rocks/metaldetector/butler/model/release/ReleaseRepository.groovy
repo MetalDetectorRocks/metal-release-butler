@@ -11,13 +11,13 @@ import java.time.LocalDate
 @Repository
 interface ReleaseRepository extends JpaRepository<ReleaseEntity, Long> {
 
-  Page<ReleaseEntity> findAllByReleaseDateAfter(LocalDate date, Pageable pageable)
+  Page<ReleaseEntity> findAllByReleaseDateAfterAndState(LocalDate date, ReleaseEntityState state, Pageable pageable)
 
-  Page<ReleaseEntity> findAllByReleaseDateBetween(LocalDate from, LocalDate to, Pageable pageable)
+  Page<ReleaseEntity> findAllByReleaseDateBetweenAndState(LocalDate from, LocalDate to, ReleaseEntityState state, Pageable pageable)
 
-  Page<ReleaseEntity> findAllByReleaseDateAfterAndArtistIn(LocalDate date, Iterable<String> artistNames, Pageable pageable)
+  Page<ReleaseEntity> findAllByReleaseDateAfterAndArtistInAndState(LocalDate date, Iterable<String> artistNames, ReleaseEntityState state, Pageable pageable)
 
-  Page<ReleaseEntity> findAllByArtistInAndReleaseDateBetween(Iterable<String> artistNames, LocalDate from, LocalDate to, Pageable pageable)
+  Page<ReleaseEntity> findAllByArtistInAndReleaseDateBetweenAndState(Iterable<String> artistNames, LocalDate from, LocalDate to, ReleaseEntityState state, Pageable pageable)
 
   List<ReleaseEntity> findAllByReleaseDateAfter(LocalDate date, Sort sort)
 

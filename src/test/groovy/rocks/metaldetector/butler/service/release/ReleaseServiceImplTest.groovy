@@ -4,6 +4,7 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import rocks.metaldetector.butler.model.TimeRange
+import rocks.metaldetector.butler.model.release.ReleaseEntityState
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.web.api.ReleasesResponse
 import spock.lang.Specification
@@ -11,6 +12,7 @@ import spock.lang.Specification
 import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
+import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 
 class ReleaseServiceImplTest extends Specification {
 
@@ -22,6 +24,7 @@ class ReleaseServiceImplTest extends Specification {
   static final LocalDate NOW = LocalDate.now()
   static final Sort sorting = Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle")
   static final ReleasesResponse response = new ReleasesResponse()
+  static final ReleaseEntityState state = OK
 
   def "findAllUpcomingReleases paginated: should request all releases from release repository if no artist names are given"() {
     given:
@@ -30,10 +33,10 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllUpcomingReleases([], page, size)
+    underTest.findAllUpcomingReleases([], state, page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfter(NOW - 1, expectedPageRequest)
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndState(NOW - 1, state, expectedPageRequest)
   }
 
   def "findAllUpcomingReleases paginated: should transform page result with ReleasesTransformer if no artist names are given"() {
@@ -42,10 +45,10 @@ class ReleaseServiceImplTest extends Specification {
         ReleaseEntityFactory.createReleaseEntity("A1", NOW),
         ReleaseEntityFactory.createReleaseEntity("A2", NOW)
     ])
-    underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> pageResult
+    underTest.releaseRepository.findAllByReleaseDateAfterAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllUpcomingReleases([], 1, 10)
+    def result = underTest.findAllUpcomingReleases([], state, 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -62,10 +65,10 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllUpcomingReleases(artistNames, page, size)
+    underTest.findAllUpcomingReleases(artistNames, state, page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(NOW - 1, artistNames, expectedPageRequest)
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(NOW - 1, artistNames, state, expectedPageRequest)
   }
 
   def "findAllUpcomingReleases paginated: should transform page result with ReleasesTransformer if artist names are given"() {
@@ -74,10 +77,10 @@ class ReleaseServiceImplTest extends Specification {
         ReleaseEntityFactory.createReleaseEntity("A1", NOW),
         ReleaseEntityFactory.createReleaseEntity("A2", NOW)
     ])
-    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(*_) >> pageResult
+    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllUpcomingReleases(["A1"], 1, 10)
+    def result = underTest.findAllUpcomingReleases(["A1"], state, 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -94,10 +97,10 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesForTimeRange([], timeRange, page, size)
+    underTest.findAllReleasesForTimeRange([], timeRange, state, page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to, expectedPageRequest)
+    1 * underTest.releaseRepository.findAllByReleaseDateBetweenAndState(timeRange.from, timeRange.to, state, expectedPageRequest)
   }
 
   def "findAllReleasesForTimeRange paginated: should transform page result with ReleasesTransformer if no artist names are given"() {
@@ -106,10 +109,10 @@ class ReleaseServiceImplTest extends Specification {
         ReleaseEntityFactory.createReleaseEntity("A1", NOW),
         ReleaseEntityFactory.createReleaseEntity("A2", NOW)
     ])
-    underTest.releaseRepository.findAllByReleaseDateBetween(*_) >> pageResult
+    underTest.releaseRepository.findAllByReleaseDateBetweenAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllReleasesForTimeRange([], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), 1, 10)
+    def result = underTest.findAllReleasesForTimeRange([], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), state, 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -127,10 +130,10 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesForTimeRange(artistNames, timeRange, page, size)
+    underTest.findAllReleasesForTimeRange(artistNames, timeRange, state, page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, expectedPageRequest)
+    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetweenAndState(artistNames, timeRange.from, timeRange.to, state, expectedPageRequest)
   }
 
   def "findAllReleasesForTimeRange paginated: should transform page result with ReleasesTransformer if artist names are given"() {
@@ -139,10 +142,10 @@ class ReleaseServiceImplTest extends Specification {
         ReleaseEntityFactory.createReleaseEntity("A1", NOW),
         ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)
     ])
-    underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(*_) >> pageResult
+    underTest.releaseRepository.findAllByArtistInAndReleaseDateBetweenAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllReleasesForTimeRange(["A1"], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), 1, 10)
+    def result = underTest.findAllReleasesForTimeRange(["A1"], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), state, 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -159,10 +162,10 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesSince([], date, page, size)
+    underTest.findAllReleasesSince([], date, state, page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfter(date, expectedPageRequest)
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndState(date, state, expectedPageRequest)
   }
 
   def "findAllReleasesSince paginated: should transform release entities with ReleasesTransformer if no artist names are given"() {
@@ -171,10 +174,10 @@ class ReleaseServiceImplTest extends Specification {
         ReleaseEntityFactory.createReleaseEntity("A1", NOW),
         ReleaseEntityFactory.createReleaseEntity("A2", NOW)
     ])
-    underTest.releaseRepository.findAllByReleaseDateAfter(*_) >> pageResult
+    underTest.releaseRepository.findAllByReleaseDateAfterAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllReleasesSince([], LocalDate.now(), 1, 10)
+    def result = underTest.findAllReleasesSince([], LocalDate.now(), state, 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -192,10 +195,10 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesSince(artists, date, page, size)
+    underTest.findAllReleasesSince(artists, date, state, page, size)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(date, artists, expectedPageRequest)
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(date, artists, state, expectedPageRequest)
   }
 
   def "findAllReleasesSince paginated: should transform release entities with ReleasesTransformer if artist names are given"() {
@@ -204,10 +207,10 @@ class ReleaseServiceImplTest extends Specification {
         ReleaseEntityFactory.createReleaseEntity("A1", NOW),
         ReleaseEntityFactory.createReleaseEntity("A2", NOW)
     ])
-    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(*_) >> pageResult
+    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllReleasesSince(["A1"], LocalDate.now(), 1, 10)
+    def result = underTest.findAllReleasesSince(["A1"], LocalDate.now(), state, 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
