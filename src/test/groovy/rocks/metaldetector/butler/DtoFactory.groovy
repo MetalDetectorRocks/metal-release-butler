@@ -2,12 +2,12 @@ package rocks.metaldetector.butler
 
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.release.ReleaseEntity
-import rocks.metaldetector.butler.model.release.ReleaseEntityState
 import rocks.metaldetector.butler.web.dto.ReleaseDto
 
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
 import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 
@@ -16,11 +16,11 @@ class DtoFactory {
   static class ReleaseEntityFactory {
 
     static ReleaseEntity createReleaseEntity(String artist) {
-      return createReleaseEntity(1l, artist, LocalDate.now())
+      return createReleaseEntity(1L, artist, LocalDate.now())
     }
 
     static ReleaseEntity createReleaseEntity(String artist, LocalDate releaseDate) {
-      return createReleaseEntity(1l, artist, releaseDate)
+      return createReleaseEntity(1L, artist, releaseDate)
     }
 
     static ReleaseEntity createReleaseEntity(Long id, String artist, LocalDate releaseDate) {
@@ -29,7 +29,7 @@ class DtoFactory {
           artist: artist,
           albumTitle: "T",
           releaseDate: releaseDate,
-          state: ReleaseEntityState.OK,
+          state: OK,
           estimatedReleaseDate: "releaseDate",
           additionalArtists: artist,
           source: METAL_ARCHIVES,
@@ -69,7 +69,7 @@ class DtoFactory {
           albumTitle: "T",
           releaseDate: releaseDate,
           estimatedReleaseDate: "releaseDate",
-          state: ReleaseEntityState.OK,
+          state: OK,
           source: METAL_ARCHIVES,
           genre: "genre",
           type: FULL_LENGTH,

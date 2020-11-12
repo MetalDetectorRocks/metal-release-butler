@@ -5,11 +5,13 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.model.release.ReleaseEntityState
 import rocks.metaldetector.butler.service.release.ReleaseService
+import rocks.metaldetector.butler.web.api.ReleaseUpdateRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequestPaginated
 import rocks.metaldetector.butler.web.api.ReleasesResponse
@@ -18,6 +20,7 @@ import javax.validation.Valid
 
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
+import static rocks.metaldetector.butler.config.constants.Endpoints.UPDATE_RELEASE
 
 @RestController
 class ReleasesRestController {
@@ -64,5 +67,12 @@ class ReleasesRestController {
     }
 
     return ResponseEntity.ok(releasesResponse)
+  }
+
+  @PutMapping(path = UPDATE_RELEASE, consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+  ResponseEntity<Void> updateReleaseState(@Valid @RequestBody ReleaseUpdateRequest request) {
+    releaseService.updateReleaseState(request.releaseId, request.state)
+    return ResponseEntity.ok().build()
   }
 }

@@ -20,4 +20,6 @@ interface ReleaseService {
 
   ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom)
 
+  void updateReleaseState(long releaseId, ReleaseEntityState state)
+
 }

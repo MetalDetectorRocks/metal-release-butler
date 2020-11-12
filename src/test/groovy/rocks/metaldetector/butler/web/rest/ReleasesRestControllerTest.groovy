@@ -2,7 +2,6 @@ package rocks.metaldetector.butler.web.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import rocks.metaldetector.butler.model.TimeRange
@@ -10,6 +9,7 @@ import rocks.metaldetector.butler.model.release.ReleaseEntityState
 import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.testutil.WithExceptionResolver
 import rocks.metaldetector.butler.web.api.Pagination
+import rocks.metaldetector.butler.web.api.ReleaseUpdateRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequestPaginated
 import rocks.metaldetector.butler.web.api.ReleasesResponse
@@ -21,10 +21,14 @@ import java.time.LocalDate
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.OK
+import static org.springframework.http.MediaType.APPLICATION_JSON
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
+import static rocks.metaldetector.butler.config.constants.Endpoints.UPDATE_RELEASE
+import static rocks.metaldetector.butler.model.release.ReleaseEntityState.FAULTY
 
 class ReleasesRestControllerTest extends Specification implements WithExceptionResolver {
 
@@ -43,8 +47,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def artists = [ARTIST_NAME]
     def releasesRequest = new ReleasesRequest(artists: artists)
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
 
     when:
@@ -58,8 +62,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     given:
     def releasesRequest = new ReleasesRequest(artists: [ARTIST_NAME])
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
 
     when:
@@ -74,8 +78,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def expectedReleasesReponse = createReleasesResponse()
     def releasesRequest = new ReleasesRequest(artists: [ARTIST_NAME])
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
     underTest.releaseService.findAllUpcomingReleases(_) >> expectedReleasesReponse
 
@@ -94,8 +98,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequest(artists: artists, dateFrom: from, dateTo: to)
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
 
     when:
@@ -109,8 +113,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     given:
     def requestDto = new ReleasesRequest(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2020, 2, 1))
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
 
     when:
@@ -125,8 +129,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def requestDto = new ReleasesRequest(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2020, 2, 1))
     def expectedReleasesResponse = createReleasesResponse()
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
     underTest.releaseService.findAllReleasesForTimeRange(*_) >> expectedReleasesResponse
 
@@ -144,8 +148,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequest(artists: artists, dateFrom: from)
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
 
     when:
@@ -159,8 +163,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     given:
     def requestDto = new ReleasesRequest(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1))
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
 
     when:
@@ -175,8 +179,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def requestDto = new ReleasesRequest(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1))
     def expectedReleasesResponse = createReleasesResponse()
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
     underTest.releaseService.findAllReleasesSince(*_) >> expectedReleasesResponse
 
@@ -192,8 +196,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
   "getAllReleases: bad request should not call releases service"() {
     given:
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(body))
 
     when:
@@ -213,8 +217,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
   "getAllReleases: bad request should return status bad request"() {
     given:
     def request = post(RELEASES_UNPAGINATED)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(body))
 
     when:
@@ -234,8 +238,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def artists = [ARTIST_NAME]
     def releasesRequest = new ReleasesRequestPaginated(artists: artists, page: 1, size: 10)
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
 
     when:
@@ -249,8 +253,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     given:
     def releasesRequest = new ReleasesRequestPaginated(artists: [ARTIST_NAME], page: 1, size: 10)
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
 
     when:
@@ -265,8 +269,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def expectedReleasesResponse = createReleasesResponse()
     def releasesRequest = new ReleasesRequestPaginated(artists: [ARTIST_NAME], page: 1, size: 10)
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(releasesRequest))
     underTest.releaseService.findAllUpcomingReleases(*_) >> expectedReleasesResponse
 
@@ -285,8 +289,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, dateTo: to, page: 1, size: 10)
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
 
     when:
@@ -300,8 +304,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     given:
     def requestDto = new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 10)
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
 
     when:
@@ -316,8 +320,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def requestDto = new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 10)
     def expectedReleasesResponse = createReleasesResponse()
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
     underTest.releaseService.findAllReleasesForTimeRange(*_) >> expectedReleasesResponse
 
@@ -335,8 +339,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def artists = [ARTIST_NAME]
     def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, page: 1, size: 10)
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
 
     when:
@@ -350,8 +354,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     given:
     def requestDto = new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1), page: 1, size: 10)
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
 
     when:
@@ -366,8 +370,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def requestDto = new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1), page: 1, size: 10)
     def expectedReleasesResponse = createReleasesResponse()
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(requestDto))
     underTest.releaseService.findAllReleasesSince(*_) >> expectedReleasesResponse
 
@@ -383,8 +387,8 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
   "getPaginatedReleases: bad request should return status bad request"() {
     given:
     def request = post(RELEASES)
-        .contentType(MediaType.APPLICATION_JSON)
-        .accept(MediaType.APPLICATION_JSON)
+        .contentType(APPLICATION_JSON)
+        .accept(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(body))
 
     when:
@@ -411,6 +415,52 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
                                           page: 1, size: 51),
              new ReleasesRequestPaginated(artists: [ARTIST_NAME], dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2019, 1, 1),
                                           page: 1, size: 10)]
+  }
+
+  def "updateReleaseState: should call releasesService"() {
+    given:
+    def body = new ReleaseUpdateRequest(1L, FAULTY)
+    def request = put(UPDATE_RELEASE)
+        .contentType(APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(body))
+
+    when:
+    mockMvc.perform(request).andReturn()
+
+    then:
+    1 * underTest.releaseService.updateReleaseState(body.releaseId, body.state)
+  }
+
+  def "updateReleaseState: should return OK"() {
+    given:
+    def body = new ReleaseUpdateRequest(1L, FAULTY)
+    def request = put(UPDATE_RELEASE)
+        .contentType(APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(body))
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == OK.value()
+  }
+
+  @Unroll
+  "updateReleaseState: should return BAD REQUEST"() {
+    given:
+    def request = put(UPDATE_RELEASE)
+        .contentType(APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(body))
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == BAD_REQUEST.value()
+
+    where:
+    body << [new ReleaseUpdateRequest(0L, FAULTY),
+             new ReleaseUpdateRequest(1L, null)]
   }
 
   private static ReleasesResponse createReleasesResponse() {

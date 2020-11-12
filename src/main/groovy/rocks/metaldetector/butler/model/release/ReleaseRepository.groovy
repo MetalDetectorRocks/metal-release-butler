@@ -27,5 +27,7 @@ interface ReleaseRepository extends JpaRepository<ReleaseEntity, Long> {
 
   List<ReleaseEntity> findAllByArtistInAndReleaseDateBetween(Iterable<String> artistNames, LocalDate from, LocalDate to, Sort sort)
 
+  Optional<ReleaseEntity> findById(long id)
+
   boolean existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(String artist, String albumTitle, LocalDate releaseDate);
 }

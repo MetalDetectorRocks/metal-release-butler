@@ -12,6 +12,7 @@ import spock.lang.Specification
 import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
+import static rocks.metaldetector.butler.model.release.ReleaseEntityState.FAULTY
 import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 
 class ReleaseServiceImplTest extends Specification {
@@ -378,5 +379,29 @@ class ReleaseServiceImplTest extends Specification {
 
     and:
     result == response
+  }
+
+  def "updateReleaseState: should call release repository to get release"() {
+    given:
+    long id = 1L
+
+    when:
+    underTest.updateReleaseState(id, FAULTY)
+
+    then:
+    1 * underTest.releaseRepository.findById(id) >> Optional.empty()
+  }
+
+  def "updateReleaseState: should call release repository to update release if present"() {
+    given:
+    def id = 1L
+    def release = ReleaseEntityFactory.createReleaseEntity("A")
+    underTest.releaseRepository.findById(*_) >> Optional.of(release)
+
+    when:
+    underTest.updateReleaseState(id, FAULTY)
+
+    then:
+    1 * underTest.releaseRepository.save({args -> args.state == FAULTY})
   }
 }

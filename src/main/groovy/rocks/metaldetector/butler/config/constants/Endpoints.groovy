@@ -6,6 +6,7 @@ class Endpoints {
   public static final String IMPORT_JOB           = "/rest/v1/releases/import"
   public static final String COVER_JOB            = "/rest/v1/releases/cover-reload"
   public static final String RELEASES_UNPAGINATED = "/rest/v1/releases/unpaginated"
+  public static final String UPDATE_RELEASE       = "/rest/v1/release/update"
 
   static class AntPattern {
 
