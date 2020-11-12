@@ -11,14 +11,18 @@ import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.TokenFactory
 import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
+import rocks.metaldetector.butler.web.api.ReleaseUpdateRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequestPaginated
 import spock.lang.Specification
 
 import static org.mockito.Mockito.reset
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
+import static rocks.metaldetector.butler.config.constants.Endpoints.UPDATE_RELEASE
+import static rocks.metaldetector.butler.model.release.ReleaseEntityState.FAULTY
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -98,5 +102,35 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
     then:
     result.response.status == HttpStatus.FORBIDDEN.value()
+  }
+
+  def "User cannot access release update endpoint"() {
+    given:
+    def requestBody = new ReleaseUpdateRequest(releaseId: 1L, state: FAULTY)
+    def request = put(UPDATE_RELEASE)
+        .content(objectMapper.writeValueAsString(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Bearer " + testUserToken)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == HttpStatus.FORBIDDEN.value()
+  }
+
+  def "Admin can access release update endpoint"() {
+    given:
+    def requestBody = new ReleaseUpdateRequest(releaseId: 1L, state: FAULTY)
+    def request = put(UPDATE_RELEASE)
+        .content(objectMapper.writeValueAsString(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .header("Authorization", "Bearer " + testAdminToken)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == HttpStatus.OK.value()
   }
 }

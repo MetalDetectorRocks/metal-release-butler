@@ -94,4 +94,15 @@ class ReleaseServiceImpl implements ReleaseService {
 
     return releasesResponseTransformer.transformReleaseEntities(releaseEntities)
   }
+
+  @Override
+  @Transactional
+  void updateReleaseState(long releaseId, ReleaseEntityState state) {
+    def releaseEntityOptional = releaseRepository.findById(releaseId)
+    if (releaseEntityOptional.isPresent()) {
+      def releaseEntity = releaseEntityOptional.get()
+      releaseEntity.state = state
+      releaseRepository.save(releaseEntity)
+    }
+  }
 }
