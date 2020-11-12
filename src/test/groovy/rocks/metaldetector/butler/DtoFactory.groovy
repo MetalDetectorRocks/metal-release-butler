@@ -16,12 +16,16 @@ class DtoFactory {
   static class ReleaseEntityFactory {
 
     static ReleaseEntity createReleaseEntity(String artist) {
-      return createReleaseEntity(artist, LocalDate.now())
+      return createReleaseEntity(1l, artist, LocalDate.now())
     }
 
     static ReleaseEntity createReleaseEntity(String artist, LocalDate releaseDate) {
+      return createReleaseEntity(1l, artist, releaseDate)
+    }
+
+    static ReleaseEntity createReleaseEntity(Long id, String artist, LocalDate releaseDate) {
       return new ReleaseEntity(
-          id: 1L,
+          id: id,
           artist: artist,
           albumTitle: "T",
           releaseDate: releaseDate,

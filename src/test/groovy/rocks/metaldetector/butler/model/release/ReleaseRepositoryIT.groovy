@@ -17,9 +17,9 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   @Autowired
   ReleaseRepository underTest
 
-  static ReleaseEntity release1 = ReleaseEntityFactory.createReleaseEntity("A1", LocalDate.of(2020, 1, 1))
-  static ReleaseEntity release2 = ReleaseEntityFactory.createReleaseEntity("A2", LocalDate.of(2020, 2, 1))
-  static ReleaseEntity release3 = ReleaseEntityFactory.createReleaseEntity("A3", LocalDate.of(2020, 3, 1))
+  static ReleaseEntity release1 = ReleaseEntityFactory.createReleaseEntity(1L, "A1", LocalDate.of(2020, 1, 1))
+  static ReleaseEntity release2 = ReleaseEntityFactory.createReleaseEntity(2L, "A2", LocalDate.of(2020, 2, 1))
+  static ReleaseEntity release3 = ReleaseEntityFactory.createReleaseEntity(3L, "A3", LocalDate.of(2020, 3, 1))
   static Sort sorting = Sort.by(Sort.Direction.ASC, "releaseDate")
 
   void setup() {
