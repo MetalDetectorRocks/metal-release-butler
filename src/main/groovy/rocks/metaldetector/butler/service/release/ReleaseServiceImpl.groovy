@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.TimeRange
+import rocks.metaldetector.butler.model.release.ReleaseEntityState
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.web.api.ReleasesResponse
 
@@ -33,33 +34,33 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional(readOnly = true)
-  ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames, int page, int size) {
+  ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames, ReleaseEntityState state, int page, int size) {
     PageRequest pageRequest = pageableSupplier.call(page, size)
     def pageResult = artistNames.isEmpty()
-            ? releaseRepository.findAllByReleaseDateAfter(YESTERDAY, pageRequest)
-            : releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, pageRequest)
+            ? releaseRepository.findAllByReleaseDateAfterAndState(YESTERDAY, state, pageRequest)
+            : releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(YESTERDAY, artistNames, state, pageRequest)
 
     return releasesResponseTransformer.transformPage(pageResult)
   }
 
   @Override
   @Transactional(readOnly = true)
-  ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, int page, int size) {
+  ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, ReleaseEntityState state, int page, int size) {
     PageRequest pageRequest = pageableSupplier.call(page, size)
     def pageResult = artistNames.isEmpty()
-            ? releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to, pageRequest)
-            : releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, pageRequest)
+            ? releaseRepository.findAllByReleaseDateBetweenAndState(timeRange.from, timeRange.to, state, pageRequest)
+            : releaseRepository.findAllByArtistInAndReleaseDateBetweenAndState(artistNames, timeRange.from, timeRange.to, state, pageRequest)
 
     return releasesResponseTransformer.transformPage(pageResult)
   }
 
   @Override
   @Transactional(readOnly = true)
-  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, int page, int size) {
+  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, ReleaseEntityState state, int page, int size) {
     PageRequest pageRequest = pageableSupplier.call(page, size)
     def pageResult = artistNames.isEmpty()
-        ? releaseRepository.findAllByReleaseDateAfter(dateFrom, pageRequest)
-        : releaseRepository.findAllByReleaseDateAfterAndArtistIn(dateFrom, artistNames, pageRequest)
+        ? releaseRepository.findAllByReleaseDateAfterAndState(dateFrom, state, pageRequest)
+        : releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(dateFrom, artistNames, state, pageRequest)
 
     return releasesResponseTransformer.transformPage(pageResult)
   }

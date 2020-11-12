@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import rocks.metaldetector.butler.model.TimeRange
+import rocks.metaldetector.butler.model.release.ReleaseEntityState
 import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.web.api.ReleasesRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequestPaginated
@@ -29,14 +30,14 @@ class ReleasesRestController {
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request) {
     def releasesResponse
     if (request.dateFrom == null && request.dateTo == null) {
-      releasesResponse = releaseService.findAllUpcomingReleases(request.artists, request.page, request.size)
+      releasesResponse = releaseService.findAllUpcomingReleases(request.artists, ReleaseEntityState.OK, request.page, request.size)
     }
     else if (request.dateFrom != null && request.dateTo != null) {
       TimeRange timeRange = TimeRange.of(request.dateFrom, request.dateTo)
-      releasesResponse = releaseService.findAllReleasesForTimeRange(request.artists, timeRange, request.page, request.size)
+      releasesResponse = releaseService.findAllReleasesForTimeRange(request.artists, timeRange, ReleaseEntityState.OK, request.page, request.size)
     }
     else if (request.dateFrom != null) {
-      releasesResponse = releaseService.findAllReleasesSince(request.artists, request.dateFrom, request.page, request.size)
+      releasesResponse = releaseService.findAllReleasesSince(request.artists, request.dateFrom, ReleaseEntityState.OK, request.page, request.size)
     }
     else {
       throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' or only for 'dateFrom' with format 'YYYY-MM-DD'.")

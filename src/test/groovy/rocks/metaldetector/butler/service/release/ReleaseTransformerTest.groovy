@@ -1,23 +1,24 @@
 package rocks.metaldetector.butler.service.release
 
-import rocks.metaldetector.butler.DtoFactory
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import spock.lang.Specification
 
 import java.time.LocalDate
 
+import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 
 class ReleaseTransformerTest extends Specification {
 
   ReleaseTransformer underTest = new ReleaseTransformer()
-  ReleaseEntity releaseEntity = DtoFactory.ReleaseEntityFactory.createReleaseEntity("A", LocalDate.now())
+  ReleaseEntity releaseEntity = ReleaseEntityFactory.createReleaseEntity("A", LocalDate.now())
 
   def "should transform releaseEntity to releaseDto"() {
     when:
     def result = underTest.transform(releaseEntity)
 
     then:
+    result.id == releaseEntity.id
     result.artist == releaseEntity.artist
     result.albumTitle == releaseEntity.albumTitle
     result.releaseDate == releaseEntity.releaseDate

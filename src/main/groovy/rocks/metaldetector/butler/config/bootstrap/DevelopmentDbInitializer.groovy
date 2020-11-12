@@ -12,7 +12,7 @@ import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import java.time.LocalDate
 
-import static rocks.metaldetector.butler.model.release.ReleaseEntityRecordState.DEMO
+import static rocks.metaldetector.butler.model.release.ReleaseEntityState.DEMO
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 import static rocks.metaldetector.butler.model.release.ReleaseType.COMPILATION
 import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
