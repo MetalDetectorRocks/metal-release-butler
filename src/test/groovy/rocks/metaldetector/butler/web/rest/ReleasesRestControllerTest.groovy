@@ -5,7 +5,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import rocks.metaldetector.butler.model.TimeRange
-import rocks.metaldetector.butler.model.release.ReleaseEntityState
 import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.testutil.WithExceptionResolver
 import rocks.metaldetector.butler.web.api.Pagination
@@ -27,7 +26,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static rocks.metaldetector.butler.DtoFactory.ReleaseDtoFactory
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
-import static rocks.metaldetector.butler.config.constants.Endpoints.UPDATE_RELEASE
 import static rocks.metaldetector.butler.model.release.ReleaseEntityState.FAULTY
 
 class ReleasesRestControllerTest extends Specification implements WithExceptionResolver {
@@ -246,7 +244,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllUpcomingReleases(releasesRequest.artists, ReleaseEntityState.OK, releasesRequest.page, releasesRequest.size)
+    1 * underTest.releaseService.findAllUpcomingReleases(releasesRequest.artists, releasesRequest.page, releasesRequest.size)
   }
 
   def "getPaginatedReleases: valid request without time range should return ok"() {
@@ -297,7 +295,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(from, to), ReleaseEntityState.OK, requestDto.page, requestDto.size)
+    1 * underTest.releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(from, to), requestDto.page, requestDto.size)
   }
 
   def "getPaginatedReleases: valid request with time range should return ok"() {
@@ -347,7 +345,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllReleasesSince(artists, from, ReleaseEntityState.OK, requestDto.page, requestDto.size) >> []
+    1 * underTest.releaseService.findAllReleasesSince(artists, from, requestDto.page, requestDto.size) >> []
   }
 
   def "getPaginatedReleases: should return ok if only 'dateFrom' is given"() {
@@ -419,8 +417,9 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
 
   def "updateReleaseState: should call releasesService"() {
     given:
-    def body = new ReleaseUpdateRequest(1L, FAULTY)
-    def request = put(UPDATE_RELEASE)
+    def releaseId = 1L
+    def body = new ReleaseUpdateRequest(FAULTY)
+    def request = put("${RELEASES}/${releaseId}")
         .contentType(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(body))
 
@@ -428,13 +427,13 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.updateReleaseState(body.releaseId, body.state)
+    1 * underTest.releaseService.updateReleaseState(releaseId, body.state)
   }
 
   def "updateReleaseState: should return OK"() {
     given:
-    def body = new ReleaseUpdateRequest(1L, FAULTY)
-    def request = put(UPDATE_RELEASE)
+    def body = new ReleaseUpdateRequest(FAULTY)
+    def request = put("${RELEASES}/1")
         .contentType(APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(body))
 
@@ -445,22 +444,31 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     result.response.status == OK.value()
   }
 
-  @Unroll
-  "updateReleaseState: should return BAD REQUEST"() {
+  def "updateReleaseState: should return BAD REQUEST for wrong body"() {
     given:
-    def request = put(UPDATE_RELEASE)
+    def request = put("${RELEASES}/1")
         .contentType(APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(body))
+        .content(objectMapper.writeValueAsString(new ReleaseUpdateRequest(null)))
 
     when:
     def result = mockMvc.perform(request).andReturn()
 
     then:
     result.response.status == BAD_REQUEST.value()
+  }
 
-    where:
-    body << [new ReleaseUpdateRequest(0L, FAULTY),
-             new ReleaseUpdateRequest(1L, null)]
+  def "updateReleaseState: should return BAD REQUEST for wrong release id"() {
+    given:
+    def request = put("${RELEASES}/0")
+        .contentType(APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(new ReleaseUpdateRequest(FAULTY)))
+    underTest.releaseService.updateReleaseState(*_) >> {throw new IllegalArgumentException()}
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == BAD_REQUEST.value()
   }
 
   private static ReleasesResponse createReleasesResponse() {

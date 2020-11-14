@@ -34,7 +34,7 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllUpcomingReleases([], state, page, size)
+    underTest.findAllUpcomingReleases([], page, size)
 
     then:
     1 * underTest.releaseRepository.findAllByReleaseDateAfterAndState(NOW - 1, state, expectedPageRequest)
@@ -49,7 +49,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.releaseRepository.findAllByReleaseDateAfterAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllUpcomingReleases([], state, 1, 10)
+    def result = underTest.findAllUpcomingReleases([], 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -66,7 +66,7 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllUpcomingReleases(artistNames, state, page, size)
+    underTest.findAllUpcomingReleases(artistNames, page, size)
 
     then:
     1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(NOW - 1, artistNames, state, expectedPageRequest)
@@ -81,7 +81,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllUpcomingReleases(["A1"], state, 1, 10)
+    def result = underTest.findAllUpcomingReleases(["A1"], 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -98,7 +98,7 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesForTimeRange([], timeRange, state, page, size)
+    underTest.findAllReleasesForTimeRange([], timeRange, page, size)
 
     then:
     1 * underTest.releaseRepository.findAllByReleaseDateBetweenAndState(timeRange.from, timeRange.to, state, expectedPageRequest)
@@ -113,7 +113,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.releaseRepository.findAllByReleaseDateBetweenAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllReleasesForTimeRange([], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), state, 1, 10)
+    def result = underTest.findAllReleasesForTimeRange([], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -131,7 +131,7 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesForTimeRange(artistNames, timeRange, state, page, size)
+    underTest.findAllReleasesForTimeRange(artistNames, timeRange, page, size)
 
     then:
     1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetweenAndState(artistNames, timeRange.from, timeRange.to, state, expectedPageRequest)
@@ -146,7 +146,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.releaseRepository.findAllByArtistInAndReleaseDateBetweenAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllReleasesForTimeRange(["A1"], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), state, 1, 10)
+    def result = underTest.findAllReleasesForTimeRange(["A1"], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -163,7 +163,7 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesSince([], date, state, page, size)
+    underTest.findAllReleasesSince([], date, page, size)
 
     then:
     1 * underTest.releaseRepository.findAllByReleaseDateAfterAndState(date, state, expectedPageRequest)
@@ -178,7 +178,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.releaseRepository.findAllByReleaseDateAfterAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllReleasesSince([], LocalDate.now(), state, 1, 10)
+    def result = underTest.findAllReleasesSince([], LocalDate.now(), 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -196,7 +196,7 @@ class ReleaseServiceImplTest extends Specification {
     def expectedPageRequest = PageRequest.of(page - 1, size, sorting)
 
     when:
-    underTest.findAllReleasesSince(artists, date, state, page, size)
+    underTest.findAllReleasesSince(artists, date, page, size)
 
     then:
     1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(date, artists, state, expectedPageRequest)
@@ -211,7 +211,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(*_) >> pageResult
 
     when:
-    def result = underTest.findAllReleasesSince(["A1"], LocalDate.now(), state, 1, 10)
+    def result = underTest.findAllReleasesSince(["A1"], LocalDate.now(), 1, 10)
 
     then:
     1 * underTest.releasesResponseTransformer.transformPage(pageResult) >> response
@@ -389,7 +389,18 @@ class ReleaseServiceImplTest extends Specification {
     underTest.updateReleaseState(id, FAULTY)
 
     then:
-    1 * underTest.releaseRepository.findById(id) >> Optional.empty()
+    1 * underTest.releaseRepository.findById(id) >> Optional.of(ReleaseEntityFactory.createReleaseEntity("A"))
+  }
+
+  def "updateReleaseState: should throw exception when id not found"() {
+    given:
+    underTest.releaseRepository.findById(*_) >> Optional.empty()
+
+    when:
+    underTest.updateReleaseState(0L, FAULTY)
+
+    then:
+    thrown(IllegalArgumentException)
   }
 
   def "updateReleaseState: should call release repository to update release if present"() {

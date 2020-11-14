@@ -106,8 +106,8 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   def "User cannot access release update endpoint"() {
     given:
-    def requestBody = new ReleaseUpdateRequest(releaseId: 1L, state: FAULTY)
-    def request = put(UPDATE_RELEASE)
+    def requestBody = new ReleaseUpdateRequest(state: FAULTY)
+    def request = put(UPDATE_RELEASE, 1)
         .content(objectMapper.writeValueAsString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
         .header("Authorization", "Bearer " + testUserToken)
@@ -121,8 +121,8 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   def "Admin can access release update endpoint"() {
     given:
-    def requestBody = new ReleaseUpdateRequest(releaseId: 1L, state: FAULTY)
-    def request = put(UPDATE_RELEASE)
+    def requestBody = new ReleaseUpdateRequest(state: FAULTY)
+    def request = put(UPDATE_RELEASE, 1)
         .content(objectMapper.writeValueAsString(requestBody))
         .contentType(MediaType.APPLICATION_JSON)
         .header("Authorization", "Bearer " + testAdminToken)
