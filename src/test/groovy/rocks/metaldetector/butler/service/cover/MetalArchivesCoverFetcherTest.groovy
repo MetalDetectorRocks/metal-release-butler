@@ -9,7 +9,7 @@ class MetalArchivesCoverFetcherTest extends Specification {
 
   MetalArchivesCoverFetcher underTest = new MetalArchivesCoverFetcher(httpBuilderFunction: Mock(HTTPBuilderFunction))
   HTTPBuilder mockHttpBuilder = Mock(HTTPBuilder)
-  URL requestUrl = new URL("http://www.internet.de")
+  String requestUrl = "http://www.internet.de"
 
   def "httpBuilderFunction is called to get new instance of HTTPBuilder"() {
     when:
@@ -38,10 +38,10 @@ class MetalArchivesCoverFetcherTest extends Specification {
     mockHttpBuilder.get(*_) >> mockReleasePage
 
     when:
-    URL result = underTest.fetchCoverUrl(requestUrl)
+    def result = underTest.fetchCoverUrl(requestUrl)
 
     then:
-    result.toURI().toString() == "https://www.i-am-a-cover.com"
+    result == "https://www.i-am-a-cover.com"
   }
 
   def "if getting the release page fails 5 times null is returned"() {

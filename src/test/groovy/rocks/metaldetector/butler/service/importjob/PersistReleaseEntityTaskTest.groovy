@@ -13,16 +13,16 @@ class PersistReleaseEntityTaskTest extends Specification {
           releaseRepository: Mock(ReleaseRepository)
   )
 
-  def "should pass 'metalArchivesAlbumUrl' to cover service"() {
+  def "should pass 'albumUrl' to cover service"() {
     given:
-    def metalArchivesAlbumUrl = new URL("http://cover-url")
-    underTest.releaseEntity.metalArchivesAlbumUrl >> metalArchivesAlbumUrl
+    def albumUrl = "http://cover-url"
+    underTest.releaseEntity.coverSourceUrl >> albumUrl
 
     when:
     underTest.run()
 
     then:
-    1 * underTest.coverService.transfer(metalArchivesAlbumUrl)
+    1 * underTest.coverService.transfer(albumUrl)
   }
 
   def "should set result from cover service cover url on release entity"() {
@@ -43,5 +43,19 @@ class PersistReleaseEntityTaskTest extends Specification {
 
     then:
     1 * underTest.releaseRepository.save(underTest.releaseEntity)
+  }
+
+  def "cover not saved if cover service not set"() {
+    given:
+    underTest.coverService = null
+
+    when:
+    underTest.run()
+
+    then:
+    0 * underTest.coverService.transfer(*_)
+
+    and:
+    0 * underTest.releaseEntity.setCoverUrl(*_)
   }
 }

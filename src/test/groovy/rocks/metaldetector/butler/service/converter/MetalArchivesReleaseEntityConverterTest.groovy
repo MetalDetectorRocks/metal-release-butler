@@ -30,10 +30,10 @@ class MetalArchivesReleaseEntityConverterTest extends Specification {
 
     and:
     conversionResult[0].artist == "The Band"
-    conversionResult[0].metalArchivesArtistUrl == new URL("http://www.example.com/band")
+    conversionResult[0].metalArchivesArtistUrl == "http://www.example.com/band"
     conversionResult[0].additionalArtists.isEmpty()
     conversionResult[0].albumTitle =="The Album Title"
-    conversionResult[0].metalArchivesAlbumUrl == new URL("http://www.example.com/album")
+    conversionResult[0].coverSourceUrl == "http://www.example.com/album"
     conversionResult[0].type == FULL_LENGTH
     conversionResult[0].genre == "Depressive Black Metal"
     conversionResult[0].releaseDate == LocalDate.of(2019, 8, 26)
@@ -82,9 +82,9 @@ class MetalArchivesReleaseEntityConverterTest extends Specification {
     def firstArtistName = "The 1st Artist"
     def secondArtistName = "The 2nd Artist"
     def thirdArtistName = "The 3rd Artist"
-    def firstArtistUrl = new URL("http://www.example.com/band1")
-    def secondArtistUrl = new URL("http://www.example.com/band2")
-    def thirdArtistUrl = new URL("http://www.example.com/band3")
+    def firstArtistUrl = "http://www.example.com/band1"
+    def secondArtistUrl = "http://www.example.com/band2"
+    def thirdArtistUrl = "http://www.example.com/band3"
     def artist = """
       <a href=\\\"$firstArtistUrl\\\">$firstArtistName</a> /
       <a href=\\"$secondArtistUrl\\">$secondArtistName</a> /

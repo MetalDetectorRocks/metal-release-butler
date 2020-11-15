@@ -31,7 +31,7 @@ class S3PersistenceServiceTest extends Specification {
       openConnection() >> GroovyMock(HttpURLConnection) {
         contentType >> "image/jpeg"
       }
-      toExternalForm() >> ""
+      toExternalForm() >> "http://www.internet.com"
     }
 
     responseUrl = GroovyMock(URL) {
@@ -51,11 +51,11 @@ class S3PersistenceServiceTest extends Specification {
 
     then:
     1 * underTest.amazonS3Client.putObject({ arg ->
-      assert arg.bucketName == underTest.bucketName
-      assert arg.key == PATH + uuid + ".jpg"
-      assert arg.inputStream == coverUrl.openStream()
-      assert arg.metadata instanceof ObjectMetadata
-      assert arg.cannedAcl == CannedAccessControlList.PublicRead
+      arg.bucketName == underTest.bucketName &&
+      arg.key == PATH + uuid + ".jpg" &&
+      arg.inputStream == coverUrl.openStream() &&
+      arg.metadata instanceof ObjectMetadata &&
+      arg.cannedAcl == CannedAccessControlList.PublicRead
     })
   }
 

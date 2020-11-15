@@ -9,12 +9,12 @@ class HTTPBuilderFunctionImplTest extends Specification {
 
   def "returns new HTTPBuilder instance with given uri"() {
     given:
-    def url = new URL("http://www.internet.com")
+    def url = "http://www.internet.com"
 
     when:
     HTTPBuilder result = underTest.apply(url)
 
     then:
-    result.uri as URI == url.toURI()
+    result.uri as String == url
   }
 }

@@ -53,15 +53,15 @@ class MetalArchivesReleaseEntityConverter implements Converter<String[], List<Re
       def releaseDate = rawData[4] ? parseReleaseDate(rawData[4]) : null
 
       releaseEntities <<  new ReleaseEntity(
-              artist: artistName,
-              metalArchivesArtistUrl: artistUrl,
-              albumTitle: albumTitle,
-              metalArchivesAlbumUrl: albumUrl,
-              type: ReleaseType.convertFrom(type),
-              genre: genre,
-              releaseDate: releaseDate,
-              source: METAL_ARCHIVES,
-              state: OK
+          artist: artistName,
+          metalArchivesArtistUrl: artistUrl,
+          albumTitle: albumTitle,
+          coverSourceUrl: albumUrl,
+          type: ReleaseType.convertFrom(type),
+          genre: genre,
+          releaseDate: releaseDate,
+          source: METAL_ARCHIVES,
+          state: OK
       )
     }
 
@@ -110,7 +110,7 @@ class MetalArchivesReleaseEntityConverter implements Converter<String[], List<Re
     return xml.text().trim()
   }
 
-  private URL parseAnchorHref(String text) {
+  private String parseAnchorHref(String text) {
     def xml = xmlSlurper.parseText(text)
 
     return new URL(xml.@href.text())

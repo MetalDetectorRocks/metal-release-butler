@@ -9,6 +9,7 @@ import java.time.LocalDateTime
 
 import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
+import static rocks.metaldetector.butler.model.release.ReleaseSource.TEST
 import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 
 class DtoFactory {
@@ -32,10 +33,10 @@ class DtoFactory {
           state: OK,
           estimatedReleaseDate: "releaseDate",
           additionalArtists: artist,
-          source: METAL_ARCHIVES,
+          source: TEST,
           genre: "genre",
           type: FULL_LENGTH,
-          metalArchivesAlbumUrl: new URL("http://www.internet.de"),
+          coverSourceUrl: "http://www.internet.de",
           metalArchivesArtistUrl: new URL("http://www.internet2.de"),
           coverUrl: "coverUrl"
       )
@@ -73,7 +74,7 @@ class DtoFactory {
           source: METAL_ARCHIVES,
           genre: "genre",
           type: FULL_LENGTH,
-          metalArchivesAlbumUrl: new URL("http://www.internet.de").toExternalForm(),
+          coverSourceUrl: "http://www.internet.de",
           metalArchivesArtistUrl: new URL("http://www.internet2.de").toExternalForm(),
           coverUrl: "coverUrl"
       )

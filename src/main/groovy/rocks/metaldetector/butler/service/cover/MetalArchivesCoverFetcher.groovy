@@ -19,14 +19,14 @@ class MetalArchivesCoverFetcher implements CoverFetcher {
   HTTPBuilderFunction httpBuilderFunction
 
   @Override
-  URL fetchCoverUrl(URL metalArchivesAlbumUrl) {
+  String fetchCoverUrl(String metalArchivesAlbumUrl) {
     currentAttempt = 0
     HTTPBuilder httpBuilder = httpBuilderFunction.apply(metalArchivesAlbumUrl)
     def releasePage = fetchReleasePage(httpBuilder)
     def coverDivs = releasePage?."**"?.findAll { it.@id == ALBUM_COVER_HTML_ID }
     def coverDiv = coverDivs ? coverDivs.first() : null
     def coverLink = coverDiv?.@href?.text() as String
-    return coverLink ? new URL(coverLink) : null
+    return coverLink ? coverLink : null
   }
 
   private def fetchReleasePage(HTTPBuilder httpBuilder) {

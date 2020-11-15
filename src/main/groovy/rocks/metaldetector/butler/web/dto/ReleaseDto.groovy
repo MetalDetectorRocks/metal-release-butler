@@ -21,7 +21,7 @@ class ReleaseDto {
   String genre
   ReleaseType type
   String metalArchivesArtistUrl
-  String metalArchivesAlbumUrl
+  String coverSourceUrl
   ReleaseSource source
   ReleaseEntityState state
   String coverUrl

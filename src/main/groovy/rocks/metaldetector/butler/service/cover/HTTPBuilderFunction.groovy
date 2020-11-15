@@ -4,5 +4,5 @@ import groovyx.net.http.HTTPBuilder
 
 import java.util.function.Function
 
-interface HTTPBuilderFunction extends Function<URL, HTTPBuilder> {
+interface HTTPBuilderFunction extends Function<String, HTTPBuilder> {
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 class HTTPBuilderFunctionImpl implements HTTPBuilderFunction {
 
   @Override
-  HTTPBuilder apply(URL albumUrl) {
+  HTTPBuilder apply(String albumUrl) {
     return new HTTPBuilder(albumUrl)
   }
 }

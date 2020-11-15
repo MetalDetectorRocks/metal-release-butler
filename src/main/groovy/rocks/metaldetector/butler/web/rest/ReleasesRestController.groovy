@@ -1,7 +1,6 @@
 package rocks.metaldetector.butler.web.rest
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PathVariable
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import rocks.metaldetector.butler.config.constants.Endpoints
 import rocks.metaldetector.butler.model.TimeRange
 import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.web.api.ReleaseUpdateRequest
@@ -19,8 +17,10 @@ import rocks.metaldetector.butler.web.api.ReleasesResponse
 
 import javax.validation.Valid
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
+import static rocks.metaldetector.butler.config.constants.Endpoints.UPDATE_RELEASE
 
 @RestController
 class ReleasesRestController {
@@ -28,7 +28,7 @@ class ReleasesRestController {
   @Autowired
   ReleaseService releaseService
 
-  @PostMapping(path = RELEASES, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = RELEASES, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_USER')")
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request) {
     def releasesResponse
@@ -49,7 +49,7 @@ class ReleasesRestController {
     return ResponseEntity.ok(releasesResponse)
   }
 
-  @PostMapping(path = RELEASES_UNPAGINATED, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(path = RELEASES_UNPAGINATED, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request) {
     def releasesResponse
@@ -69,7 +69,7 @@ class ReleasesRestController {
     return ResponseEntity.ok(releasesResponse)
   }
 
-  @PutMapping(path = Endpoints.UPDATE_RELEASE, consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(path = UPDATE_RELEASE, consumes = APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<Void> updateReleaseState(@Valid @RequestBody ReleaseUpdateRequest request, @PathVariable("releaseId") long releaseId) {
     releaseService.updateReleaseState(releaseId, request.state)
