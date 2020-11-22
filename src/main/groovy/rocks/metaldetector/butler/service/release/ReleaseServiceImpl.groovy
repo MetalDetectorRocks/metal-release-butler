@@ -25,17 +25,15 @@ class ReleaseServiceImpl implements ReleaseService {
   @Autowired
   ReleasesResponseTransformer releasesResponseTransformer
 
-  final Sort sorting = Sort.by(Sort.Direction.ASC, "releaseDate", "artist", "albumTitle")
-
-  final Closure<PageRequest> pageableSupplier = { int page, int size ->
+  final Closure<PageRequest> pageableSupplier = { int page, int size, Sort sorting ->
     // Since the page is index-based we decrement the value by 1
     return PageRequest.of(page - 1, size, sorting)
   }
 
   @Override
   @Transactional(readOnly = true)
-  ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames, int page, int size) {
-    PageRequest pageRequest = pageableSupplier.call(page, size)
+  ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames, int page, int size, Sort sorting) {
+    PageRequest pageRequest = pageableSupplier.call(page, size, sorting)
     def pageResult = artistNames.isEmpty()
         ? releaseRepository.findAllByReleaseDateAfterAndState(YESTERDAY, ReleaseEntityState.OK, pageRequest)
         : releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(YESTERDAY, artistNames, ReleaseEntityState.OK, pageRequest)
@@ -45,8 +43,8 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional(readOnly = true)
-  ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, int page, int size) {
-    PageRequest pageRequest = pageableSupplier.call(page, size)
+  ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, int page, int size, Sort sorting) {
+    PageRequest pageRequest = pageableSupplier.call(page, size, sorting)
     def pageResult = artistNames.isEmpty()
         ? releaseRepository.findAllByReleaseDateBetweenAndState(timeRange.from, timeRange.to, ReleaseEntityState.OK, pageRequest)
         : releaseRepository.findAllByArtistInAndReleaseDateBetweenAndState(artistNames, timeRange.from, timeRange.to, ReleaseEntityState.OK, pageRequest)
@@ -56,8 +54,8 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional(readOnly = true)
-  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, int page, int size) {
-    PageRequest pageRequest = pageableSupplier.call(page, size)
+  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, int page, int size, Sort sorting) {
+    PageRequest pageRequest = pageableSupplier.call(page, size, sorting)
     def pageResult = artistNames.isEmpty()
         ? releaseRepository.findAllByReleaseDateAfterAndState(dateFrom, ReleaseEntityState.OK, pageRequest)
         : releaseRepository.findAllByReleaseDateAfterAndArtistInAndState(dateFrom, artistNames, ReleaseEntityState.OK, pageRequest)
@@ -67,7 +65,7 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional(readOnly = true)
-  ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames) {
+  ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames, Sort sorting) {
     def releaseEntities = artistNames.isEmpty()
         ? releaseRepository.findAllByReleaseDateAfter(YESTERDAY, sorting)
         : releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, sorting)
@@ -77,7 +75,7 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional(readOnly = true)
-  ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange) {
+  ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, Sort sorting) {
     def releaseEntities = artistNames.isEmpty()
         ? releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to, sorting)
         : releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, sorting)
@@ -87,7 +85,7 @@ class ReleaseServiceImpl implements ReleaseService {
 
   @Override
   @Transactional(readOnly = true)
-  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom) {
+  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, Sort sorting) {
     def releaseEntities = artistNames.isEmpty()
         ? releaseRepository.findAllByReleaseDateAfter(dateFrom, sorting)
         : releaseRepository.findAllByReleaseDateAfterAndArtistIn(dateFrom, artistNames, sorting)

@@ -9,6 +9,7 @@ RUN mkdir /app
 WORKDIR /app
 
 RUN useradd --no-log-init --no-create-home --shell /bin/false service_user
+USER service_user
 
 # Arguments
 ARG SOURCE_JAR_FILE="build/libs/*.jar"
