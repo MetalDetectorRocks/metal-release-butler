@@ -2,6 +2,7 @@ package rocks.metaldetector.butler.service.converter
 
 import groovy.util.logging.Slf4j
 import groovy.xml.XmlSlurper
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseType
@@ -18,11 +19,8 @@ class MetalArchivesReleaseEntityConverter implements Converter<String[], List<Re
 
   static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.US)
 
-  final XmlSlurper xmlSlurper
-
-  MetalArchivesReleaseEntityConverter() {
-    xmlSlurper = new XmlSlurper()
-  }
+  @Autowired
+  XmlSlurper xmlSlurper
 
   /*
    * Returns a list of ReleaseEntity, since a split album from Metal Archives
@@ -54,9 +52,9 @@ class MetalArchivesReleaseEntityConverter implements Converter<String[], List<Re
 
       releaseEntities <<  new ReleaseEntity(
           artist: artistName,
-          metalArchivesArtistUrl: artistUrl,
+          artistDetailsUrl: artistUrl,
           albumTitle: albumTitle,
-          coverSourceUrl: albumUrl,
+          releaseDetailsUrl: albumUrl,
           type: ReleaseType.convertFrom(type),
           genre: genre,
           releaseDate: releaseDate,
@@ -113,7 +111,7 @@ class MetalArchivesReleaseEntityConverter implements Converter<String[], List<Re
   private String parseAnchorHref(String text) {
     def xml = xmlSlurper.parseText(text)
 
-    return new URL(xml.@href.text())
+    return xml.@href.text()
   }
 
   private LocalDate parseReleaseDate(String rawDate) {

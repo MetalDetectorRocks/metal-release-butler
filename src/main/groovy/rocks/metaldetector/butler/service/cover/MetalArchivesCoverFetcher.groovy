@@ -26,7 +26,7 @@ class MetalArchivesCoverFetcher implements CoverFetcher {
     def coverDivs = releasePage?."**"?.findAll { it.@id == ALBUM_COVER_HTML_ID }
     def coverDiv = coverDivs ? coverDivs.first() : null
     def coverLink = coverDiv?.@href?.text() as String
-    return coverLink ? coverLink : null
+    return coverLink
   }
 
   private def fetchReleasePage(HTTPBuilder httpBuilder) {

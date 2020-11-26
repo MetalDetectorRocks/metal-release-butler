@@ -36,8 +36,8 @@ class DtoFactory {
           source: TEST,
           genre: "genre",
           type: FULL_LENGTH,
-          coverSourceUrl: "http://www.internet.de",
-          metalArchivesArtistUrl: new URL("http://www.internet2.de"),
+          releaseDetailsUrl: "http://www.internet.de",
+          artistDetailsUrl: new URL("http://www.internet2.de"),
           coverUrl: "coverUrl"
       )
     }
@@ -74,8 +74,8 @@ class DtoFactory {
           source: METAL_ARCHIVES,
           genre: "genre",
           type: FULL_LENGTH,
-          coverSourceUrl: "http://www.internet.de",
-          metalArchivesArtistUrl: new URL("http://www.internet2.de").toExternalForm(),
+          releaseDetailsUrl: "http://www.internet.de",
+          artistDetailsUrl: new URL("http://www.internet2.de").toExternalForm(),
           coverUrl: "coverUrl"
       )
     }

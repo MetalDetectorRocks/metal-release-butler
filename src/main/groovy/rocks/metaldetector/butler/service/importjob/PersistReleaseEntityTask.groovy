@@ -13,7 +13,7 @@ class PersistReleaseEntityTask implements Runnable {
   @Override
   void run() {
     if (coverService) {
-      String transferTargetAddress = coverService.transfer(releaseEntity.coverSourceUrl)
+      String transferTargetAddress = coverService.transfer(releaseEntity.releaseDetailsUrl)
       releaseEntity.setCoverUrl(transferTargetAddress)
     }
     releaseRepository.save(releaseEntity)

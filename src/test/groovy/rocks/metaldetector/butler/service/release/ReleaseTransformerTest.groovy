@@ -25,8 +25,8 @@ class ReleaseTransformerTest extends Specification {
     result.estimatedReleaseDate == releaseEntity.estimatedReleaseDate
     result.source == releaseEntity.source
     result.genre == releaseEntity.genre
-    result.coverSourceUrl == releaseEntity.coverSourceUrl
-    result.metalArchivesArtistUrl == releaseEntity.metalArchivesArtistUrl
+    result.releaseDetailsUrl == releaseEntity.releaseDetailsUrl
+    result.artistDetailsUrl == releaseEntity.artistDetailsUrl
     result.type == releaseEntity.type
     result.coverUrl == releaseEntity.coverUrl
     result.state == releaseEntity.state
@@ -44,7 +44,7 @@ class ReleaseTransformerTest extends Specification {
     noExceptionThrown()
 
     and:
-    !result.metalArchivesArtistUrl
-    !result.coverSourceUrl
+    !result.artistDetailsUrl
+    !result.releaseDetailsUrl
   }
 }

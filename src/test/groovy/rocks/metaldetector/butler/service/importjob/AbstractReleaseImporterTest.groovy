@@ -22,14 +22,14 @@ class AbstractReleaseImporterTest extends Specification {
     given:
     def releaseEntities = [
         ReleaseEntityFactory.createReleaseEntity("a"),
-        ReleaseEntityFactory.createReleaseEntity("b")
+        ReleaseEntityFactory.createReleaseEntity("a")
     ]
 
     when:
     underTest.persistReleaseEntities(releaseEntities)
 
     then:
-    2 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
+    1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
   }
 
   def "ReleaseEntity, CoverService and ReleaseRepository is passed to each created PersistReleaseEntityTask"() {

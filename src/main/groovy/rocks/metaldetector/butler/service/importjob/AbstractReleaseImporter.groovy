@@ -5,13 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
-import rocks.metaldetector.butler.model.release.ReleaseSource
 import rocks.metaldetector.butler.service.cover.CoverService
 
 import java.util.concurrent.Future
 
 @Slf4j
-abstract class AbstractReleaseImporter {
+abstract class AbstractReleaseImporter implements ReleaseImporter {
 
   @Autowired
   ReleaseRepository releaseRepository
@@ -21,9 +20,20 @@ abstract class AbstractReleaseImporter {
 
   protected CoverService coverService
 
-  abstract ImportResult importReleases()
-
-  abstract ReleaseSource getReleaseSource()
+  @Override
+  void retryCoverDownload() {
+    if (coverService) {
+      List<Future> futures = []
+      releaseRepository.findAll()
+          .findAll { releaseEntity ->
+            releaseEntity.source == getReleaseSource() && !releaseEntity.coverUrl
+          }
+          .each { releaseEntity ->
+            futures << releaseEntityPersistenceThreadPool.submit(createPersistReleaseEntityTask(releaseEntity))
+          }
+      futures*.get()
+    }
+  }
 
   protected ImportResult persistReleaseEntities(List<ReleaseEntity> releaseEntities) {
     int inserted = 0
@@ -44,20 +54,6 @@ abstract class AbstractReleaseImporter {
         totalCountRequested: releaseEntities.size(),
         totalCountImported: inserted
     )
-  }
-
-  protected void retryCoverDownload() {
-    if (coverService) {
-      List<Future> futures = []
-      releaseRepository.findAll()
-          .findAll { releaseEntity ->
-            releaseEntity.source == getReleaseSource() && !releaseEntity.coverUrl
-          }
-          .each { releaseEntity ->
-            futures << releaseEntityPersistenceThreadPool.submit(createPersistReleaseEntityTask(releaseEntity))
-          }
-      futures*.get()
-    }
   }
 
   protected PersistReleaseEntityTask createPersistReleaseEntityTask(ReleaseEntity releaseEntity) {

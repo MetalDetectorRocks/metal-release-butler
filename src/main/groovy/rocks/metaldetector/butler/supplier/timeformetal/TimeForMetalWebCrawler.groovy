@@ -20,7 +20,7 @@ class TimeForMetalWebCrawler {
       return responseEntity.body
     }
     catch (Exception e) {
-      log.error("Error during fetching releases", e)
+      log.error("Error during fetching releases for page ${page}", e)
     }
   }
 }

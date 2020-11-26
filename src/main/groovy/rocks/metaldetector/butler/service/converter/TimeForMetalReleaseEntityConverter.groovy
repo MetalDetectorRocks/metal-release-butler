@@ -3,6 +3,7 @@ package rocks.metaldetector.butler.service.converter
 import groovy.util.logging.Slf4j
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.NodeChild
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 
@@ -15,11 +16,8 @@ import static rocks.metaldetector.butler.model.release.ReleaseSource.TIME_FOR_ME
 @Slf4j
 class TimeForMetalReleaseEntityConverter implements Converter<String, List<ReleaseEntity>> {
 
-  final XmlSlurper xmlSlurper
-
-  TimeForMetalReleaseEntityConverter() {
-    this.xmlSlurper = new XmlSlurper()
-  }
+  @Autowired
+  XmlSlurper xmlSlurper
 
   @Override
   List<ReleaseEntity> convert(String source) {
@@ -67,6 +65,6 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
 
   private void setCoverSourceUrl(def builder, NodeChild rawSource) {
     def sourceUrl = rawSource.attributes()["src"] as String
-    builder.coverSourceUrl(sourceUrl)
+    builder.releaseDetailsUrl(sourceUrl)
   }
 }

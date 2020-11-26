@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.service.converter
 
+import groovy.xml.XmlSlurper
 import org.springframework.core.io.ClassPathResource
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import spock.lang.Specification
@@ -18,7 +19,7 @@ import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEnt
 
 class MetalHammerReleaseEntityConverterTest extends Specification {
 
-  MetalHammerReleaseEntityConverter underTest = new MetalHammerReleaseEntityConverter()
+  MetalHammerReleaseEntityConverter underTest = new MetalHammerReleaseEntityConverter(xmlSlurper: Spy(XmlSlurper))
   def sourceString = new ClassPathResource("mock-releases-page-metal-hammer.txt").inputStream.text
 
   def "Should convert raw data into release entities"() {
@@ -37,6 +38,9 @@ class MetalHammerReleaseEntityConverterTest extends Specification {
     result[1] == new ReleaseEntity(artist: "Mayhem",
                                    albumTitle: "De Mysteriis Dom Sathanas",
                                    releaseDate: LocalDate.of(LocalDate.now().year, 7, 7))
+
+    and:
+    1 * underTest.xmlSlurper.parseText(*_)
   }
 
   @Unroll

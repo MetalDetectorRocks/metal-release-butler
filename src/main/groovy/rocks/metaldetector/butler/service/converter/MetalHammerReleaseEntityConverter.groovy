@@ -3,6 +3,7 @@ package rocks.metaldetector.butler.service.converter
 import groovy.util.logging.Slf4j
 import groovy.xml.XmlSlurper
 import org.apache.commons.lang.WordUtils
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 
@@ -27,11 +28,8 @@ class MetalHammerReleaseEntityConverter implements Converter<String, List<Releas
   static final String AUTUMN_ENGLISH = "Autumn"
   static final String WINTER_ENGLISH = "Winter"
 
-  final XmlSlurper xmlSlurper
-
-  MetalHammerReleaseEntityConverter() {
-    this.xmlSlurper = new XmlSlurper()
-  }
+  @Autowired
+  XmlSlurper xmlSlurper
 
   @Override
   List<ReleaseEntity> convert(String source) {

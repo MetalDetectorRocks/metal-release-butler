@@ -16,7 +16,7 @@ class PersistReleaseEntityTaskTest extends Specification {
   def "should pass 'albumUrl' to cover service"() {
     given:
     def albumUrl = "http://cover-url"
-    underTest.releaseEntity.coverSourceUrl >> albumUrl
+    underTest.releaseEntity.releaseDetailsUrl >> albumUrl
 
     when:
     underTest.run()

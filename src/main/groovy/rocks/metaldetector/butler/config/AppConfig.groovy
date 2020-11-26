@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.config
 
+import groovy.xml.XmlSlurper
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,11 +24,16 @@ class AppConfig {
 
   @Bean
   JwtParser jwtParser() {
-    Jwts.parser()
+    return Jwts.parser()
   }
 
   @Bean
   ThreadPoolTaskExecutor releaseEntityPersistenceThreadPool() {
     return new ThreadPoolTaskExecutor(corePoolSize: concurrencyConfig.releaseImportPoolSize)
+  }
+
+  @Bean
+  XmlSlurper xmlSlurper() {
+    return new XmlSlurper()
   }
 }

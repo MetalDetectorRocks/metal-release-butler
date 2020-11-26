@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.service.converter
 
+import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.NodeChild
 import org.springframework.core.io.ClassPathResource
 import rocks.metaldetector.butler.model.release.ReleaseEntity
@@ -10,7 +11,7 @@ import java.time.LocalDate
 
 class TimeForMetalReleaseEntityConverterTest extends Specification {
 
-  TimeForMetalReleaseEntityConverter underTest = new TimeForMetalReleaseEntityConverter()
+  TimeForMetalReleaseEntityConverter underTest = new TimeForMetalReleaseEntityConverter(xmlSlurper: Spy(XmlSlurper))
   def sourceString = new ClassPathResource("mock-releases-page-time-for-metal.txt").inputStream.text
 
   def "Should convert raw data into release entities"() {
@@ -29,6 +30,9 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     result[1] == new ReleaseEntity(artist: "Artist 2",
                                    albumTitle: "Album 2",
                                    releaseDate: LocalDate.of(2020, 2, 1))
+
+    and:
+    2 * underTest.xmlSlurper.parseText(*_)
   }
 
   def "artist name is set"() {
@@ -85,6 +89,6 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
 
     then:
     def releaseEntity = releaseEntityBuilder.build()
-    releaseEntity.coverSourceUrl == sourceUrl
+    releaseEntity.releaseDetailsUrl == sourceUrl
   }
 }

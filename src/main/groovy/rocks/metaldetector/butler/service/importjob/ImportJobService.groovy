@@ -24,22 +24,22 @@ class ImportJobService {
   ImportJobTransformer importJobTransformer
 
   @Autowired
-  AbstractReleaseImporter metalArchivesReleaseImporter
+  ReleaseImporter metalArchivesReleaseImporter
 
   @Autowired
-  AbstractReleaseImporter metalHammerReleaseImporter
+  ReleaseImporter metalHammerReleaseImporter
 
   @Autowired
-  AbstractReleaseImporter timeForMetalReleaseImporter
+  ReleaseImporter timeForMetalReleaseImporter
 
-  List<AbstractReleaseImporter> releaseImporters
+  List<ReleaseImporter> releaseImporters
 
   @PostConstruct
   private void init() {
     releaseImporters = [
-//        metalArchivesReleaseImporter,
-        timeForMetalReleaseImporter
-//        metalHammerReleaseImporter
+        metalArchivesReleaseImporter,
+        timeForMetalReleaseImporter,
+        metalHammerReleaseImporter
     ]
   }
 
