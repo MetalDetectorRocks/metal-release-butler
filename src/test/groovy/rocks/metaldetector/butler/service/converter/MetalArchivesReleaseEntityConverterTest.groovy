@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.service.converter
 
+import groovy.xml.XmlSlurper
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -11,7 +12,7 @@ import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 
 class MetalArchivesReleaseEntityConverterTest extends Specification {
 
-  MetalArchivesReleaseEntityConverter underTest = new MetalArchivesReleaseEntityConverter()
+  MetalArchivesReleaseEntityConverter underTest = new MetalArchivesReleaseEntityConverter(xmlSlurper: Spy(XmlSlurper))
 
   def "Should convert raw data into ReleaseEntity"() {
     given:
@@ -30,15 +31,18 @@ class MetalArchivesReleaseEntityConverterTest extends Specification {
 
     and:
     conversionResult[0].artist == "The Band"
-    conversionResult[0].metalArchivesArtistUrl == new URL("http://www.example.com/band")
+    conversionResult[0].artistDetailsUrl == "http://www.example.com/band"
     conversionResult[0].additionalArtists.isEmpty()
     conversionResult[0].albumTitle =="The Album Title"
-    conversionResult[0].metalArchivesAlbumUrl == new URL("http://www.example.com/album")
+    conversionResult[0].releaseDetailsUrl == "http://www.example.com/album"
     conversionResult[0].type == FULL_LENGTH
     conversionResult[0].genre == "Depressive Black Metal"
     conversionResult[0].releaseDate == LocalDate.of(2019, 8, 26)
     conversionResult[0].source == METAL_ARCHIVES
     conversionResult[0].estimatedReleaseDate == null
+
+    and:
+    4 * underTest.xmlSlurper.parseText(*_)
   }
 
   def "Should handle null on index 2, 3 and 4" () {
@@ -82,9 +86,9 @@ class MetalArchivesReleaseEntityConverterTest extends Specification {
     def firstArtistName = "The 1st Artist"
     def secondArtistName = "The 2nd Artist"
     def thirdArtistName = "The 3rd Artist"
-    def firstArtistUrl = new URL("http://www.example.com/band1")
-    def secondArtistUrl = new URL("http://www.example.com/band2")
-    def thirdArtistUrl = new URL("http://www.example.com/band3")
+    def firstArtistUrl = "http://www.example.com/band1"
+    def secondArtistUrl = "http://www.example.com/band2"
+    def thirdArtistUrl = "http://www.example.com/band3"
     def artist = """
       <a href=\\\"$firstArtistUrl\\\">$firstArtistName</a> /
       <a href=\\"$secondArtistUrl\\">$secondArtistName</a> /
@@ -94,24 +98,24 @@ class MetalArchivesReleaseEntityConverterTest extends Specification {
     String[] rawReleaseData = [artist, albumTitle, null, null, null]
 
     when:
-    List<ReleaseEntity> conversionResult = new MetalArchivesReleaseEntityConverter().convert(rawReleaseData)
+    List<ReleaseEntity> conversionResult = underTest.convert(rawReleaseData)
 
     then:
     conversionResult.size() == 3
 
     and:
     conversionResult[0].artist == firstArtistName
-    conversionResult[0].metalArchivesArtistUrl == firstArtistUrl
+    conversionResult[0].artistDetailsUrl == firstArtistUrl
     conversionResult[0].additionalArtists == [secondArtistName, thirdArtistName]
 
     and:
     conversionResult[1].artist == secondArtistName
-    conversionResult[1].metalArchivesArtistUrl == secondArtistUrl
+    conversionResult[1].artistDetailsUrl == secondArtistUrl
     conversionResult[1].additionalArtists == [firstArtistName, thirdArtistName]
 
     and:
     conversionResult[2].artist == thirdArtistName
-    conversionResult[2].metalArchivesArtistUrl == thirdArtistUrl
+    conversionResult[2].artistDetailsUrl == thirdArtistUrl
     conversionResult[2].additionalArtists == [firstArtistName, secondArtistName]
   }
 

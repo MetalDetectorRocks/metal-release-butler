@@ -25,15 +25,15 @@ class ReleaseTransformerTest extends Specification {
     result.estimatedReleaseDate == releaseEntity.estimatedReleaseDate
     result.source == releaseEntity.source
     result.genre == releaseEntity.genre
-    result.metalArchivesAlbumUrl == releaseEntity.metalArchivesAlbumUrl.toExternalForm()
-    result.metalArchivesArtistUrl == releaseEntity.metalArchivesArtistUrl.toExternalForm()
+    result.releaseDetailsUrl == releaseEntity.releaseDetailsUrl
+    result.artistDetailsUrl == releaseEntity.artistDetailsUrl
     result.type == releaseEntity.type
     result.coverUrl == releaseEntity.coverUrl
     result.state == releaseEntity.state
     result.additionalArtists == releaseEntity.additionalArtists
   }
 
-  def "metalArchives urls can be null"() {
+  def "urls can be null"() {
     given:
     def metalHammerReleaseEntity = new ReleaseEntity(source: METAL_HAMMER_DE)
 
@@ -44,7 +44,7 @@ class ReleaseTransformerTest extends Specification {
     noExceptionThrown()
 
     and:
-    !result.metalArchivesArtistUrl
-    !result.metalArchivesAlbumUrl
+    !result.artistDetailsUrl
+    !result.releaseDetailsUrl
   }
 }

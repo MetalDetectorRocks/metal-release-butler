@@ -30,10 +30,9 @@ class S3PersistenceService implements CoverPersistenceService {
 
   @Override
   String persistCover(URL coverUrl) {
-    def coverUrlAsString = coverUrl.toExternalForm()
     def key = PATH + UUID.randomUUID() + "." + FilenameUtils.getExtension(coverUrl.getPath())
     try {
-      log.info("Upload cover from '" + coverUrlAsString + "'")
+      log.info("Upload cover from '${coverUrl.toExternalForm()}'")
       PutObjectRequest request = createPutObjectRequest(key, coverUrl)
       amazonS3Client.putObject(request)
 
@@ -41,7 +40,7 @@ class S3PersistenceService implements CoverPersistenceService {
       return "${awsS3Host}/${bucketName}${s3Url.path}"
     }
     catch (SdkClientException ex) {
-      log.warn("Could not upload cover from '${coverUrlAsString}'", ex)
+      log.warn("Could not upload cover from '${coverUrl.toExternalForm()}'", ex)
       return null
     }
   }

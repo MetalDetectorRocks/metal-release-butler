@@ -41,4 +41,18 @@ class MetalHammerWebCrawlerTest extends Specification {
     and:
     result == responsePage
   }
+
+  def "nothing happens on exception and null is returned"() {
+    given:
+    underTest.restTemplate.getForEntity(*_) >> {throw new Exception()}
+
+    when:
+    def result = underTest.requestReleases()
+
+    then:
+    noExceptionThrown()
+
+    and:
+    !result
+  }
 }

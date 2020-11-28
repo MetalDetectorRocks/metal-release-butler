@@ -7,6 +7,7 @@ import spock.lang.Specification
 import static rocks.metaldetector.butler.DtoFactory.ImportJobEntityFactory
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
+import static rocks.metaldetector.butler.model.release.ReleaseSource.TIME_FOR_METAL
 
 class ImportJobServiceTest extends Specification {
 
@@ -14,7 +15,8 @@ class ImportJobServiceTest extends Specification {
           importJobRepository: Mock(ImportJobRepository),
           importJobTransformer: Mock(ImportJobTransformer),
           metalArchivesReleaseImporter: Mock(MetalArchivesReleaseImporter),
-          metalHammerReleaseImporter: Mock(MetalHammerReleaseImporter)
+          metalHammerReleaseImporter: Mock(MetalHammerReleaseImporter),
+          timeForMetalReleaseImporter: Mock(TimeForMetalReleaseImporter)
   )
 
   def "should call import job repository"() {
@@ -89,8 +91,9 @@ class ImportJobServiceTest extends Specification {
 
   def "Should process the release importers according to the specified order"() {
     given:
-    underTest.releaseImporters = [underTest.metalArchivesReleaseImporter, underTest.metalHammerReleaseImporter]
+    underTest.releaseImporters = [underTest.metalArchivesReleaseImporter, underTest.timeForMetalReleaseImporter, underTest.metalHammerReleaseImporter]
     underTest.metalArchivesReleaseImporter.releaseSource >> METAL_ARCHIVES
+    underTest.timeForMetalReleaseImporter.releaseSource >> TIME_FOR_METAL
     underTest.metalHammerReleaseImporter.releaseSource >> METAL_HAMMER_DE
     underTest.importJobRepository.save(*_) >> new ImportJobEntity()
 
@@ -99,6 +102,9 @@ class ImportJobServiceTest extends Specification {
 
     then:
     1 * underTest.metalArchivesReleaseImporter.importReleases() >> new ImportResult()
+
+    then:
+    1 * underTest.timeForMetalReleaseImporter.importReleases() >> new ImportResult()
 
     then:
     1 * underTest.metalHammerReleaseImporter.importReleases() >> new ImportResult()
@@ -151,11 +157,16 @@ class ImportJobServiceTest extends Specification {
     result == createdJobEntity
   }
 
-  def "should call metalArchivesImport on retryCoverDownload"() {
+  def "should call all importers on retryCoverDownload"() {
+    given:
+    underTest.releaseImporters = [underTest.metalArchivesReleaseImporter, underTest.metalHammerReleaseImporter, underTest.timeForMetalReleaseImporter]
+
     when:
     underTest.retryCoverDownload()
 
     then:
     1 * underTest.metalArchivesReleaseImporter.retryCoverDownload()
+    1 * underTest.metalHammerReleaseImporter.retryCoverDownload()
+    1 * underTest.timeForMetalReleaseImporter.retryCoverDownload()
   }
 }

@@ -12,8 +12,10 @@ class PersistReleaseEntityTask implements Runnable {
 
   @Override
   void run() {
-    String transferTargetAddress = coverService.transfer(releaseEntity.metalArchivesAlbumUrl)
-    releaseEntity.setCoverUrl(transferTargetAddress)
+    if (coverService) {
+      String transferTargetAddress = coverService.transfer(releaseEntity.releaseDetailsUrl)
+      releaseEntity.setCoverUrl(transferTargetAddress)
+    }
     releaseRepository.save(releaseEntity)
   }
 }

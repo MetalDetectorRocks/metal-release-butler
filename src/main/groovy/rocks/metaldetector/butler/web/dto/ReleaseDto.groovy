@@ -20,8 +20,8 @@ class ReleaseDto {
   String estimatedReleaseDate
   String genre
   ReleaseType type
-  String metalArchivesArtistUrl
-  String metalArchivesAlbumUrl
+  String artistDetailsUrl
+  String releaseDetailsUrl
   ReleaseSource source
   ReleaseEntityState state
   String coverUrl

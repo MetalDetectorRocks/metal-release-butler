@@ -1,0 +1,36 @@
+html blabla
+
+<table class="events-table">
+    <tbody>
+        <tr>
+            <td>01.01.2020</td>
+            <td>
+                <a>
+                    <img src="http://cover1.com/album.jpg" />
+                </a>
+            </td>
+            <td>
+                <a>Artist 1 - Album 1</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+html blabla
+
+<table class="events-table">
+    <tbody>
+        <tr>
+            <td>01.02.2020</td>
+            <td>
+                <a>
+                    <img src="http://cover2.com/album.jpg" />
+                </a>
+            </td>
+            <td><a>Artist 2 - Album 2</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+html blabla

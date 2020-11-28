@@ -29,13 +29,17 @@ class ImportJobService {
   @Autowired
   ReleaseImporter metalHammerReleaseImporter
 
+  @Autowired
+  ReleaseImporter timeForMetalReleaseImporter
+
   List<ReleaseImporter> releaseImporters
 
   @PostConstruct
   private void init() {
     releaseImporters = [
-            metalArchivesReleaseImporter,
-            metalHammerReleaseImporter
+        metalArchivesReleaseImporter,
+        timeForMetalReleaseImporter,
+        metalHammerReleaseImporter
     ]
   }
 
@@ -50,7 +54,9 @@ class ImportJobService {
 
   @Async
   void retryCoverDownload() {
-    metalArchivesReleaseImporter.retryCoverDownload()
+    releaseImporters.each {
+      it.retryCoverDownload()
+    }
   }
 
   @Transactional
@@ -71,9 +77,9 @@ class ImportJobService {
   @Transactional(readOnly = false)
   ImportJobEntity createImportJob(ReleaseSource source) {
     ImportJobEntity importJobEntity = new ImportJobEntity(
-            jobId: UUID.randomUUID(),
-            startTime: LocalDateTime.now(),
-            source: source
+        jobId: UUID.randomUUID(),
+        startTime: LocalDateTime.now(),
+        source: source
     )
     importJobEntity = importJobRepository.save(importJobEntity)
     return importJobEntity
