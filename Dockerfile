@@ -29,6 +29,4 @@ LABEL org.label-schema.version=$BUILD_DATE
 
 COPY $SOURCE_JAR_FILE app.jar
 
-RUN sh -c 'touch app.jar'
-
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
+CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
