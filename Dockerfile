@@ -3,13 +3,15 @@ FROM openjdk:11-stretch
 ENV TZ=Europe/Berlin
 ENV SERVER_PORT 8080
 
-EXPOSE $SERVER_PORT
-
-RUN mkdir /app
+RUN mkdir /app && mkdir /app/images && mkdir /app/logs
 WORKDIR /app
 
 RUN useradd --no-log-init --no-create-home --shell /bin/false service_user
+RUN chown -cR service_user:service_user /app
 USER service_user
+
+EXPOSE $SERVER_PORT
+VOLUME ["/app/images/", "/app/logs/"]
 
 # Arguments
 ARG SOURCE_JAR_FILE="build/libs/*.jar"
