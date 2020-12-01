@@ -11,6 +11,7 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
+import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 
 @Component
 @Slf4j
@@ -44,6 +45,7 @@ class MetalHammerReleaseEntityConverter implements Converter<String, List<Releas
           setArtist(builder, it.td[0].toString())
           setAlbumTitle(builder, it.td[1].toString())
           setDate(builder, it.td[2].toString())
+          builder.type(FULL_LENGTH)
           return builder.build()
         }
     return releases

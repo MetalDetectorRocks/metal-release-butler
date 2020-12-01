@@ -6,11 +6,13 @@ import groovy.xml.slurpersupport.NodeChild
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import rocks.metaldetector.butler.model.release.ReleaseEntity
+import rocks.metaldetector.butler.model.release.ReleaseType
 
 import java.time.LocalDate
 
 import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 import static rocks.metaldetector.butler.model.release.ReleaseSource.TIME_FOR_METAL
+import static rocks.metaldetector.butler.model.release.ReleaseType.*
 
 @Component
 @Slf4j
@@ -35,6 +37,7 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
             setAlbumTitle(builder, it.td[2].toString())
             setReleaseDate(builder, it.td[0].toString())
             setCoverSourceUrl(builder, it.td[1].a[0].img[0] as NodeChild)
+            builder.type(FULL_LENGTH)
             return builder.build()
           }
     }
