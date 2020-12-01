@@ -5,6 +5,7 @@ import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.model.release.ReleaseSource
 import rocks.metaldetector.butler.service.cover.CoverService
+import rocks.metaldetector.butler.service.cover.NoOpCoverService
 import spock.lang.Specification
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
@@ -15,8 +16,7 @@ import static rocks.metaldetector.butler.model.release.ReleaseSource.TEST
 class AbstractReleaseImporterTest extends Specification {
 
   AbstractReleaseImporter underTest = new TestReleaseImporter(releaseRepository: Mock(ReleaseRepository),
-                                                              releaseEntityPersistenceThreadPool: Mock(ThreadPoolTaskExecutor),
-                                                              coverService: Mock(CoverService))
+                                                              coverTransferThreadPool: Mock(ThreadPoolTaskExecutor))
 
   def "Duplicates are filtered out before the database query checks whether the release already exists"() {
     given:
@@ -26,13 +26,13 @@ class AbstractReleaseImporterTest extends Specification {
     ]
 
     when:
-    underTest.persistReleaseEntities(releaseEntities)
+    underTest.finalizeImport(releaseEntities)
 
     then:
     1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
   }
 
-  def "ReleaseEntity, CoverService and ReleaseRepository is passed to each created PersistReleaseEntityTask"() {
+  def "ReleaseEntity and CoverService is passed to each created CoverTransferTask"() {
     given:
     def releaseEntities = [
         ReleaseEntityFactory.createReleaseEntity("a"),
@@ -40,20 +40,18 @@ class AbstractReleaseImporterTest extends Specification {
     ]
 
     when:
-    underTest.persistReleaseEntities(releaseEntities)
+    underTest.finalizeImport(releaseEntities)
 
     then:
-    1 * underTest.releaseEntityPersistenceThreadPool.submit({ args ->
+    1 * underTest.coverTransferThreadPool.submit({ args ->
       args.releaseEntity == releaseEntities[0] &&
-      args.coverService == underTest.coverService &&
-      args.releaseRepository == underTest.releaseRepository
+      args.coverService == underTest.getCoverService()
     })
 
     and:
-    1 * underTest.releaseEntityPersistenceThreadPool.submit({ args ->
+    1 * underTest.coverTransferThreadPool.submit({ args ->
       args.releaseEntity == releaseEntities[1] &&
-      args.coverService == underTest.coverService &&
-      args.releaseRepository == underTest.releaseRepository
+      args.coverService == underTest.getCoverService()
     })
   }
 
@@ -62,13 +60,28 @@ class AbstractReleaseImporterTest extends Specification {
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("a")]
 
     when:
-    underTest.persistReleaseEntities(releaseEntities)
+    underTest.finalizeImport(releaseEntities)
 
     then:
     1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >> true
 
     and:
-    0 * underTest.releaseEntityPersistenceThreadPool.submit(_)
+    0 * underTest.coverTransferThreadPool.submit(_)
+  }
+
+  def "should call release repository to save all new releases"() {
+    given:
+    underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [false, false]
+    def releaseEntities = [
+            ReleaseEntityFactory.createReleaseEntity("a"),
+            ReleaseEntityFactory.createReleaseEntity("b")
+    ]
+
+    when:
+    underTest.finalizeImport(releaseEntities)
+
+    then:
+    1 * underTest.releaseRepository.saveAll(releaseEntities)
   }
 
   def "should return ImportResult with correct values for 'totalCountRequested' and 'totalCountImported'"() {
@@ -80,7 +93,7 @@ class AbstractReleaseImporterTest extends Specification {
     ]
 
     when:
-    def importResult = underTest.persistReleaseEntities(releaseEntities)
+    def importResult = underTest.finalizeImport(releaseEntities)
 
     then:
     importResult == new ImportResult(totalCountRequested: 2, totalCountImported: 1)
@@ -106,28 +119,18 @@ class AbstractReleaseImporterTest extends Specification {
     underTest.retryCoverDownload()
 
     then:
-    1 * underTest.releaseEntityPersistenceThreadPool.submit({ args ->
-      args.releaseEntity == release1 &&
-      args.coverService == underTest.coverService &&
-      args.releaseRepository == underTest.releaseRepository
+    1 * underTest.coverTransferThreadPool.submit({ args ->
+      args.releaseEntity == release1
+      args.coverService == underTest.getCoverService()
     })
 
     then:
-    0 * underTest.releaseEntityPersistenceThreadPool.submit(*_)
-  }
-
-  def "nothing is called if cover service is null"() {
-    given:
-    underTest.coverService = null
-
-    when:
-    underTest.retryCoverDownload()
-
-    then:
-    0 * underTest.releaseRepository.findAll()
+    0 * underTest.coverTransferThreadPool.submit(*_)
   }
 
   class TestReleaseImporter extends AbstractReleaseImporter {
+
+    CoverService coverService = new NoOpCoverService()
 
     @Override
     ImportResult importReleases() {
@@ -137,6 +140,11 @@ class AbstractReleaseImporterTest extends Specification {
     @Override
     ReleaseSource getReleaseSource() {
       return TEST
+    }
+
+    @Override
+    CoverService getCoverService() {
+      return coverService
     }
   }
 }
