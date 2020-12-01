@@ -1,7 +1,10 @@
 package rocks.metaldetector.butler.service.importjob
 
+import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
+import rocks.metaldetector.butler.service.converter.Converter
 import rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter
+import rocks.metaldetector.butler.service.cover.CoverService
 import rocks.metaldetector.butler.supplier.metalhammer.MetalHammerWebCrawler
 import spock.lang.Specification
 
@@ -10,9 +13,10 @@ import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMME
 class MetalHammerReleaseImporterTest extends Specification {
 
   MetalHammerReleaseImporter underTest = new MetalHammerReleaseImporter(
-      webCrawler: Mock(MetalHammerWebCrawler),
-      metalHammerReleaseEntityConverter: Mock(MetalHammerReleaseEntityConverter),
-      releaseRepository: Mock(ReleaseRepository)
+          webCrawler: Mock(MetalHammerWebCrawler),
+          metalHammerReleaseEntityConverter: Mock(MetalHammerReleaseEntityConverter),
+          noOpCoverService: Mock(CoverService),
+          releaseRepository: Mock(ReleaseRepository)
   )
 
   def "web crawler is called"() {
@@ -41,5 +45,10 @@ class MetalHammerReleaseImporterTest extends Specification {
   def "should return METAL_HAMMER_DE as release source"() {
     expect:
     underTest.getReleaseSource() == METAL_HAMMER_DE
+  }
+
+  def "should return specific cover service"() {
+    expect:
+    underTest.noOpCoverService == underTest.getCoverService()
   }
 }

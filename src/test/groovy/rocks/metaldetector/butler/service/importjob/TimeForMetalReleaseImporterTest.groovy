@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.service.importjob
 
+import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.Converter
 import rocks.metaldetector.butler.service.cover.CoverService
@@ -10,10 +11,12 @@ import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
 
 class TimeForMetalReleaseImporterTest extends Specification {
 
-  TimeForMetalReleaseImporter underTest = new TimeForMetalReleaseImporter(webCrawler: Mock(TimeForMetalWebCrawler),
-                                                                          timeForMetalReleaseEntityConverter: Mock(Converter),
-                                                                          coverService: Mock(CoverService),
-                                                                          releaseRepository: Mock(ReleaseRepository))
+  TimeForMetalReleaseImporter underTest = new TimeForMetalReleaseImporter(
+          webCrawler: Mock(TimeForMetalWebCrawler),
+          timeForMetalReleaseEntityConverter: Mock(Converter),
+          timeForMetalCoverService: Mock(CoverService),
+          releaseRepository: Mock(ReleaseRepository)
+  )
 
   def "webCrawler is called with initial page"() {
     given:
@@ -53,5 +56,10 @@ class TimeForMetalReleaseImporterTest extends Specification {
 
     then:
     1 * underTest.webCrawler.requestReleases(2) >> null
+  }
+
+  def "should return specific cover service"() {
+    expect:
+    underTest.timeForMetalCoverService == underTest.getCoverService()
   }
 }

@@ -2,7 +2,6 @@ package rocks.metaldetector.butler.service.importjob
 
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseSource
@@ -23,25 +22,29 @@ class TimeForMetalReleaseImporter extends AbstractReleaseImporter {
   Converter<String, List<ReleaseEntity>> timeForMetalReleaseEntityConverter
 
   @Autowired
-  @Qualifier("timeForMetalCoverService")
-  CoverService coverService
+  CoverService timeForMetalCoverService
 
   @Override
   ImportResult importReleases() {
     List<ReleaseEntity> releaseEntities = []
     def count = 1
-    def newReleases = []
+    def newReleases
     do {
       def rawReleasesPage = webCrawler.requestReleases(count++)
       newReleases = timeForMetalReleaseEntityConverter.convert(rawReleasesPage)
       releaseEntities.addAll(newReleases)
     } while (newReleases)
 
-    return persistReleaseEntities(releaseEntities)
+    return finalizeImport(releaseEntities)
   }
 
   @Override
   ReleaseSource getReleaseSource() {
     return TIME_FOR_METAL
+  }
+
+  @Override
+  CoverService getCoverService() {
+    return timeForMetalCoverService
   }
 }
