@@ -9,6 +9,8 @@ import spock.lang.Unroll
 
 import java.time.LocalDate
 
+import static rocks.metaldetector.butler.model.release.ReleaseType.*
+
 class TimeForMetalReleaseEntityConverterTest extends Specification {
 
   TimeForMetalReleaseEntityConverter underTest = new TimeForMetalReleaseEntityConverter(xmlSlurper: Spy(XmlSlurper))
@@ -24,12 +26,14 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     and:
     result[0] == new ReleaseEntity(artist: "Artist 1",
                                    albumTitle: "Album 1",
-                                   releaseDate: LocalDate.of(2020, 1, 1))
+                                   releaseDate: LocalDate.of(2020, 1, 1),
+                                   type: FULL_LENGTH)
 
     and:
     result[1] == new ReleaseEntity(artist: "Artist 2",
                                    albumTitle: "Album 2",
-                                   releaseDate: LocalDate.of(2020, 2, 1))
+                                   releaseDate: LocalDate.of(2020, 2, 1),
+                                   type: FULL_LENGTH)
 
     and:
     2 * underTest.xmlSlurper.parseText(*_)
