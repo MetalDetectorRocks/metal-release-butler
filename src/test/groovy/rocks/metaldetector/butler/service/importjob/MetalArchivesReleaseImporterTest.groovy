@@ -12,10 +12,10 @@ import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHI
 class MetalArchivesReleaseImporterTest extends Specification {
 
   MetalArchivesReleaseImporter underTest = new MetalArchivesReleaseImporter(
-      restClient: Mock(MetalArchivesRestClient),
-      coverService: Mock(CoverService),
-      releaseRepository: Mock(ReleaseRepository),
-      releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter)
+          restClient: Mock(MetalArchivesRestClient),
+          releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
+          metalArchivesCoverService: Mock(CoverService),
+          releaseRepository: Mock(ReleaseRepository)
   )
 
   def "rest client is called once on import"() {
@@ -47,5 +47,10 @@ class MetalArchivesReleaseImporterTest extends Specification {
   def "should return METAL_ARCHIVES as release source"() {
     expect:
     underTest.getReleaseSource() == METAL_ARCHIVES
+  }
+
+  def "should return specific cover service"() {
+    expect:
+    underTest.metalArchivesCoverService == underTest.getCoverService()
   }
 }
