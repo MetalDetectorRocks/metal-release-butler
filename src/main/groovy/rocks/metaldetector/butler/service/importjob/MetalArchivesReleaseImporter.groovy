@@ -2,7 +2,6 @@ package rocks.metaldetector.butler.service.importjob
 
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
 import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseSource
@@ -20,8 +19,7 @@ class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
   MetalArchivesRestClient restClient
 
   @Autowired
-  @Qualifier("metalArchivesCoverService")
-  CoverService coverService
+  CoverService metalArchivesCoverService
 
   @Autowired
   Converter<String[], List<ReleaseEntity>> releaseEntityConverter
@@ -30,11 +28,16 @@ class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
   ImportResult importReleases() {
     def upcomingReleasesRawData = restClient.requestReleases()
     List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
-    return persistReleaseEntities(releaseEntities)
+    return finalizeImport(releaseEntities)
   }
 
   @Override
   ReleaseSource getReleaseSource() {
     return METAL_ARCHIVES
+  }
+
+  @Override
+  CoverService getCoverService() {
+    return metalArchivesCoverService
   }
 }
