@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit
 @Service
 class MetalArchivesCoverFetcher implements CoverFetcher {
 
+  static final String RELEASE_PAGE_NOT_FOUND_ERROR_MESSAGE = "status code: 404"
   static final String ALBUM_COVER_HTML_ID = "cover"
   static final int MAX_ATTEMPTS = 5
   int currentAttempt
@@ -39,14 +40,18 @@ class MetalArchivesCoverFetcher implements CoverFetcher {
     }
   }
 
-  private def handleErrorAndTryAgain(Exception e, HTTPBuilder httpBuilder) {
-    if (currentAttempt < MAX_ATTEMPTS) {
-      log.info("Error during fetching the release page '${httpBuilder.uri}' (${e.message}). I will wait 1 second and try again.")
+  private def handleErrorAndTryAgain(Exception exception, HTTPBuilder httpBuilder) {
+    if (exception.message?.containsIgnoreCase(RELEASE_PAGE_NOT_FOUND_ERROR_MESSAGE)) {
+      log.warn("The release page '${httpBuilder.uri}' could not be found.")
+      return null
+    }
+    else if (currentAttempt < MAX_ATTEMPTS) {
+      log.info("Error during fetching the release page '${httpBuilder.uri}' (${exception.message}). I will wait 1 second and try again.")
       TimeUnit.SECONDS.sleep(1)
       return fetchReleasePage(httpBuilder)
     }
     else {
-      log.error("5 errors in a row during fetching the release page. I give up.", e)
+      log.error("5 errors in a row during fetching the release page. I give up.", exception)
       return null
     }
   }
