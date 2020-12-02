@@ -60,4 +60,21 @@ class MetalArchivesCoverFetcherTest extends Specification {
     and:
     noExceptionThrown()
   }
+
+  def "should not retry getting the release page on status code 404"() {
+    given:
+    underTest.httpBuilderFunction.apply(requestUrl) >> mockHttpBuilder
+
+    when:
+    def result = underTest.fetchCoverUrl(requestUrl)
+
+    then:
+    1 * mockHttpBuilder.get(*_) >> {throw new RuntimeException("(status code: 404, reason phrase: Not Found)")}
+
+    and:
+    !result
+
+    and:
+    noExceptionThrown()
+  }
 }
