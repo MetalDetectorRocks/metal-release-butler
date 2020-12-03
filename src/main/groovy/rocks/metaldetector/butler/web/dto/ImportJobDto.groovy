@@ -8,10 +8,11 @@ import java.time.LocalDateTime
 class ImportJobDto {
 
   UUID jobId
-  int totalCountRequested
-  int totalCountImported
+  Integer totalCountRequested
+  Integer totalCountImported
   LocalDateTime startTime
   LocalDateTime endTime
+  String state
   String source
 
 }

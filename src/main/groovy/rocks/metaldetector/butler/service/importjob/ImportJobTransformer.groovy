@@ -15,7 +15,8 @@ class ImportJobTransformer {
               totalCountImported: importJobEntity.totalCountImported,
               startTime: importJobEntity.startTime,
               endTime: importJobEntity.endTime,
-              source: importJobEntity.source
+              state: importJobEntity.state?.displayName,
+              source: importJobEntity.source?.displayName
       )
     }
 

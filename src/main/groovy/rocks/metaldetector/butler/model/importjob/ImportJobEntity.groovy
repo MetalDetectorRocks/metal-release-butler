@@ -20,16 +20,20 @@ class ImportJobEntity extends BaseEntity {
   UUID jobId
 
   @Column(name = "total_count_requested", nullable = true)
-  int totalCountRequested
+  Integer totalCountRequested
 
   @Column(name = "total_count_imported", nullable = true)
-  int totalCountImported
+  Integer totalCountImported
 
   @Column(name = "start_time", nullable = false, columnDefinition = "timestamp")
   LocalDateTime startTime
 
   @Column(name = "end_time", nullable = true, columnDefinition = "timestamp")
   LocalDateTime endTime
+
+  @Column(name = "state", nullable = false)
+  @Enumerated(EnumType.STRING)
+  JobState state
 
   @Column(name = "source", nullable = false)
   @Enumerated(EnumType.STRING)

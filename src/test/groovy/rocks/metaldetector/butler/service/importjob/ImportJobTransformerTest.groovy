@@ -1,8 +1,8 @@
 package rocks.metaldetector.butler.service.importjob
 
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
+import rocks.metaldetector.butler.model.importjob.JobState
 import rocks.metaldetector.butler.model.release.ReleaseSource
-import rocks.metaldetector.butler.service.importjob.ImportJobTransformer
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -78,6 +78,21 @@ class ImportJobTransformerTest extends Specification {
   }
 
   @Unroll
+  "should transform 'state'"() {
+    given:
+    def importJobEntity = new ImportJobEntity(state: givenState)
+
+    when:
+    def result = underTest.transform(importJobEntity)
+
+    then:
+    result.state == ((JobState) givenState).displayName
+
+    where:
+    givenState << JobState.values()
+  }
+
+  @Unroll
   "should transform 'source'"() {
     given:
     def importJobEntity = new ImportJobEntity(source: givenSource)
@@ -86,7 +101,7 @@ class ImportJobTransformerTest extends Specification {
     def result = underTest.transform(importJobEntity)
 
     then:
-    result.source == givenSource.toString()
+    result.source == ((ReleaseSource) givenSource).displayName
 
     where:
     givenSource << ReleaseSource.values()

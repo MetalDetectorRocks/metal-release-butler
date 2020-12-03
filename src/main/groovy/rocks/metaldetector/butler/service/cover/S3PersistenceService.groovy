@@ -40,7 +40,7 @@ class S3PersistenceService implements CoverPersistenceService {
       return "${awsS3Host}/${bucketName}${s3Url.path}"
     }
     catch (SdkClientException ex) {
-      log.warn("Could not upload cover from '${coverUrl.toExternalForm()}'", ex)
+      log.error("Could not upload cover from '${coverUrl.toExternalForm()}'", ex)
       return null
     }
   }

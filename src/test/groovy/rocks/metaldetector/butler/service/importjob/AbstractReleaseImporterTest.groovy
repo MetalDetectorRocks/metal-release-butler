@@ -99,6 +99,22 @@ class AbstractReleaseImporterTest extends Specification {
     importResult == new ImportResult(totalCountRequested: 2, totalCountImported: 1)
   }
 
+  def "should not modify original list when calling unique()"() {
+    given:
+    underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [false, false]
+    def releaseEntities = [
+            ReleaseEntityFactory.createReleaseEntity("a"),
+            ReleaseEntityFactory.createReleaseEntity("a"),
+            ReleaseEntityFactory.createReleaseEntity("b")
+    ]
+
+    when:
+    def importResult = underTest.finalizeImport(releaseEntities)
+
+    then:
+    importResult == new ImportResult(totalCountRequested: 3, totalCountImported: 2)
+  }
+
   def "should call releaseRepository on retryCoverDownload"() {
     when:
     underTest.retryCoverDownload()
