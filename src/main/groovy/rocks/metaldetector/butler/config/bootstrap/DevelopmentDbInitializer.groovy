@@ -7,13 +7,14 @@ import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.release.ReleaseEntity
+import rocks.metaldetector.butler.model.release.ReleaseSource
 
 import javax.persistence.EntityManager
 import javax.persistence.PersistenceContext
 import java.time.LocalDate
 
 import static rocks.metaldetector.butler.model.release.ReleaseEntityState.DEMO
-import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
+import static rocks.metaldetector.butler.model.release.ReleaseSource.*
 import static rocks.metaldetector.butler.model.release.ReleaseType.COMPILATION
 import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 import static rocks.metaldetector.butler.model.release.ReleaseType.SPLIT
@@ -46,7 +47,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.now().plusDays(33))
             .genre("Black Metal (early), Post-Metal/Shoegaze (later)")
             .type(FULL_LENGTH)
-            .source(METAL_HAMMER_DE)
+            .source(METAL_ARCHIVES)
             .state(DEMO)
             .build()
 
@@ -56,7 +57,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.now().plusDays(66))
             .genre("Death Metal (early), Symphonic Black Metal (mid), Extreme Gothic Metal (later)")
             .type(FULL_LENGTH)
-            .source(METAL_HAMMER_DE)
+            .source(METAL_ARCHIVES)
             .state(DEMO)
             .build()
 
@@ -66,7 +67,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.now().plusDays(99))
             .genre("Symphonic/Folk Black Metal")
             .type(COMPILATION)
-            .source(METAL_HAMMER_DE)
+            .source(METAL_ARCHIVES)
             .state(DEMO)
             .build()
 
@@ -76,7 +77,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.now().plusDays(40))
             .genre("Death Metal")
             .type(SPLIT)
-            .source(METAL_HAMMER_DE)
+            .source(METAL_ARCHIVES)
             .additionalArtists("Stupid people")
             .state(DEMO)
             .build()
@@ -87,7 +88,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
             .releaseDate(LocalDate.now().plusDays(40))
             .genre("Death Metal")
             .type(SPLIT)
-            .source(METAL_HAMMER_DE)
+            .source(METAL_ARCHIVES)
             .additionalArtists("Hamster purchaser")
             .state(DEMO)
             .build()

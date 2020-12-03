@@ -6,8 +6,7 @@ import spock.lang.Specification
 import java.time.LocalDate
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
-import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
-
+import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
 class ReleaseTransformerTest extends Specification {
 
   ReleaseTransformer underTest = new ReleaseTransformer()
@@ -35,10 +34,10 @@ class ReleaseTransformerTest extends Specification {
 
   def "urls can be null"() {
     given:
-    def metalHammerReleaseEntity = new ReleaseEntity(source: METAL_HAMMER_DE)
+    def releaseEntity = new ReleaseEntity(source: METAL_ARCHIVES)
 
     when:
-    def result = underTest.transform(metalHammerReleaseEntity)
+    def result = underTest.transform(releaseEntity)
 
     then:
     noExceptionThrown()

@@ -10,8 +10,8 @@ import spock.lang.Specification
 
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
-import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_HAMMER_DE
 import static rocks.metaldetector.butler.model.release.ReleaseSource.TEST
+import static rocks.metaldetector.butler.model.release.ReleaseSource.TIME_FOR_METAL
 
 class AbstractReleaseImporterTest extends Specification {
 
@@ -127,7 +127,7 @@ class AbstractReleaseImporterTest extends Specification {
     given:
     def release1 = new ReleaseEntity(artist: "A", source: TEST)
     def release2 = new ReleaseEntity(artist: "B", source: METAL_ARCHIVES)
-    def release3 = new ReleaseEntity(artist: "C", source: METAL_HAMMER_DE)
+    def release3 = new ReleaseEntity(artist: "C", source: TIME_FOR_METAL)
     def release4 = new ReleaseEntity(artist: "D", source: TEST, coverUrl: "i'm an url")
     underTest.releaseRepository.findAll() >> [release1, release2, release3, release4]
 
