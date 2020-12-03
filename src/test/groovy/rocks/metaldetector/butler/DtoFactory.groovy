@@ -37,7 +37,7 @@ class DtoFactory {
           genre: "genre",
           type: FULL_LENGTH,
           releaseDetailsUrl: "http://www.internet.de",
-          artistDetailsUrl: new URL("http://www.internet2.de"),
+          artistDetailsUrl: "http://www.internet2.de",
           coverUrl: "coverUrl"
       )
     }

@@ -23,4 +23,6 @@ interface ReleaseService {
 
   void updateReleaseState(long releaseId, ReleaseEntityState state)
 
+  void deleteByReleaseDetailsUrl(String releaseDetailsUrl)
+
 }
