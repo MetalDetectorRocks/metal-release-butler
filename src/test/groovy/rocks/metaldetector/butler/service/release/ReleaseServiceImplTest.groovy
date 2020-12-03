@@ -416,4 +416,15 @@ class ReleaseServiceImplTest extends Specification {
     then:
     1 * underTest.releaseRepository.save({ args -> args.state == FAULTY })
   }
+
+  def "deleteByReleaseDetailsUrl: should pass release details url to release repository"() {
+    given:
+    def releaseDetailsUrl = "release-details-url"
+
+    when:
+    underTest.deleteByReleaseDetailsUrl(releaseDetailsUrl)
+
+    then:
+    1 * underTest.releaseRepository.deleteByReleaseDetailsUrl(releaseDetailsUrl)
+  }
 }

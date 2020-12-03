@@ -20,14 +20,17 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
   @Override
   void retryCoverDownload() {
     List<Future> futures = []
-    releaseRepository.findAll()
-        .findAll { releaseEntity ->
-          releaseEntity.source == getReleaseSource() && !releaseEntity.coverUrl
-        }
-        .each { releaseEntity ->
-          futures << coverTransferThreadPool.submit(createCoverTransferTask(releaseEntity))
-        }
+    def releaseEntitiesToUpdate = releaseRepository.findAll()
+            .findAll { releaseEntity ->
+              releaseEntity.source == getReleaseSource() && !releaseEntity.coverUrl
+            }
+            .each { releaseEntity ->
+              futures << coverTransferThreadPool.submit(createCoverTransferTask(releaseEntity))
+            }
+            .collect()
+
     futures*.get()
+    releaseRepository.saveAll(releaseEntitiesToUpdate)
   }
 
   protected ImportResult finalizeImport(List<ReleaseEntity> releaseEntities) {

@@ -18,7 +18,7 @@ class AbstractReleaseImporterTest extends Specification {
   AbstractReleaseImporter underTest = new TestReleaseImporter(releaseRepository: Mock(ReleaseRepository),
                                                               coverTransferThreadPool: Mock(ThreadPoolTaskExecutor))
 
-  def "Duplicates are filtered out before the database query checks whether the release already exists"() {
+  def "finalizeImport: Duplicates are filtered out before the database query checks whether the release already exists"() {
     given:
     def releaseEntities = [
         ReleaseEntityFactory.createReleaseEntity("a"),
@@ -32,7 +32,7 @@ class AbstractReleaseImporterTest extends Specification {
     1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
   }
 
-  def "ReleaseEntity and CoverService is passed to each created CoverTransferTask"() {
+  def "finalizeImport: ReleaseEntity and CoverService is passed to each created CoverTransferTask"() {
     given:
     def releaseEntities = [
         ReleaseEntityFactory.createReleaseEntity("a"),
@@ -55,7 +55,7 @@ class AbstractReleaseImporterTest extends Specification {
     })
   }
 
-  def "existing releases are not submitted to persistence thread pool"() {
+  def "finalizeImport: existing releases are not submitted to persistence thread pool"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("a")]
 
@@ -69,7 +69,7 @@ class AbstractReleaseImporterTest extends Specification {
     0 * underTest.coverTransferThreadPool.submit(_)
   }
 
-  def "should call release repository to save all new releases"() {
+  def "finalizeImport: should call release repository to save all new releases"() {
     given:
     underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [false, false]
     def releaseEntities = [
@@ -84,7 +84,7 @@ class AbstractReleaseImporterTest extends Specification {
     1 * underTest.releaseRepository.saveAll(releaseEntities)
   }
 
-  def "should return ImportResult with correct values for 'totalCountRequested' and 'totalCountImported'"() {
+  def "finalizeImport: should return ImportResult with correct values for 'totalCountRequested' and 'totalCountImported'"() {
     given:
     underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [true, false]
     def releaseEntities = [
@@ -99,7 +99,7 @@ class AbstractReleaseImporterTest extends Specification {
     importResult == new ImportResult(totalCountRequested: 2, totalCountImported: 1)
   }
 
-  def "should not modify original list when calling unique()"() {
+  def "finalizeImport: should not modify original list when calling unique()"() {
     given:
     underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [false, false]
     def releaseEntities = [
@@ -115,7 +115,7 @@ class AbstractReleaseImporterTest extends Specification {
     importResult == new ImportResult(totalCountRequested: 3, totalCountImported: 2)
   }
 
-  def "should call releaseRepository on retryCoverDownload"() {
+  def "retryCoverDownload: should call releaseRepository on retryCoverDownload"() {
     when:
     underTest.retryCoverDownload()
 
@@ -123,7 +123,7 @@ class AbstractReleaseImporterTest extends Specification {
     1 * underTest.releaseRepository.findAll()
   }
 
-  def "all releases of current release source without cover url are added to thread pool"() {
+  def "retryCoverDownload: all releases of current release source without cover url are added to thread pool"() {
     given:
     def release1 = new ReleaseEntity(artist: "A", source: TEST)
     def release2 = new ReleaseEntity(artist: "B", source: METAL_ARCHIVES)
@@ -142,6 +142,20 @@ class AbstractReleaseImporterTest extends Specification {
 
     then:
     0 * underTest.coverTransferThreadPool.submit(*_)
+  }
+
+  def "retryCoverDownload: should call release repository to update releases"() {
+    given:
+    def release1 = new ReleaseEntity(artist: "A", source: TEST)
+    def release2 = new ReleaseEntity(artist: "B", source: TEST)
+    def releases = [release1, release2]
+    underTest.releaseRepository.findAll() >> releases
+
+    when:
+    underTest.retryCoverDownload()
+
+    then:
+    1 * underTest.releaseRepository.saveAll(releases)
   }
 
   class TestReleaseImporter extends AbstractReleaseImporter {
