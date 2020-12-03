@@ -5,7 +5,7 @@ import groovy.transform.Canonical
 @Canonical
 class ImportResult {
 
-  int totalCountRequested
-  int totalCountImported
+  Integer totalCountRequested
+  Integer totalCountImported
 
 }

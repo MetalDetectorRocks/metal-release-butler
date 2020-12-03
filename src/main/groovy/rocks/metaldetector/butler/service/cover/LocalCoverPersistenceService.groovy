@@ -31,7 +31,7 @@ class LocalCoverPersistenceService implements CoverPersistenceService {
       return "$RELEASE_IMAGES/$localFileName"
     }
     catch (Exception e) {
-      log.warn("Could not persist cover from '${coverUrl}'", e)
+      log.error("Could not persist cover from '${coverUrl}'", e)
       return null
     }
   }
