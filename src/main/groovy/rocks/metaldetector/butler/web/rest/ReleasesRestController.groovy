@@ -3,7 +3,6 @@ package rocks.metaldetector.butler.web.rest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.SortDefault
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PathVariable
@@ -54,6 +53,13 @@ class ReleasesRestController {
     return ResponseEntity.ok(releasesResponse)
   }
 
+  @PutMapping(path = UPDATE_RELEASE, consumes = APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+  ResponseEntity<Void> updateReleaseState(@Valid @RequestBody ReleaseUpdateRequest request, @PathVariable long releaseId) {
+    releaseService.updateReleaseState(releaseId, request.state)
+    return ResponseEntity.ok().build()
+  }
+
   @PostMapping(path = RELEASES_UNPAGINATED, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request,
@@ -73,12 +79,5 @@ class ReleasesRestController {
     }
 
     return ResponseEntity.ok(releasesResponse)
-  }
-
-  @PutMapping(path = UPDATE_RELEASE, consumes = APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
-  ResponseEntity<Void> updateReleaseState(@Valid @RequestBody ReleaseUpdateRequest request, @PathVariable("releaseId") long releaseId) {
-    releaseService.updateReleaseState(releaseId, request.state)
-    return ResponseEntity.ok().build()
   }
 }

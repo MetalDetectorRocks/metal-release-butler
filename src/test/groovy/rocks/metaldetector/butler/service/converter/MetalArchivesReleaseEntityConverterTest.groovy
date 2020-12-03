@@ -45,7 +45,20 @@ class MetalArchivesReleaseEntityConverterTest extends Specification {
     4 * underTest.xmlSlurper.parseText(*_)
   }
 
-  def "Should handle null on index 2, 3 and 4" () {
+  def "Should use FULL_LENGTH as default release type"() {
+    given:
+    def artist = '<a href="http://www.example.com/band">The Band</a>'
+    def albumTitle = '<a href="http://www.example.com/album">The Album Title</a>'
+    String[] rawReleaseData = [artist, albumTitle, null, null, null]
+
+    when:
+    List<ReleaseEntity> conversionResult = underTest.convert(rawReleaseData)
+
+    then:
+    conversionResult[0].type == FULL_LENGTH
+  }
+
+  def "Should handle null on index 3 and 4" () {
     given:
     def artist = '<a href="http://www.example.com/band">The Band</a>'
     def albumTitle = '<a href="http://www.example.com/album">The Album Title</a>'
@@ -58,7 +71,6 @@ class MetalArchivesReleaseEntityConverterTest extends Specification {
     conversionResult.size() == 1
 
     and:
-    conversionResult[0].type == null
     conversionResult[0].genre == null
     conversionResult[0].estimatedReleaseDate == null
   }

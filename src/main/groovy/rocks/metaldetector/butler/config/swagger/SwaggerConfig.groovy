@@ -16,7 +16,7 @@ class SwaggerConfig implements WebMvcConfigurer {
 
   @Override
   void addResourceHandlers(final ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/resources/**").addResourceLocations("/resources/static/")
+    registry.addResourceHandler("/resources/**").addResourceLocations("/resources/config/swagger/")
   }
 
   @Bean
@@ -28,5 +28,4 @@ class SwaggerConfig implements WebMvcConfigurer {
             .paths(PathSelectors.none())
             .build()
   }
-
 }

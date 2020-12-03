@@ -31,6 +31,6 @@ enum ReleaseType {
   }
 
   static ReleaseType convertFrom(String value) {
-    return MAPPINGS[value]
+    return MAPPINGS[value] ?: FULL_LENGTH
   }
 }

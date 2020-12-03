@@ -8,6 +8,7 @@ import spock.lang.Unroll
 
 import java.time.LocalDate
 
+import static rocks.metaldetector.butler.model.release.ReleaseType.*
 import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.AUTUMN_ENGLISH
 import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.AUTUMN_GERMAN
 import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.SPRING_ENGLISH
@@ -15,7 +16,7 @@ import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEnt
 import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.SUMMER_GERMAN
 import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.WINTER_ENGLISH
 import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.WINTER_GERMAN
-import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.getSPRING_GERMAN
+import static rocks.metaldetector.butler.service.converter.MetalHammerReleaseEntityConverter.SPRING_GERMAN
 
 class MetalHammerReleaseEntityConverterTest extends Specification {
 
@@ -32,12 +33,14 @@ class MetalHammerReleaseEntityConverterTest extends Specification {
     and:
     result[0] == new ReleaseEntity(artist: "Darkthrone",
                                    albumTitle: "Transilvanian Hunger",
-                                   releaseDate: LocalDate.of(LocalDate.now().year, 6, 6))
+                                   releaseDate: LocalDate.of(LocalDate.now().year, 6, 6),
+                                   type: FULL_LENGTH)
 
     and:
     result[1] == new ReleaseEntity(artist: "Mayhem",
                                    albumTitle: "De Mysteriis Dom Sathanas",
-                                   releaseDate: LocalDate.of(LocalDate.now().year, 7, 7))
+                                   releaseDate: LocalDate.of(LocalDate.now().year, 7, 7),
+                                   type: FULL_LENGTH)
 
     and:
     1 * underTest.xmlSlurper.parseText(*_)
