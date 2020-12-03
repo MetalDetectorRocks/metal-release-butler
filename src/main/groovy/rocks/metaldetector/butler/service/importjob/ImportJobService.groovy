@@ -27,9 +27,6 @@ class ImportJobService {
   ReleaseImporter metalArchivesReleaseImporter
 
   @Autowired
-  ReleaseImporter metalHammerReleaseImporter
-
-  @Autowired
   ReleaseImporter timeForMetalReleaseImporter
 
   List<ReleaseImporter> releaseImporters
@@ -38,8 +35,7 @@ class ImportJobService {
   private void init() {
     releaseImporters = [
         metalArchivesReleaseImporter,
-        timeForMetalReleaseImporter,
-        metalHammerReleaseImporter
+        timeForMetalReleaseImporter
     ]
   }
 
