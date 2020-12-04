@@ -7,11 +7,16 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.model.importjob.ImportJobEntity
 import rocks.metaldetector.butler.model.importjob.ImportJobRepository
+import rocks.metaldetector.butler.model.importjob.JobState
 import rocks.metaldetector.butler.model.release.ReleaseSource
 import rocks.metaldetector.butler.web.dto.ImportJobDto
 
 import javax.annotation.PostConstruct
 import java.time.LocalDateTime
+
+import static rocks.metaldetector.butler.model.importjob.JobState.ERROR
+import static rocks.metaldetector.butler.model.importjob.JobState.RUNNING
+import static rocks.metaldetector.butler.model.importjob.JobState.SUCCESSFUL
 
 @Service
 @Slf4j
@@ -43,15 +48,26 @@ class ImportJobService {
   void importFromExternalSources() {
     releaseImporters.each { releaseImporter ->
       ImportJobEntity job = createImportJob(releaseImporter.releaseSource)
-      ImportResult importResult = releaseImporter.importReleases()
-      updateImportJob(job, importResult)
+      try {
+        ImportResult importResult = releaseImporter.importReleases()
+        updateImportJob(job, importResult, SUCCESSFUL)
+      }
+      catch (Exception e) {
+        log.error("Error during import of releases from '${releaseImporter.getReleaseSource().displayName}'", e)
+        updateImportJob(job, new ImportResult(), ERROR)
+      }
     }
   }
 
   @Async
   void retryCoverDownload() {
-    releaseImporters.each {
-      it.retryCoverDownload()
+    releaseImporters.each { releaseImporter ->
+      try {
+        releaseImporter.retryCoverDownload()
+      }
+      catch (Exception e) {
+        log.error("Error during cover download from '${releaseImporter.getReleaseSource().displayName}'", e)
+      }
     }
   }
 
@@ -63,9 +79,10 @@ class ImportJobService {
   }
 
   @Transactional(readOnly = false)
-  void updateImportJob(ImportJobEntity importJobEntity, ImportResult importResult) {
+  void updateImportJob(ImportJobEntity importJobEntity, ImportResult importResult, JobState jobState) {
     importJobEntity.totalCountRequested = importResult.totalCountRequested
     importJobEntity.totalCountImported = importResult.totalCountImported
+    importJobEntity.state = jobState
     importJobEntity.endTime = LocalDateTime.now()
     importJobRepository.save(importJobEntity)
   }
@@ -75,6 +92,7 @@ class ImportJobService {
     ImportJobEntity importJobEntity = new ImportJobEntity(
         jobId: UUID.randomUUID(),
         startTime: LocalDateTime.now(),
+        state: RUNNING,
         source: source
     )
     importJobEntity = importJobRepository.save(importJobEntity)

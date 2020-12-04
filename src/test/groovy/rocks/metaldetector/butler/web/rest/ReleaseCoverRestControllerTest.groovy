@@ -54,4 +54,18 @@ class ReleaseCoverRestControllerTest extends Specification implements WithExcept
     then:
     result.response.status == OK.value()
   }
+
+  def "should return image resource from image resource finder"() {
+    given:
+    def imageResource = new ClassPathResource("test.jpg")
+    def request = get("${RELEASE_IMAGES}/{id}", "cover-id")
+    underTest.imageResourceFinder.findImage(_) >> Optional.of(imageResource)
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    byte[] resourceAsBytes = result.response.getContentAsByteArray()
+    resourceAsBytes == imageResource.inputStream.bytes
+  }
 }

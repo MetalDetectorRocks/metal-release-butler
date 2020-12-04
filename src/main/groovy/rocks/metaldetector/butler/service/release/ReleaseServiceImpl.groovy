@@ -104,4 +104,10 @@ class ReleaseServiceImpl implements ReleaseService {
     releaseEntity.state = state
     releaseRepository.save(releaseEntity)
   }
+
+  @Override
+  @Transactional
+  void deleteByReleaseDetailsUrl(String releaseDetailsUrl) {
+    releaseRepository.deleteByReleaseDetailsUrl(releaseDetailsUrl)
+  }
 }

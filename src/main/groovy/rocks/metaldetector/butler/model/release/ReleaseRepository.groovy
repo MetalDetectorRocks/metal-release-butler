@@ -29,5 +29,7 @@ interface ReleaseRepository extends JpaRepository<ReleaseEntity, Long> {
 
   Optional<ReleaseEntity> findById(long id)
 
-  boolean existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(String artist, String albumTitle, LocalDate releaseDate);
+  boolean existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(String artist, String albumTitle, LocalDate releaseDate)
+
+  void deleteByReleaseDetailsUrl(String releaseDetailsUrl)
 }
