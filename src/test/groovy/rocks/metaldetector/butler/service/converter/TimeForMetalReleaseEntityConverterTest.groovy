@@ -15,6 +15,7 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
 
   TimeForMetalReleaseEntityConverter underTest = new TimeForMetalReleaseEntityConverter(xmlSlurper: Spy(XmlSlurper))
   def sourceString = new ClassPathResource("mock-releases-page-time-for-metal.txt").inputStream.text
+  static final String LONG_DASH = "–"
 
   def "Should convert raw data into release entities"() {
     when:
@@ -39,16 +40,24 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     2 * underTest.xmlSlurper.parseText(*_)
   }
 
-  def "artist name is set"() {
+  @Unroll
+  "artist name is set"() {
     given:
     def releaseEntityBuilder = ReleaseEntity.builder()
 
     when:
-    underTest.setArtistName(releaseEntityBuilder, "Artist 1 - Album 1")
+    underTest.setArtistName(releaseEntityBuilder, rawValue)
 
     then:
     def releaseEntity = releaseEntityBuilder.build()
     releaseEntity.artist == "Artist 1"
+
+    where:
+    rawValue << [
+            "Artist 1 - Album",
+            "     Artist 1     -    Album",
+            "Artist 1 $LONG_DASH Album"
+    ]
   }
 
   @Unroll
@@ -64,9 +73,11 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     releaseEntity.albumTitle == expectedTitle
 
     where:
-    title                              | expectedTitle
-    "Artist 1 - Album 1"               | "Album 1"
-    "Artist 1 - Album 1 - Live - 1964" | "Album 1 - Live - 1964"
+    title                                       | expectedTitle
+    "Artist 1 - Album 1"                        | "Album 1"
+    "Artist 1 -      Album 1        "           | "Album 1"
+    "Artist 1 - Album 1 - Live - 1964"          | "Album 1 - Live - 1964"
+    "Artist 1 $LONG_DASH Album 1 - Live - 1964" | "Album 1 - Live - 1964"
   }
 
   def "release date is set"() {
