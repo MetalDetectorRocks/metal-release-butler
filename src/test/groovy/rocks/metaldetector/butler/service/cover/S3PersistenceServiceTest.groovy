@@ -80,15 +80,12 @@ class S3PersistenceServiceTest extends Specification {
   }
 
   @Unroll
-  "if upload fails with '#exception.class' null is returned"() {
+  "if upload fails with 'FileNotFoundException' null is returned"() {
     given:
-    underTest.amazonS3Client.putObject(*_) >> { throw exception }
+    underTest.amazonS3Client.putObject(*_) >> { throw new FileNotFoundException() }
 
     expect:
     underTest.persistCover(coverUrl) == null
-
-    where:
-    exception << [new SdkClientException("exception"), new AmazonServiceException("exeption")]
   }
 
   def "getUrl: client is called with bucket name"() {
