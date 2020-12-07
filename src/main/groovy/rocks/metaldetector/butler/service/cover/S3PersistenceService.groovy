@@ -1,6 +1,5 @@
 package rocks.metaldetector.butler.service.cover
 
-import com.amazonaws.SdkClientException
 import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.services.s3.model.ObjectMetadata
@@ -39,8 +38,8 @@ class S3PersistenceService implements CoverPersistenceService {
       URL s3Url = amazonS3Client.getUrl(bucketName, key)
       return "${awsS3Host}/${bucketName}${s3Url.path}"
     }
-    catch (SdkClientException ex) {
-      log.error("Could not upload cover from '${coverUrl.toExternalForm()}'", ex)
+    catch (FileNotFoundException ex) {
+      log.warn("Could not find cover '${coverUrl.toExternalForm()}'. The upload to S3 is skipped.", ex)
       return null
     }
   }
