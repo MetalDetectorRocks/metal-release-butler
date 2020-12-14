@@ -4,12 +4,14 @@ import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.NodeChild
 import org.springframework.core.io.ClassPathResource
 import rocks.metaldetector.butler.model.release.ReleaseEntity
+import rocks.metaldetector.butler.model.release.ReleaseType
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.time.LocalDate
 
-import static rocks.metaldetector.butler.model.release.ReleaseType.*
+import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
+import static rocks.metaldetector.butler.model.release.ReleaseType.EP
 
 class TimeForMetalReleaseEntityConverterTest extends Specification {
 
@@ -90,6 +92,24 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     then:
     def releaseEntity = releaseEntityBuilder.build()
     releaseEntity.releaseDate == LocalDate.of(2020, 12, 24)
+  }
+
+  def "should set release type"() {
+    given:
+    def releaseEntityBuilder = ReleaseEntity.builder()
+
+    when:
+    underTest.setReleaseType(releaseEntityBuilder, rawValue)
+
+    then:
+    def releaseEntity = releaseEntityBuilder.build()
+    releaseEntity.type == expectedReleaseType
+
+    where:
+    rawValue                   | expectedReleaseType
+    "Artist - Album"           | FULL_LENGTH
+    "Artist - Album (Single)"  | FULL_LENGTH
+    "Artist - Album (EP)"      | EP
   }
 
   def "cover source url is set"() {
