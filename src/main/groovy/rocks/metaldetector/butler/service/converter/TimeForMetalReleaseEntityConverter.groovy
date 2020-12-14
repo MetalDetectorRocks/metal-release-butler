@@ -11,12 +11,14 @@ import java.time.LocalDate
 
 import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 import static rocks.metaldetector.butler.model.release.ReleaseSource.TIME_FOR_METAL
+import static rocks.metaldetector.butler.model.release.ReleaseType.EP
 import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 
 @Component
 @Slf4j
 class TimeForMetalReleaseEntityConverter implements Converter<String, List<ReleaseEntity>> {
 
+  static final String EP_SUFFIX = "(EP)"
   static final String ANY_WHITESPACE_REGEX = "\\s*"
   static final String ANY_DASH_REGEX = "\\p{Pd}"
   static final String ARTIST_ALBUM_NAME_DELIMITER_REGEX = "${ANY_WHITESPACE_REGEX}${ANY_DASH_REGEX}${ANY_WHITESPACE_REGEX}"
@@ -39,8 +41,8 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
             setArtistName(builder, it.td[2].toString())
             setAlbumTitle(builder, it.td[2].toString())
             setReleaseDate(builder, it.td[0].toString())
+            setReleaseType(builder, it.td[2].toString())
             setCoverSourceUrl(builder, it.td[1].a[0].img[0] as NodeChild)
-            builder.type(FULL_LENGTH)
             return builder.build()
           }
     }
@@ -62,12 +64,17 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
         albumTitle += " - ${it}"
       }
     }
+    albumTitle = albumTitle.replaceAll(EP_SUFFIX, "")
     builder.albumTitle(albumTitle.trim().strip())
   }
 
   private void setReleaseDate(def builder, String dateString) {
     def dateParts = dateString.split("\\.")
     builder.releaseDate(LocalDate.of(dateParts[2].toInteger(), dateParts[1].toInteger(), dateParts[0].toInteger()))
+  }
+
+  private void setReleaseType(def builder, String rawValue) {
+    rawValue.endsWith(EP_SUFFIX) ? builder.type(EP) : builder.type(FULL_LENGTH)
   }
 
   private void setCoverSourceUrl(def builder, NodeChild rawSource) {
