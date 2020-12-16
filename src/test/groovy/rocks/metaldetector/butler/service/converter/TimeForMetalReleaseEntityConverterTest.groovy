@@ -4,7 +4,6 @@ import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.NodeChild
 import org.springframework.core.io.ClassPathResource
 import rocks.metaldetector.butler.model.release.ReleaseEntity
-import rocks.metaldetector.butler.model.release.ReleaseType
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -120,7 +119,7 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     nodeChildMock.attributes() >> [src: sourceUrl]
 
     when:
-    underTest.setCoverSourceUrl(releaseEntityBuilder, nodeChildMock)
+    underTest.setReleaseDetailsUrl(releaseEntityBuilder, nodeChildMock)
 
     then:
     def releaseEntity = releaseEntityBuilder.build()
