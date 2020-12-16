@@ -33,5 +33,7 @@ LABEL org.label-schema.version=$BUILD_DATE
 HEALTHCHECK --start_period=10s --interval=10s --timeout=5s --retries=3 CMD curl --fail $HEALTH_CHECK_ENDPOINT || exit 1
 
 COPY $SOURCE_JAR_FILE app.jar
+COPY docker-entrypoint.sh /app
 
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
