@@ -30,5 +30,7 @@ LABEL org.label-schema.vcs-ref=$VCS_REF
 LABEL org.label-schema.version=$BUILD_DATE
 
 COPY $SOURCE_JAR_FILE app.jar
+COPY docker-entrypoint.sh /app
 
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]

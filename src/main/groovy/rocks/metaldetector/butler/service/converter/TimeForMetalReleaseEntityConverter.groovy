@@ -42,7 +42,8 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
             setAlbumTitle(builder, it.td[2].toString())
             setReleaseDate(builder, it.td[0].toString())
             setReleaseType(builder, it.td[2].toString())
-            setCoverSourceUrl(builder, it.td[1].a[0].img[0] as NodeChild)
+            setReleaseDetailsUrl(builder, it.td[1].a[0].img[0] as NodeChild)
+            builder.type(FULL_LENGTH)
             return builder.build()
           }
     }
@@ -77,7 +78,7 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
     rawValue.endsWith(EP_SUFFIX) ? builder.type(EP) : builder.type(FULL_LENGTH)
   }
 
-  private void setCoverSourceUrl(def builder, NodeChild rawSource) {
+  private void setReleaseDetailsUrl(def builder, NodeChild rawSource) {
     def sourceUrl = rawSource.attributes()["src"] as String
     sourceUrl.replaceAll(ANY_DASH_REGEX, "-")
     builder.releaseDetailsUrl(sourceUrl)
