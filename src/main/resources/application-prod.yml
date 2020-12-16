@@ -1,7 +1,7 @@
 spring:
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 
 server:
   port: 8080
@@ -20,3 +20,8 @@ bucket4j:
 
 aws:
   bucket-name: rocks.metal-detector.s3.images
+
+management:
+  endpoints:
+    web:
+      base-path: ${ACTUAOTR_BASE_PATH}

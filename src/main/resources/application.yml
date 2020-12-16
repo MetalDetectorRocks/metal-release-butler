@@ -78,3 +78,10 @@ aws:
   secret-key: ${AWS_SECRET_KEY}
   s3-host: https://s3.eu-central-1.amazonaws.com
   bucket-name:
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health, info, metrics, prometheus
