@@ -7,10 +7,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import rocks.metaldetector.butler.config.constants.Endpoints
 import rocks.metaldetector.butler.config.security.filter.JwtRequestFilter
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS
+import static rocks.metaldetector.butler.config.constants.Endpoints.AntPattern.ACTUATOR_ENDPOINTS
+import static rocks.metaldetector.butler.config.constants.Endpoints.AntPattern.REST_ENDPOINTS
 
 @Configuration
 @EnableWebSecurity
@@ -25,11 +26,13 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().ignoringAntMatchers(Endpoints.AntPattern.REST_ENDPOINTS)
+    http.csrf().ignoringAntMatchers(REST_ENDPOINTS)
         .and().sessionManagement().sessionCreationPolicy(STATELESS)
         .and().requiresChannel().requestMatchers(new XForwardedProtoMatcher()).requiresSecure()
     http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-        .and().authorizeRequests().anyRequest().authenticated()
+        .and().authorizeRequests()
+            .antMatchers(ACTUATOR_ENDPOINTS).permitAll()
+            .anyRequest().authenticated()
         .and().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter)
   }
 }

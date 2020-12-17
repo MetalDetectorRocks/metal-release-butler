@@ -12,5 +12,6 @@ class Endpoints {
   static class AntPattern {
 
     public static final String REST_ENDPOINTS = "/rest/**"
+    public static final String ACTUATOR_ENDPOINTS = "/actuator/**"
   }
 }
