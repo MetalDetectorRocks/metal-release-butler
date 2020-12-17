@@ -30,7 +30,7 @@ LABEL org.label-schema.vcs-url="https://github.com/MetalDetectorRocks/metal-rele
 LABEL org.label-schema.vcs-ref=$VCS_REF
 LABEL org.label-schema.version=$BUILD_DATE
 
-HEALTHCHECK --start_period=10s --interval=10s --timeout=5s --retries=3 CMD curl --fail $HEALTH_CHECK_ENDPOINT || exit 1
+HEALTHCHECK --start-period=10s --interval=10s --timeout=5s --retries=3 CMD curl --fail $HEALTH_CHECK_ENDPOINT || exit 1
 
 COPY $SOURCE_JAR_FILE app.jar
 COPY docker-entrypoint.sh /app
