@@ -24,4 +24,4 @@ aws:
 management:
   endpoints:
     web:
-      base-path: ${ACTUAOTR_BASE_PATH}
+      base-path: ${ACTUATOR_BASE_PATH}
