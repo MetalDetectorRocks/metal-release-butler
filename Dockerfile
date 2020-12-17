@@ -35,5 +35,5 @@ HEALTHCHECK --start-period=10s --interval=10s --timeout=5s --retries=3 CMD curl 
 COPY $SOURCE_JAR_FILE app.jar
 COPY docker-entrypoint.sh /app
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+ENTRYPOINT ["sh", "/app/docker-entrypoint.sh"]
 CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
