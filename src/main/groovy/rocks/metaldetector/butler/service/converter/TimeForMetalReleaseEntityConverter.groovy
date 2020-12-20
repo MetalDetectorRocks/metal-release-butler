@@ -65,7 +65,7 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
         albumTitle += " - ${it}"
       }
     }
-    albumTitle = albumTitle.replaceAll(EP_SUFFIX, "")
+    albumTitle = albumTitle.replace(EP_SUFFIX, "")
     builder.albumTitle(albumTitle.trim().strip())
   }
 
