@@ -43,20 +43,20 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-web"
   implementation "org.springframework.boot:spring-boot-starter-validation"
   implementation "org.springframework.boot:spring-boot-starter-security"
-  implementation "org.apache.httpcomponents:httpclient"
-
-  implementation "org.springframework.boot:spring-boot-starter-cache"
-  implementation "org.ehcache:ehcache"
-  implementation "com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:$bucket4JVersion"
   implementation "org.springframework.boot:spring-boot-starter-actuator"
+  implementation "org.springframework.boot:spring-boot-starter-cache"
+  implementation "com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:$bucket4JVersion"
+
+  implementation "org.apache.httpcomponents:httpclient"
+  implementation "commons-io:commons-io:$commonsIoVersion"
+  implementation "org.ehcache:ehcache"
   implementation "io.micrometer:micrometer-registry-prometheus"
+  implementation 'org.flywaydb:flyway-core'
 
   implementation "org.codehaus.groovy:groovy:$groovyVersion"
   implementation "org.codehaus.groovy:groovy-xml:$groovyVersion"
   implementation "org.codehaus.groovy:groovy-datetime:$groovyVersion"
-
   implementation "org.codehaus.groovy.modules.http-builder:http-builder:$httpBuilderVersion"
-  implementation "commons-io:commons-io:$commonsIoVersion"
 
   implementation "io.springfox:springfox-swagger2:$swaggerVersion"
   implementation "io.springfox:springfox-swagger-ui:$swaggerVersion"
