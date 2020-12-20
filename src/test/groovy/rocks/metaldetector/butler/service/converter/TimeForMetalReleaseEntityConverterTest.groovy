@@ -55,9 +55,9 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
 
     where:
     rawValue << [
-            "Artist 1 - Album",
-            "     Artist 1     -    Album",
-            "Artist 1 $LONG_DASH Album"
+        "Artist 1 - Album",
+        "     Artist 1     -    Album",
+        "Artist 1 $LONG_DASH Album"
     ]
   }
 
@@ -77,6 +77,7 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     title                                       | expectedTitle
     "Artist 1 - Album 1"                        | "Album 1"
     "Artist 1 -      Album 1        "           | "Album 1"
+    "Artist 1 - Album 1 (EP)"                   | "Album 1"
     "Artist 1 - Album 1 - Live - 1964"          | "Album 1 - Live - 1964"
     "Artist 1 $LONG_DASH Album 1 - Live - 1964" | "Album 1 - Live - 1964"
   }
@@ -105,10 +106,10 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     releaseEntity.type == expectedReleaseType
 
     where:
-    rawValue                   | expectedReleaseType
-    "Artist - Album"           | FULL_LENGTH
-    "Artist - Album (Single)"  | FULL_LENGTH
-    "Artist - Album (EP)"      | EP
+    rawValue                  | expectedReleaseType
+    "Artist - Album"          | FULL_LENGTH
+    "Artist - Album (Single)" | FULL_LENGTH
+    "Artist - Album (EP)"     | EP
   }
 
   def "cover source url is set"() {
