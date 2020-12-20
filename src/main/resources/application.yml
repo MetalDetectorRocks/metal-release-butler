@@ -17,9 +17,11 @@ spring:
       max-lifetime: 2000000
       connectionTimeout: 30000
       idle-timeout: 30000
-    data: classpath:schema.sql
     platform: postgres
     initialization-mode: always
+  flyway:
+    baseline-on-migrate: true
+    sql-migration-prefix: v
   jpa:
     properties:
       hibernate:
@@ -30,7 +32,7 @@ spring:
     show-sql: false
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      ddl-auto: update # (create, create-drop, validate, update)
+      ddl-auto: validate # (create, create-drop, validate, update)
     open-in-view: false
   cache:
     jcache:
