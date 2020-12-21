@@ -45,7 +45,7 @@ class ReleaseCoverRestControllerIT extends Specification implements WithIntegrat
 
   def "User can access release image endpoint"() {
     given:
-    def request = get("$RELEASE_IMAGES/{releaseCoverId}", "release-cover-id")
+    def request = get("$RELEASE_IMAGES?id={releaseCoverId}", "release-cover-id")
             .header("Authorization", "Bearer " + testUserToken)
 
     when:
@@ -57,7 +57,7 @@ class ReleaseCoverRestControllerIT extends Specification implements WithIntegrat
 
   def "Admin can access release image endpoint"() {
     given:
-    def request = get("$RELEASE_IMAGES/{releaseCoverId}", "release-cover-id")
+    def request = get("$RELEASE_IMAGES?id={releaseCoverId}", "release-cover-id")
             .header("Authorization", "Bearer " + testAdminToken)
 
     when:
