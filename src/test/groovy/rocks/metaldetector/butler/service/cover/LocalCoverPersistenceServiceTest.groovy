@@ -12,6 +12,7 @@ class LocalCoverPersistenceServiceTest extends Specification {
 
   def "should run without error (smoke test)"() {
     given:
+    def targetFolder = "path/to/target"
     def url = GroovyMock(URL) {
       getPath() >> "foo.jpg"
     }
@@ -19,10 +20,10 @@ class LocalCoverPersistenceServiceTest extends Specification {
     underTest.fileTransferService.transferFileFromUrl(*_) >> 1
 
     when:
-    def result = underTest.persistCover(url)
+    def result = underTest.persistCover(url, targetFolder)
 
     then:
-    result.startsWith(RELEASE_IMAGES)
+    result.startsWith("$RELEASE_IMAGES?id=$targetFolder")
 
     and:
     result.endsWith("jpg")

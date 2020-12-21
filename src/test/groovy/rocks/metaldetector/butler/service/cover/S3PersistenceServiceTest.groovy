@@ -1,7 +1,5 @@
 package rocks.metaldetector.butler.service.cover
 
-import com.amazonaws.AmazonServiceException
-import com.amazonaws.SdkClientException
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.services.s3.model.ObjectMetadata
@@ -35,7 +33,7 @@ class S3PersistenceServiceTest extends Specification {
     }
 
     responseUrl = GroovyMock(URL) {
-      getPath() >> "/images/image.jpg"
+      getPath() >> "/images/2021/1/image.jpg"
     }
 
     underTest.amazonS3Client.getUrl(*_) >> responseUrl
@@ -44,15 +42,16 @@ class S3PersistenceServiceTest extends Specification {
 
   def "putObject: client is called with PutObjectRequest"() {
     given:
+    def targetFolder = "path/to/target"
     UUID.randomUUID() >> uuid
 
     when:
-    underTest.persistCover(coverUrl)
+    underTest.persistCover(coverUrl, targetFolder)
 
     then:
     1 * underTest.amazonS3Client.putObject({ arg ->
       arg.bucketName == underTest.bucketName &&
-      arg.key == PATH + uuid + ".jpg" &&
+      arg.key == PATH + targetFolder + "/" + uuid + ".jpg" &&
       arg.inputStream == coverUrl.openStream() &&
       arg.metadata instanceof ObjectMetadata &&
       arg.cannedAcl == CannedAccessControlList.PublicRead
@@ -61,7 +60,7 @@ class S3PersistenceServiceTest extends Specification {
 
   def "putObject: client is called with content type, fetched via URLConnection, set in meta data"() {
     when:
-    underTest.persistCover(coverUrl)
+    underTest.persistCover(coverUrl, "path/to/target")
 
     then:
     1 * underTest.amazonS3Client.putObject({ arg ->
@@ -71,7 +70,7 @@ class S3PersistenceServiceTest extends Specification {
 
   def "putObject: client is called with content length set in meta data"() {
     when:
-    underTest.persistCover(coverUrl)
+    underTest.persistCover(coverUrl, "path/to/target")
 
     then:
     1 * underTest.amazonS3Client.putObject({ arg ->
@@ -85,12 +84,12 @@ class S3PersistenceServiceTest extends Specification {
     underTest.amazonS3Client.putObject(*_) >> { throw new FileNotFoundException() }
 
     expect:
-    underTest.persistCover(coverUrl) == null
+    underTest.persistCover(coverUrl, "path/to/target") == null
   }
 
   def "getUrl: client is called with bucket name"() {
     when:
-    underTest.persistCover(coverUrl)
+    underTest.persistCover(coverUrl, "path/to/target")
 
     then:
     1 * underTest.amazonS3Client.getUrl("bucket", _) >> responseUrl
@@ -98,17 +97,18 @@ class S3PersistenceServiceTest extends Specification {
 
   def "getUrl: client is called with key"() {
     given:
+    def targetFolder = "path/to/target"
     UUID.randomUUID() >> uuid
 
     when:
-    underTest.persistCover(coverUrl)
+    underTest.persistCover(coverUrl, targetFolder)
 
     then:
-    1 * underTest.amazonS3Client.getUrl(_, PATH + uuid + ".jpg") >> responseUrl
+    1 * underTest.amazonS3Client.getUrl(_, PATH + targetFolder + "/" + uuid + ".jpg") >> responseUrl
   }
 
   def "the image url is composed of the aws s3 host, the bucket name and the image path on s3"() {
     expect:
-    underTest.persistCover(coverUrl) == "${underTest.awsS3Host}/${underTest.bucketName}${responseUrl.path}"
+    underTest.persistCover(coverUrl, "path/to/target") == "${underTest.awsS3Host}/${underTest.bucketName}${responseUrl.path}"
   }
 }

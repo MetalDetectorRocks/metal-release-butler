@@ -28,8 +28,8 @@ class S3PersistenceService implements CoverPersistenceService {
   AmazonS3 amazonS3Client
 
   @Override
-  String persistCover(URL coverUrl) {
-    def key = PATH + UUID.randomUUID() + "." + FilenameUtils.getExtension(coverUrl.getPath())
+  String persistCover(URL coverUrl, String targetFolder) {
+    def key = PATH + targetFolder + "/" + UUID.randomUUID() + "." + FilenameUtils.getExtension(coverUrl.getPath())
     try {
       log.info("Upload cover from '${coverUrl.toExternalForm()}'")
       PutObjectRequest request = createPutObjectRequest(key, coverUrl)

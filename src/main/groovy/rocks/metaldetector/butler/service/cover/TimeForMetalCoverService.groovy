@@ -10,10 +10,10 @@ class TimeForMetalCoverService implements CoverService {
   CoverPersistenceService coverPersistenceService
 
   @Override
-  String transfer(String sourceUrl) {
+  String transfer(String sourceUrl, String targetFolder) {
     if (sourceUrl) {
       def coverUrl = sourceUrl.replace("-100x100", "")
-      return coverPersistenceService.persistCover(new URL(coverUrl))
+      return coverPersistenceService.persistCover(new URL(coverUrl), targetFolder)
     }
   }
 }

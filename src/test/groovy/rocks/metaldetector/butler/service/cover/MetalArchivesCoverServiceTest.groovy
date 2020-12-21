@@ -10,9 +10,10 @@ class MetalArchivesCoverServiceTest extends Specification {
   def "coverFetcher is called to get the url of the release cover"() {
     given:
     def sourceUrl = "http://www.internet.com"
+    def targetFolder = "path/to/target"
 
     when:
-    underTest.transfer(sourceUrl)
+    underTest.transfer(sourceUrl, targetFolder)
 
     then:
     1 * underTest.metalArchivesCoverFetcher.fetchCoverUrl(sourceUrl)
@@ -21,14 +22,15 @@ class MetalArchivesCoverServiceTest extends Specification {
   def "if url is returned persistenceService is called and result returned"() {
     given:
     def sourceUrl = "http://www.internet.com"
+    def targetFolder = "path/to/target"
     underTest.metalArchivesCoverFetcher.fetchCoverUrl(sourceUrl) >> sourceUrl
     def expectedPath = "path/to/image"
 
     when:
-    def result = underTest.transfer(sourceUrl)
+    def result = underTest.transfer(sourceUrl, targetFolder)
 
     then:
-    1 * underTest.coverPersistenceService.persistCover(new URL(sourceUrl)) >> expectedPath
+    1 * underTest.coverPersistenceService.persistCover(new URL(sourceUrl), targetFolder) >> expectedPath
 
     and:
     result == expectedPath
@@ -37,9 +39,10 @@ class MetalArchivesCoverServiceTest extends Specification {
   def "if no url is returned persistenceService is not called and null returned"() {
     given:
     def sourceUrl = "http://www.internet.com"
+    def targetFolder = "path/to/target"
 
     when:
-    def result = underTest.transfer(sourceUrl)
+    def result = underTest.transfer(sourceUrl, targetFolder)
 
     then:
     0 * underTest.coverPersistenceService.persistCover(*_)
@@ -50,7 +53,7 @@ class MetalArchivesCoverServiceTest extends Specification {
 
   def "if source url is null nothing is called and null returned"() {
     when:
-    def result = underTest.transfer(null)
+    def result = underTest.transfer(null, null)
 
     then:
     0 * underTest.coverPersistenceService.persistCover(*_)
