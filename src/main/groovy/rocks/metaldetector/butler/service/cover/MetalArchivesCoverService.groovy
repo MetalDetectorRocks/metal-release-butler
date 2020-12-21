@@ -13,10 +13,10 @@ class MetalArchivesCoverService implements CoverService {
   CoverPersistenceService coverPersistenceService
 
   @Override
-  String transfer(String sourceUrl) {
+  String transfer(String sourceUrl, String targetFolder) {
     if (sourceUrl) {
       def coverUrl = metalArchivesCoverFetcher.fetchCoverUrl(sourceUrl)
-      return coverUrl ? coverPersistenceService.persistCover(new URL(coverUrl)) : null
+      return coverUrl ? coverPersistenceService.persistCover(new URL(coverUrl), targetFolder) : null
     }
   }
 }

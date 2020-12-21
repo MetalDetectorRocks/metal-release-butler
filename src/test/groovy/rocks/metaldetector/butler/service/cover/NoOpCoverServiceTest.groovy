@@ -8,7 +8,7 @@ class NoOpCoverServiceTest extends Specification {
 
   def "should return null for source url '#sourceUrl'"() {
     expect:
-    underTest.transfer(sourceUrl) == null
+    underTest.transfer(sourceUrl, "path/to/target") == null
 
     where:
     sourceUrl << [null, "", "source"]
