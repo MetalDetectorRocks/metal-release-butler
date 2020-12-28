@@ -9,13 +9,14 @@ class TimeForMetalCoverServiceTest extends Specification {
   def "if url is not null persistenceService is called and result returned"() {
     given:
     def sourceUrl = "http://www.internet.com"
+    def targetFolder = "path/to/target"
     def expectedPath = "path/to/image"
 
     when:
-    def result = underTest.transfer(sourceUrl)
+    def result = underTest.transfer(sourceUrl, targetFolder)
 
     then:
-    1 * underTest.coverPersistenceService.persistCover(new URL(sourceUrl)) >> expectedPath
+    1 * underTest.coverPersistenceService.persistCover(new URL(sourceUrl), targetFolder) >> expectedPath
 
     and:
     result == expectedPath
@@ -25,21 +26,17 @@ class TimeForMetalCoverServiceTest extends Specification {
     given:
     def sourceUrl = "http://www.internet.com?bla-100x100.jpg"
     def expectedUrl = "http://www.internet.com?bla.jpg"
-    def expectedPath = "path/to/image"
 
     when:
-    def result = underTest.transfer(sourceUrl)
+    underTest.transfer(sourceUrl, "path/to/target")
 
     then:
-    1 * underTest.coverPersistenceService.persistCover(new URL(expectedUrl)) >> expectedPath
-
-    and:
-    result == expectedPath
+    1 * underTest.coverPersistenceService.persistCover(new URL(expectedUrl), _)
   }
 
   def "if source url is null nothing is called and null returned"() {
     when:
-    def result = underTest.transfer(null)
+    def result = underTest.transfer(null, "path/to/target")
 
     then:
     0 * underTest.coverPersistenceService.persistCover(*_)

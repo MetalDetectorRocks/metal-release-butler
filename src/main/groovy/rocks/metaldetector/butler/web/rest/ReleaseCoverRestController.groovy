@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Profile
 import org.springframework.core.io.Resource
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import rocks.metaldetector.butler.service.cover.ImageResourceFinder
 
@@ -23,9 +23,9 @@ class ReleaseCoverRestController {
   @Autowired
   ImageResourceFinder imageResourceFinder
 
-  @GetMapping(path = "/{releaseCoverId}", produces = [IMAGE_JPEG_VALUE, IMAGE_GIF_VALUE, IMAGE_PNG_VALUE])
-  ResponseEntity<Resource> getReleaseCover(@PathVariable String releaseCoverId) {
-    Optional<Resource> coverResource = imageResourceFinder.findImage(Paths.get("images", releaseCoverId))
+  @GetMapping(produces = [IMAGE_JPEG_VALUE, IMAGE_GIF_VALUE, IMAGE_PNG_VALUE])
+  ResponseEntity<Resource> getReleaseCover(@RequestParam String id) {
+    Optional<Resource> coverResource = imageResourceFinder.findImage(Paths.get("images", id))
     return ResponseEntity.of(coverResource)
   }
 }

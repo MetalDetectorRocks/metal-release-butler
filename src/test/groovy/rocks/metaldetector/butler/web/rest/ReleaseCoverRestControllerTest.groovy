@@ -22,7 +22,7 @@ class ReleaseCoverRestControllerTest extends Specification implements WithExcept
   def "should call image resource finder with image id"() {
     given:
     def coverId = "cover-id"
-    def request = get("${RELEASE_IMAGES}/{id}", coverId)
+    def request = get("${RELEASE_IMAGES}?id={id}", coverId)
 
     when:
     mockMvc.perform(request).andReturn()
@@ -33,7 +33,7 @@ class ReleaseCoverRestControllerTest extends Specification implements WithExcept
 
   def "should return 404 if no image was found"() {
     given:
-    def request = get("${RELEASE_IMAGES}/{id}", "cover-id")
+    def request = get("${RELEASE_IMAGES}?id={id}", "cover-id")
     underTest.imageResourceFinder.findImage(_) >> Optional.empty()
 
     when:
@@ -45,7 +45,7 @@ class ReleaseCoverRestControllerTest extends Specification implements WithExcept
 
   def "should return OK if image was found"() {
     given:
-    def request = get("${RELEASE_IMAGES}/{id}", "cover-id")
+    def request = get("${RELEASE_IMAGES}?id={id}", "cover-id")
     underTest.imageResourceFinder.findImage(_) >> Optional.of(new ClassPathResource("test.jpg"))
 
     when:
@@ -58,7 +58,7 @@ class ReleaseCoverRestControllerTest extends Specification implements WithExcept
   def "should return image resource from image resource finder"() {
     given:
     def imageResource = new ClassPathResource("test.jpg")
-    def request = get("${RELEASE_IMAGES}/{id}", "cover-id")
+    def request = get("${RELEASE_IMAGES}?id={id}", "cover-id")
     underTest.imageResourceFinder.findImage(_) >> Optional.of(imageResource)
 
     when:

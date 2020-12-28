@@ -23,12 +23,12 @@ class LocalCoverPersistenceService implements CoverPersistenceService {
   LocalFileTransferService fileTransferService
 
   @Override
-  String persistCover(URL coverUrl) {
+  String persistCover(URL coverUrl, String targetFolder) {
     try {
-      createFolderIfNecessary()
-      def localFileName = createLocalFileName(coverUrl)
+      createFolderIfNecessary(targetFolder)
+      def localFileName = createLocalFileName(coverUrl, targetFolder)
       persistLocally(coverUrl, localFileName)
-      return "$RELEASE_IMAGES/$localFileName"
+      return "$RELEASE_IMAGES?id=$localFileName"
     }
     catch (Exception e) {
       log.error("Could not persist cover from '${coverUrl}'", e)
@@ -36,15 +36,15 @@ class LocalCoverPersistenceService implements CoverPersistenceService {
     }
   }
 
-  private void createFolderIfNecessary() {
-    Path imagePath = Paths.get(IMAGES_FOLDER_PATH)
+  private void createFolderIfNecessary(String targetFolder) {
+    Path imagePath = Paths.get(IMAGES_FOLDER_PATH + targetFolder)
     if (!Files.exists(imagePath)) {
       Files.createDirectories(imagePath)
     }
   }
 
-  private String createLocalFileName(URL coverUrl) {
-    return UUID.randomUUID().toString() + "." + FilenameUtils.getExtension(coverUrl.getPath())
+  private String createLocalFileName(URL coverUrl, String targetFolder) {
+    return targetFolder + "/" + UUID.randomUUID().toString() + "." + FilenameUtils.getExtension(coverUrl.getPath())
   }
 
   private void persistLocally(URL coverUrl, String localFileName) {

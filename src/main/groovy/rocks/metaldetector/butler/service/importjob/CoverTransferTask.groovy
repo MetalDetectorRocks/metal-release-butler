@@ -10,7 +10,13 @@ class CoverTransferTask implements Runnable {
 
   @Override
   void run() {
-    String transferTargetAddress = coverService.transfer(releaseEntity.releaseDetailsUrl)
+    def targetFolder = composeTargetFolderName()
+    String transferTargetAddress = coverService.transfer(releaseEntity.releaseDetailsUrl, targetFolder)
     releaseEntity.setCoverUrl(transferTargetAddress)
+  }
+
+  private String composeTargetFolderName() {
+    def releaseDate = releaseEntity.releaseDate
+    return releaseDate ? "${releaseDate.getYear()}/${releaseDate.getMonthValue()}" : releaseEntity.estimatedReleaseDate
   }
 }
