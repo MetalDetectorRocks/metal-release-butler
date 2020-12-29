@@ -28,7 +28,6 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http.csrf().ignoringAntMatchers(REST_ENDPOINTS)
         .and().sessionManagement().sessionCreationPolicy(STATELESS)
-        .and().requiresChannel().requestMatchers(new XForwardedProtoMatcher()).requiresSecure()
     http.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
         .and().authorizeRequests()
             .antMatchers(ACTUATOR_ENDPOINTS).permitAll()
