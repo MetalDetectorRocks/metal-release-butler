@@ -21,7 +21,6 @@ VOLUME ["/app/images/", "/app/logs/"]
 ARG SOURCE_JAR_FILE="build/libs/*.jar"
 ARG BUILD_DATE
 ARG VCS_REF
-ARG HEALTH_CHECK_ENDPOINT
 
 # Labels
 LABEL org.label-schema.schema-version="1.0"
@@ -34,7 +33,7 @@ LABEL org.label-schema.vcs-url="https://github.com/MetalDetectorRocks/metal-rele
 LABEL org.label-schema.vcs-ref=$VCS_REF
 LABEL org.label-schema.version=$BUILD_DATE
 
-HEALTHCHECK --start-period=10s --interval=10s --timeout=5s --retries=3 CMD curl --fail http://localhost:8080/$HEALTH_CHECK_ENDPOINT || exit 1
+HEALTHCHECK --start-period=30s --interval=10s --timeout=5s --retries=3 CMD curl --fail http://localhost:8080/actuator/health || exit 1
 
 COPY $SOURCE_JAR_FILE app.jar
 COPY docker-entrypoint.sh /app
