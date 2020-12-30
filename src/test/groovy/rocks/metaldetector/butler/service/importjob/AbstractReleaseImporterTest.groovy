@@ -22,7 +22,8 @@ class AbstractReleaseImporterTest extends Specification {
     given:
     def releaseEntities = [
         ReleaseEntityFactory.createReleaseEntity("a"),
-        ReleaseEntityFactory.createReleaseEntity("a")
+        ReleaseEntityFactory.createReleaseEntity("a"),
+        ReleaseEntityFactory.createReleaseEntity("A"),
     ]
 
     when:
