@@ -35,7 +35,10 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
 
   protected ImportResult finalizeImport(List<ReleaseEntity> releaseEntities) {
     List<Future> futures = []
-    def releaseEntitiesToSave = releaseEntities.unique(false)
+    Comparator<ReleaseEntity> releaseEntityComparator = {release1, release2 ->
+      release1.artist.toLowerCase() <=> release2.artist.toLowerCase()
+    }
+    def releaseEntitiesToSave = releaseEntities.unique(false, releaseEntityComparator)
             .findAll {releaseEntity ->
               !releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)
             }
