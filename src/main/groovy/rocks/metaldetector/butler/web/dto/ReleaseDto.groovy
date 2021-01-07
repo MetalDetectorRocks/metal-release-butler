@@ -17,6 +17,7 @@ class ReleaseDto {
   List<String> additionalArtists = []
   String albumTitle
   LocalDate releaseDate
+  LocalDate announcementDate
   String estimatedReleaseDate
   String genre
   ReleaseType type
