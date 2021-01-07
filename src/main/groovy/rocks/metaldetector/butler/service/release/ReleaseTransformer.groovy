@@ -14,6 +14,7 @@ class ReleaseTransformer {
         .additionalArtists(releaseEntity.additionalArtists)
         .albumTitle(releaseEntity.albumTitle)
         .releaseDate(releaseEntity.releaseDate)
+        .announcementDate(releaseEntity.createdDateTime.toLocalDate())
         .estimatedReleaseDate(releaseEntity.estimatedReleaseDate)
         .genre(releaseEntity.genre)
         .type(releaseEntity.type)

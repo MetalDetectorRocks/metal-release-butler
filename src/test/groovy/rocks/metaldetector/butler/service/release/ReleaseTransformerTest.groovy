@@ -21,6 +21,7 @@ class ReleaseTransformerTest extends Specification {
     result.artist == releaseEntity.artist
     result.albumTitle == releaseEntity.albumTitle
     result.releaseDate == releaseEntity.releaseDate
+    result.announcementDate == releaseEntity.createdDateTime.toLocalDate()
     result.estimatedReleaseDate == releaseEntity.estimatedReleaseDate
     result.source == releaseEntity.source
     result.genre == releaseEntity.genre

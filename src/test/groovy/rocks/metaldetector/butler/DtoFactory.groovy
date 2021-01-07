@@ -38,7 +38,8 @@ class DtoFactory {
           type: FULL_LENGTH,
           releaseDetailsUrl: "http://www.internet.de",
           artistDetailsUrl: "http://www.internet2.de",
-          coverUrl: "coverUrl"
+          coverUrl: "coverUrl",
+          createdDateTime: new Date()
       )
     }
   }
