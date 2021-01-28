@@ -22,7 +22,7 @@ def bucket4JVersion = '0.3.3'
 def jsonwebtokenVersion = '0.9.1'
 def httpBuilderVersion = '0.7.1'
 def commonsIoVersion = '2.8.0'
-def awsS3SdkVersion = '1.11.942'
+def awsS3SdkVersion = '1.11.944'
 
 configurations {
   developmentOnly
