@@ -19,8 +19,8 @@ import rocks.metaldetector.butler.web.api.ReleasesResponse
 
 import javax.validation.Valid
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import static org.springframework.data.domain.Sort.Direction.ASC
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES
 import static rocks.metaldetector.butler.config.constants.Endpoints.RELEASES_UNPAGINATED
 import static rocks.metaldetector.butler.config.constants.Endpoints.UPDATE_RELEASE
@@ -34,17 +34,19 @@ class ReleasesRestController {
   @PostMapping(path = RELEASES, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_USER')")
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request,
-                                                        @SortDefault(sort =["releaseDate", "artist", "albumTitle"], direction=ASC) Sort sorting) {
+                                                        @SortDefault(sort = ["releaseDate", "artist", "albumTitle"], direction = ASC) Sort sorting) {
     def releasesResponse
+    def query = request.query != null ? request.query.trim() : ""
+
     if (request.dateFrom == null && request.dateTo == null) {
-      releasesResponse = releaseService.findAllUpcomingReleases(request.artists, request.page, request.size, sorting)
+      releasesResponse = releaseService.findAllUpcomingReleases(request.artists, query, request.page, request.size, sorting)
     }
     else if (request.dateFrom != null && request.dateTo != null) {
       TimeRange timeRange = TimeRange.of(request.dateFrom, request.dateTo)
-      releasesResponse = releaseService.findAllReleasesForTimeRange(request.artists, timeRange, request.page, request.size, sorting)
+      releasesResponse = releaseService.findAllReleasesForTimeRange(request.artists, timeRange, query, request.page, request.size, sorting)
     }
     else if (request.dateFrom != null) {
-      releasesResponse = releaseService.findAllReleasesSince(request.artists, request.dateFrom, request.page, request.size, sorting)
+      releasesResponse = releaseService.findAllReleasesSince(request.artists, request.dateFrom, query, request.page, request.size, sorting)
     }
     else {
       throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' or only for 'dateFrom' with format 'YYYY-MM-DD'.")
@@ -63,7 +65,7 @@ class ReleasesRestController {
   @PostMapping(path = RELEASES_UNPAGINATED, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request,
-                                                  @SortDefault(sort =["releaseDate", "artist", "albumTitle"], direction=ASC) Sort sorting) {
+                                                  @SortDefault(sort = ["releaseDate", "artist", "albumTitle"], direction = ASC) Sort sorting) {
     def releasesResponse
     if (request.dateFrom == null && request.dateTo == null) {
       releasesResponse = releaseService.findAllUpcomingReleases(request.artists, sorting)

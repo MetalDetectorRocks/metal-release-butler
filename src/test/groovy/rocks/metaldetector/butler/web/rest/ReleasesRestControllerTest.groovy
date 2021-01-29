@@ -296,7 +296,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
   def "getPaginatedReleases: valid request without time range should call releases service"() {
     given:
     def artists = [ARTIST_NAME]
-    def releasesRequest = new ReleasesRequestPaginated(artists: artists, page: 1, size: 10)
+    def releasesRequest = new ReleasesRequestPaginated(artists: artists, page: 1, size: 10, query: "query")
     def expectedSorting = Sort.by(ASC, "artist")
     def request = post(RELEASES)
         .param("sort", "artist,asc")
@@ -308,13 +308,13 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllUpcomingReleases(releasesRequest.artists, releasesRequest.page, releasesRequest.size, expectedSorting)
+    1 * underTest.releaseService.findAllUpcomingReleases(releasesRequest.artists, releasesRequest.query, releasesRequest.page, releasesRequest.size, expectedSorting)
   }
 
   def "getPaginatedReleases: valid request without time range should call releases service with default sorting if none is given"() {
     given:
     def artists = [ARTIST_NAME]
-    def releasesRequest = new ReleasesRequestPaginated(artists: artists, page: 1, size: 10)
+    def releasesRequest = new ReleasesRequestPaginated(artists: artists, page: 1, size: 10, query: "query")
     def request = post(RELEASES)
         .contentType(APPLICATION_JSON)
         .accept(APPLICATION_JSON)
@@ -324,7 +324,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllUpcomingReleases(releasesRequest.artists, releasesRequest.page, releasesRequest.size, DEFAULT_SORTING)
+    1 * underTest.releaseService.findAllUpcomingReleases(releasesRequest.artists, releasesRequest.query, releasesRequest.page, releasesRequest.size, DEFAULT_SORTING)
   }
 
   def "getPaginatedReleases: valid request without time range should return ok"() {
@@ -365,7 +365,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def from = LocalDate.of(2020, 1, 1)
     def to = LocalDate.of(2020, 2, 1)
     def artists = [ARTIST_NAME]
-    def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, dateTo: to, page: 1, size: 10)
+    def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, dateTo: to, page: 1, size: 10, query: "query")
     def expectedSorting = Sort.by(ASC, "artist")
     def request = post(RELEASES)
         .param("sort", "artist,asc")
@@ -377,7 +377,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(from, to), requestDto.page, requestDto.size, expectedSorting)
+    1 * underTest.releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(from, to), requestDto.query, requestDto.page, requestDto.size, expectedSorting)
   }
 
   def "getPaginatedReleases: valid request with time range should call releases service with default sorting if none is given"() {
@@ -385,7 +385,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     def from = LocalDate.of(2020, 1, 1)
     def to = LocalDate.of(2020, 2, 1)
     def artists = [ARTIST_NAME]
-    def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, dateTo: to, page: 1, size: 10)
+    def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, dateTo: to, page: 1, size: 10, query: "query")
     def request = post(RELEASES)
         .contentType(APPLICATION_JSON)
         .accept(APPLICATION_JSON)
@@ -395,7 +395,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(from, to), requestDto.page, requestDto.size, DEFAULT_SORTING)
+    1 * underTest.releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(from, to), requestDto.query, requestDto.page, requestDto.size, DEFAULT_SORTING)
   }
 
   def "getPaginatedReleases: valid request with time range should return ok"() {
@@ -435,7 +435,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     given:
     def from = LocalDate.of(2020, 1, 1)
     def artists = [ARTIST_NAME]
-    def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, page: 1, size: 10)
+    def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, page: 1, size: 10, query: "query")
     def expectedSorting = Sort.by(ASC, "artist")
     def request = post(RELEASES)
         .param("sort", "artist,asc")
@@ -447,14 +447,14 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllReleasesSince(artists, from, requestDto.page, requestDto.size, expectedSorting) >> []
+    1 * underTest.releaseService.findAllReleasesSince(artists, from, requestDto.query, requestDto.page, requestDto.size, expectedSorting) >> []
   }
 
   def "getPaginatedReleases: should call releases service with default sorting if only 'dateFrom' and no sorting is given"() {
     given:
     def from = LocalDate.of(2020, 1, 1)
     def artists = [ARTIST_NAME]
-    def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, page: 1, size: 10)
+    def requestDto = new ReleasesRequestPaginated(artists: artists, dateFrom: from, page: 1, size: 10, query: "query")
     def request = post(RELEASES)
         .contentType(APPLICATION_JSON)
         .accept(APPLICATION_JSON)
@@ -464,7 +464,7 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     mockMvc.perform(request).andReturn()
 
     then:
-    1 * underTest.releaseService.findAllReleasesSince(artists, from, requestDto.page, requestDto.size, DEFAULT_SORTING) >> []
+    1 * underTest.releaseService.findAllReleasesSince(artists, from, requestDto.query, requestDto.page, requestDto.size, DEFAULT_SORTING) >> []
   }
 
   def "getPaginatedReleases: should return ok if only 'dateFrom' is given"() {

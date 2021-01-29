@@ -24,6 +24,8 @@ class ReleasesRequestPaginated {
   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
   LocalDate dateTo
 
+  String query
+
   Iterable<String> artists
 
   Iterable<String> getArtists() {
