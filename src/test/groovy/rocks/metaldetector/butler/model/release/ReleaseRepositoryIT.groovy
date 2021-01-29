@@ -2,6 +2,7 @@ package rocks.metaldetector.butler.model.release
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import spock.lang.Specification
@@ -31,6 +32,200 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
 
   void cleanup() {
     underTest.deleteAll()
+  }
+
+  def "findAllReleasesFrom: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+
+    when:
+    def result = underTest.findAllReleasesFrom(LocalDate.of(2020, 2, 1), null, pageRequest)
+
+    then:
+    result.content.size() == 2
+
+    and:
+    result.content == [release2, release3]
+  }
+
+  def "findAllReleasesFrom with query artistName: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def query = "a2"
+
+    when:
+    def result = underTest.findAllReleasesFrom(LocalDate.of(2020, 2, 1), query, pageRequest)
+
+    then:
+    result.content.size() == 1
+
+    and:
+    result.content == [release2]
+  }
+
+  def "findAllReleasesFrom with query albumTitle: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def query = "t"
+
+    when:
+    def result = underTest.findAllReleasesFrom(LocalDate.of(2020, 2, 1), query, pageRequest)
+
+    then:
+    result.content.size() == 2
+
+    and:
+    result.content == [release2, release3]
+  }
+
+  def "findAllReleasesBetween: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def from = LocalDate.of(2020, 1, 1)
+    def to = LocalDate.of(2020, 2, 1)
+
+    when:
+    def result = underTest.findAllReleasesBetween(from, to, null, pageRequest)
+
+    then:
+    result.content.size() == 2
+
+    and:
+    result.content == [release1, release2]
+  }
+
+  def "findAllReleasesBetween with query artistName: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def query = "a2"
+    def from = LocalDate.of(2020, 1, 1)
+    def to = LocalDate.of(2020, 2, 1)
+
+    when:
+    def result = underTest.findAllReleasesBetween(from, to, query, pageRequest)
+
+    then:
+    result.content.size() == 1
+
+    and:
+    result.content == [release2]
+  }
+
+  def "findAllReleasesBetween with query albumTitle: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def query = "t"
+    def from = LocalDate.of(2020, 1, 1)
+    def to = LocalDate.of(2020, 2, 1)
+
+    when:
+    def result = underTest.findAllReleasesBetween(from, to, query, pageRequest)
+
+    then:
+    result.content.size() == 2
+
+    and:
+    result.content == [release1, release2]
+  }
+
+  def "findAlleReleasesFromWithArtists: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def artists = ["A1"]
+
+    when:
+    def result = underTest.findAlleReleasesFromWithArtists(LocalDate.of(2020, 1, 1), artists, null, pageRequest)
+
+    then:
+    result.content.size() == 1
+
+    and:
+    result.content == [release1]
+  }
+
+  def "findAlleReleasesFromWithArtists with query artistName: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def query = "a2"
+    def artists = ["A1", "A2"]
+
+    when:
+    def result = underTest.findAlleReleasesFromWithArtists(LocalDate.of(2020, 1, 1), artists, query, pageRequest)
+
+    then:
+    result.content.size() == 1
+
+    and:
+    result.content == [release2]
+  }
+
+  def "findAlleReleasesFromWithArtists with query albumTitle: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def query = "t"
+    def artists = ["A1", "A2"]
+
+    when:
+    def result = underTest.findAlleReleasesFromWithArtists(LocalDate.of(2020, 1, 1), artists, query, pageRequest)
+
+    then:
+    result.content.size() == 2
+
+    and:
+    result.content == [release1, release2]
+  }
+
+  def "findAllReleasesBetweenWithArtists: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def from = LocalDate.of(2020, 1, 1)
+    def to = LocalDate.of(2020, 2, 1)
+    def artists = ["A1"]
+
+    when:
+    def result = underTest.findAllReleasesBetweenWithArtists(artists, from, to, null, pageRequest)
+
+    then:
+    result.content.size() == 1
+
+    and:
+    result.content == [release1]
+  }
+
+  def "findAllReleasesBetweenWithArtists with query artistName: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def query = "a2"
+    def from = LocalDate.of(2020, 1, 1)
+    def to = LocalDate.of(2020, 2, 1)
+    def artists = ["A1", "A2"]
+
+    when:
+    def result = underTest.findAllReleasesBetweenWithArtists(artists, from, to, query, pageRequest)
+
+    then:
+    result.content.size() == 1
+
+    and:
+    result.content == [release2]
+  }
+
+  def "findAllReleasesBetweenWithArtists with query albumTitle: should return correct releases"() {
+    given:
+    def pageRequest = PageRequest.of(0, 2)
+    def query = "t"
+    def from = LocalDate.of(2020, 1, 1)
+    def to = LocalDate.of(2020, 2, 1)
+    def artists = ["A1", "A2"]
+
+    when:
+    def result = underTest.findAllReleasesBetweenWithArtists(artists, from, to, query, pageRequest)
+
+    then:
+    result.content.size() == 2
+
+    and:
+    result.content == [release1, release2]
   }
 
   @Unroll

@@ -9,11 +9,11 @@ import java.time.LocalDate
 
 interface ReleaseService {
 
-  ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames, int page, int size, Sort sorting)
+  ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames, String query, int page, int size, Sort sorting)
 
-  ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, int page, int size, Sort sorting)
+  ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, String query, int page, int size, Sort sorting)
 
-  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, int page, int size, Sort sorting)
+  ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, String query, int page, int size, Sort sorting)
 
   ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames, Sort sorting)
 
