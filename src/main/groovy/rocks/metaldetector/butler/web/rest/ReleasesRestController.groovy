@@ -37,16 +37,17 @@ class ReleasesRestController {
                                                         @SortDefault(sort = ["releaseDate", "artist", "albumTitle"], direction = ASC) Sort sorting) {
     def releasesResponse
     def query = request.query != null ? request.query.trim() : ""
+    def artists = request.artists ? request.artists.collect { it?.toLowerCase() } - null : []
 
     if (request.dateFrom == null && request.dateTo == null) {
-      releasesResponse = releaseService.findAllUpcomingReleases(request.artists, query, request.page, request.size, sorting)
+      releasesResponse = releaseService.findAllUpcomingReleases(artists, query, request.page, request.size, sorting)
     }
     else if (request.dateFrom != null && request.dateTo != null) {
       TimeRange timeRange = TimeRange.of(request.dateFrom, request.dateTo)
-      releasesResponse = releaseService.findAllReleasesForTimeRange(request.artists, timeRange, query, request.page, request.size, sorting)
+      releasesResponse = releaseService.findAllReleasesForTimeRange(artists, timeRange, query, request.page, request.size, sorting)
     }
     else if (request.dateFrom != null) {
-      releasesResponse = releaseService.findAllReleasesSince(request.artists, request.dateFrom, query, request.page, request.size, sorting)
+      releasesResponse = releaseService.findAllReleasesSince(artists, request.dateFrom, query, request.page, request.size, sorting)
     }
     else {
       throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' or only for 'dateFrom' with format 'YYYY-MM-DD'.")
@@ -67,14 +68,16 @@ class ReleasesRestController {
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request,
                                                   @SortDefault(sort = ["releaseDate", "artist", "albumTitle"], direction = ASC) Sort sorting) {
     def releasesResponse
+    def artists = request.artists ? request.artists.collect { it?.toLowerCase() } - null : []
+
     if (request.dateFrom == null && request.dateTo == null) {
-      releasesResponse = releaseService.findAllUpcomingReleases(request.artists, sorting)
+      releasesResponse = releaseService.findAllUpcomingReleases(artists, sorting)
     }
     else if (request.dateFrom != null && request.dateTo != null) {
-      releasesResponse = releaseService.findAllReleasesForTimeRange(request.artists, TimeRange.of(request.dateFrom, request.dateTo), sorting)
+      releasesResponse = releaseService.findAllReleasesForTimeRange(artists, TimeRange.of(request.dateFrom, request.dateTo), sorting)
     }
     else if (request.dateFrom != null) {
-      releasesResponse = releaseService.findAllReleasesSince(request.artists, request.dateFrom, sorting)
+      releasesResponse = releaseService.findAllReleasesSince(artists, request.dateFrom, sorting)
     }
     else {
       throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' or only for 'dateFrom' with format 'YYYY-MM-DD'.")

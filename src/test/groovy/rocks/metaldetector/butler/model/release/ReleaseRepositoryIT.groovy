@@ -131,7 +131,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   def "findAlleReleasesFromWithArtists: should return correct releases"() {
     given:
     def pageRequest = PageRequest.of(0, 2)
-    def artists = ["A1"]
+    def artists = ["a1"]
 
     when:
     def result = underTest.findAlleReleasesFromWithArtists(LocalDate.of(2020, 1, 1), artists, null, pageRequest)
@@ -147,7 +147,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
     given:
     def pageRequest = PageRequest.of(0, 2)
     def query = "a2"
-    def artists = ["A1", "A2"]
+    def artists = ["a1", "a2"]
 
     when:
     def result = underTest.findAlleReleasesFromWithArtists(LocalDate.of(2020, 1, 1), artists, query, pageRequest)
@@ -163,7 +163,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
     given:
     def pageRequest = PageRequest.of(0, 2)
     def query = "t"
-    def artists = ["A1", "A2"]
+    def artists = ["a1", "a2"]
 
     when:
     def result = underTest.findAlleReleasesFromWithArtists(LocalDate.of(2020, 1, 1), artists, query, pageRequest)
@@ -180,7 +180,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
     def pageRequest = PageRequest.of(0, 2)
     def from = LocalDate.of(2020, 1, 1)
     def to = LocalDate.of(2020, 2, 1)
-    def artists = ["A1"]
+    def artists = ["a1"]
 
     when:
     def result = underTest.findAllReleasesBetweenWithArtists(artists, from, to, null, pageRequest)
@@ -198,7 +198,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
     def query = "a2"
     def from = LocalDate.of(2020, 1, 1)
     def to = LocalDate.of(2020, 2, 1)
-    def artists = ["A1", "A2"]
+    def artists = ["a1", "a2"]
 
     when:
     def result = underTest.findAllReleasesBetweenWithArtists(artists, from, to, query, pageRequest)
@@ -216,7 +216,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
     def query = "t"
     def from = LocalDate.of(2020, 1, 1)
     def to = LocalDate.of(2020, 2, 1)
-    def artists = ["A1", "A2"]
+    def artists = ["a1", "a2"]
 
     when:
     def result = underTest.findAllReleasesBetweenWithArtists(artists, from, to, query, pageRequest)

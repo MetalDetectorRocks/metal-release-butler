@@ -69,7 +69,7 @@ class ReleaseServiceImpl implements ReleaseService {
   ReleasesResponse findAllUpcomingReleases(Iterable<String> artistNames, Sort sorting) {
     def releaseEntities = artistNames.isEmpty()
         ? releaseRepository.findAllByReleaseDateAfter(YESTERDAY, sorting)
-        : releaseRepository.findAllByReleaseDateAfterAndArtistIn(YESTERDAY, artistNames, sorting)
+        : releaseRepository.findAllByReleaseDateAfterAndArtistInIgnoreCase(YESTERDAY, artistNames, sorting)
 
     return releasesResponseTransformer.transformReleaseEntities(releaseEntities)
   }
@@ -79,7 +79,7 @@ class ReleaseServiceImpl implements ReleaseService {
   ReleasesResponse findAllReleasesForTimeRange(Iterable<String> artistNames, TimeRange timeRange, Sort sorting) {
     def releaseEntities = artistNames.isEmpty()
         ? releaseRepository.findAllByReleaseDateBetween(timeRange.from, timeRange.to, sorting)
-        : releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, sorting)
+        : releaseRepository.findAllByArtistInIgnoreCaseAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, sorting)
 
     return releasesResponseTransformer.transformReleaseEntities(releaseEntities)
   }
@@ -89,7 +89,7 @@ class ReleaseServiceImpl implements ReleaseService {
   ReleasesResponse findAllReleasesSince(Iterable<String> artistNames, LocalDate dateFrom, Sort sorting) {
     def releaseEntities = artistNames.isEmpty()
         ? releaseRepository.findAllByReleaseDateAfter(dateFrom, sorting)
-        : releaseRepository.findAllByReleaseDateAfterAndArtistIn(dateFrom, artistNames, sorting)
+        : releaseRepository.findAllByReleaseDateAfterAndArtistInIgnoreCase(dateFrom, artistNames, sorting)
 
     return releasesResponseTransformer.transformReleaseEntities(releaseEntities)
   }
