@@ -4,7 +4,6 @@ import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import rocks.metaldetector.butler.model.TimeRange
-import rocks.metaldetector.butler.model.release.ReleaseEntityState
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.web.api.ReleasesResponse
 import spock.lang.Specification
@@ -14,7 +13,6 @@ import java.time.LocalDate
 import static org.springframework.data.domain.Sort.Direction.DESC
 import static rocks.metaldetector.butler.DtoFactory.ReleaseEntityFactory
 import static rocks.metaldetector.butler.model.release.ReleaseEntityState.FAULTY
-import static rocks.metaldetector.butler.model.release.ReleaseEntityState.OK
 
 class ReleaseServiceImplTest extends Specification {
 
@@ -26,7 +24,6 @@ class ReleaseServiceImplTest extends Specification {
   static final LocalDate NOW = LocalDate.now()
   static final Sort sorting = Sort.by(DESC, "releaseDate", "artist", "albumTitle")
   static final ReleasesResponse response = new ReleasesResponse()
-  static final ReleaseEntityState state = OK
 
   def "findAllUpcomingReleases paginated: should request all releases from release repository if no artist names are given"() {
     given:
@@ -259,14 +256,14 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllUpcomingReleases(artistNames, sorting)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(NOW - 1, artistNames, sorting)
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInIgnoreCase(NOW - 1, artistNames, sorting)
   }
 
   def "findAllUpcomingReleases: should transform release entities with ReleasesTransformer if artist names are given"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
                            ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
-    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(*_) >> releaseEntities
+    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInIgnoreCase(*_) >> releaseEntities
 
     when:
     def result = underTest.findAllUpcomingReleases(["A1"], sorting)
@@ -314,14 +311,14 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllReleasesForTimeRange(artistNames, timeRange, sorting)
 
     then:
-    1 * underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, sorting)
+    1 * underTest.releaseRepository.findAllByArtistInIgnoreCaseAndReleaseDateBetween(artistNames, timeRange.from, timeRange.to, sorting)
   }
 
   def "findAllReleasesForTimeRange: should transform release entities with ReleasesTransformer if artist names are given"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
                            ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
-    underTest.releaseRepository.findAllByArtistInAndReleaseDateBetween(*_) >> releaseEntities
+    underTest.releaseRepository.findAllByArtistInIgnoreCaseAndReleaseDateBetween(*_) >> releaseEntities
 
     when:
     def result = underTest.findAllReleasesForTimeRange(["A1"], TimeRange.of(LocalDate.now() - 1, LocalDate.now()), sorting)
@@ -369,14 +366,14 @@ class ReleaseServiceImplTest extends Specification {
     underTest.findAllReleasesSince(artists, date, sorting)
 
     then:
-    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(date, artists, sorting)
+    1 * underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInIgnoreCase(date, artists, sorting)
   }
 
   def "findAllReleasesSince: should transform release entities with ReleasesTransformer if artist names are given"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A1", NOW),
                            ReleaseEntityFactory.createReleaseEntity("A1", NOW + 1)]
-    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistIn(*_) >> releaseEntities
+    underTest.releaseRepository.findAllByReleaseDateAfterAndArtistInIgnoreCase(*_) >> releaseEntities
 
     when:
     def result = underTest.findAllReleasesSince(["A1"], LocalDate.now(), sorting)
