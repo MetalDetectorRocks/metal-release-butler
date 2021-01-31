@@ -262,7 +262,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   @Unroll
   "Find all after #date and artist in #artists"() {
     when:
-    List<ReleaseEntity> results = underTest.findAllByReleaseDateAfterAndArtistIn(date, artists, sorting)
+    List<ReleaseEntity> results = underTest.findAllByReleaseDateAfterAndArtistInIgnoreCase(date, artists, sorting)
 
     then:
     results == expectedReleases
@@ -277,7 +277,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   @Unroll
   "Find all between #from and #to and artist in #artists"() {
     when:
-    List<ReleaseEntity> results = underTest.findAllByArtistInAndReleaseDateBetween(artists, from, to, sorting)
+    List<ReleaseEntity> results = underTest.findAllByArtistInIgnoreCaseAndReleaseDateBetween(artists, from, to, sorting)
 
     then:
     results == expectedReleases
