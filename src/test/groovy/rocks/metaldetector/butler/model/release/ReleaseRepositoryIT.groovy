@@ -19,6 +19,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   ReleaseRepository underTest
 
   static String RELEASE_DETAILS_URL = "release-details-url"
+  static String RELEASE_DETAILS_ALBUM_TITLE = "T"
   static ReleaseEntity release1 = ReleaseEntityFactory.createReleaseEntity(1L, "A1", LocalDate.of(2020, 1, 1))
   static ReleaseEntity release2 = ReleaseEntityFactory.createReleaseEntity(2L, "A2", LocalDate.of(2020, 2, 1))
   static ReleaseEntity release3 = ReleaseEntityFactory.createReleaseEntity(3L, "A3", LocalDate.of(2020, 3, 1))
@@ -27,6 +28,7 @@ class ReleaseRepositoryIT extends Specification implements WithIntegrationTestCo
   void setup() {
     def releases = [release1, release2, release3]
     releases*.setReleaseDetailsUrl(RELEASE_DETAILS_URL)
+    releases*.setAlbumTitle(RELEASE_DETAILS_ALBUM_TITLE)
     underTest.saveAll(releases)
   }
 
