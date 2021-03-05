@@ -12,9 +12,6 @@ server:
     accesslog:
       enabled: false
 
-bucket4j:
-  enabled: true
-
 aws:
   bucket-name: rocks.metal-detector.s3.images
 

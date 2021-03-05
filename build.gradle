@@ -18,7 +18,6 @@ def swaggerVersion = '3.0.0'
 def spockVersion = '2.0-M4-groovy-3.0'
 def groovyVersion = '3.0.7'
 def postgresqlVersion = '42.2.19'
-def bucket4JVersion = '0.3.3'
 def jsonwebtokenVersion = '0.9.1'
 def httpBuilderVersion = '0.7.1'
 def commonsIoVersion = '2.8.0'
@@ -44,12 +43,9 @@ dependencies {
   implementation "org.springframework.boot:spring-boot-starter-validation"
   implementation "org.springframework.boot:spring-boot-starter-security"
   implementation "org.springframework.boot:spring-boot-starter-actuator"
-  implementation "org.springframework.boot:spring-boot-starter-cache"
-  implementation "com.giffing.bucket4j.spring.boot.starter:bucket4j-spring-boot-starter:$bucket4JVersion"
 
   implementation "org.apache.httpcomponents:httpclient"
   implementation "commons-io:commons-io:$commonsIoVersion"
-  implementation "org.ehcache:ehcache"
   implementation "io.micrometer:micrometer-registry-prometheus"
   implementation 'org.flywaydb:flyway-core'
 

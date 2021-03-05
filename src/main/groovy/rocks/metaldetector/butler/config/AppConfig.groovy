@@ -4,7 +4,6 @@ import groovy.xml.XmlSlurper
 import io.jsonwebtoken.JwtParser
 import io.jsonwebtoken.Jwts
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.annotation.EnableCaching
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
@@ -17,7 +16,6 @@ import org.springframework.web.util.pattern.PathPatternParser
 @EnableJpaAuditing
 @EnableScheduling
 @EnableAsync
-@EnableCaching
 class AppConfig {
 
   @Autowired

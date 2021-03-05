@@ -56,22 +56,6 @@ httpclient:
 concurrency:
   release-import-pool-size: 4
 
-bucket4j:
-  enabled: false
-  filters:
-    - cache-name: buckets
-      filter-method: servlet
-      url: .*
-      metrics:
-        tags:
-          - key: URL
-            expression: getRequestURI()
-      rate-limits:
-        - bandwidths:
-            - capacity: 20
-              time: 1
-              unit: minutes
-
 security:
   token-secret: ${JWT_SECRET}
 
