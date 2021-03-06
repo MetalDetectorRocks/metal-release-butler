@@ -13,7 +13,7 @@ server:
       enabled: false
 
 concurrency:
-  release-import-pool-size: ${RELEASE_IMPORT_CORE_POOL_SIZE
+  release-import-pool-size: ${RELEASE_IMPORT_CORE_POOL_SIZE}
 
 aws:
   bucket-name: preview.rocks.metal-detector.s3.images
