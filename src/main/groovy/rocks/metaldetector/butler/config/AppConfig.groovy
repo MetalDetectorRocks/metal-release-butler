@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+import org.springframework.web.util.pattern.PathPatternParser
 
 @Configuration
 @EnableJpaAuditing
@@ -35,5 +36,10 @@ class AppConfig {
   @Bean
   XmlSlurper xmlSlurper() {
     return new XmlSlurper()
+  }
+
+  @Bean
+  PathPatternParser pathPatternParser() {
+    return new PathPatternParser()
   }
 }
