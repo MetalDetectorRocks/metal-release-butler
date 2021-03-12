@@ -5,34 +5,39 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.web.util.pattern.PathPatternParser
+import rocks.metaldetector.butler.config.constants.Endpoints
 import rocks.metaldetector.butler.config.security.JwtsSupport
 import rocks.metaldetector.butler.config.security.SecurityContextFacade
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import javax.servlet.FilterChain
 
 class JwtRequestFilterImplTest extends Specification {
 
   JwtRequestFilterImpl underTest = new JwtRequestFilterImpl(
-          jwtsSupport: Mock(JwtsSupport),
-          securityContextFacade: Mock(SecurityContextFacade)
+      jwtsSupport: Mock(JwtsSupport),
+      pathPatternParser: Spy(PathPatternParser),
+      securityContextFacade: Mock(SecurityContextFacade)
   )
-  MockHttpServletRequest mockRequest
-  MockHttpServletResponse mockResponse
-  FilterChain filterChain
+  MockHttpServletRequest mockRequest = new MockHttpServletRequest()
+  MockHttpServletResponse mockResponse = new MockHttpServletResponse()
+  FilterChain filterChain = Mock(FilterChain)
 
-  def setup() {
-    mockRequest = new MockHttpServletRequest()
-    mockResponse = new MockHttpServletResponse()
-    filterChain = Mock(FilterChain)
-  }
+  @Unroll
+  "FilterChain is called for every request"() {
+    given:
+    mockRequest.servletPath = servletPath
 
-  def "FilterChain is called"() {
     when:
     underTest.doFilterInternal(mockRequest, mockResponse, filterChain)
 
     then:
     1 * filterChain.doFilter(mockRequest, mockResponse)
+
+    where:
+    servletPath << ["/actuator/health", Endpoints.RELEASES]
   }
 
   def "JwtsSupport is called to get claims when token is present"() {
@@ -112,5 +117,25 @@ class JwtRequestFilterImplTest extends Specification {
       assert authentication.name == username
       assert authentication.authorities == authorities
     })
+  }
+
+  def "PathPatternParser is called with actuator pattern"() {
+    when:
+    underTest.doFilterInternal(mockRequest, mockResponse, filterChain)
+
+    then:
+    1 * underTest.pathPatternParser.parse(Endpoints.AntPattern.ACTUATOR_ENDPOINTS)
+  }
+
+  def "If request path is any actuator path, token is not checked"() {
+    given:
+    mockRequest.servletPath = "/actuator/health"
+
+    when:
+    underTest.doFilterInternal(mockRequest, mockResponse, filterChain)
+
+    then:
+    0 * underTest.jwtsSupport(*_)
+    0 * underTest.securityContextFacade(*_)
   }
 }

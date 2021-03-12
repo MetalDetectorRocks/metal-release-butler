@@ -15,9 +15,6 @@ server:
 concurrency:
   release-import-pool-size: ${RELEASE_IMPORT_CORE_POOL_SIZE}
 
-bucket4j:
-  enabled: true
-
 aws:
   bucket-name: preview.rocks.metal-detector.s3.images
 
