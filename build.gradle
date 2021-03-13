@@ -11,7 +11,7 @@ sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
 springBoot {
-  mainClassName = 'rocks.metaldetector.butler.MetalReleaseButlerApplication'
+  mainClass.set('rocks.metaldetector.butler.MetalReleaseButlerApplication')
 }
 
 def swaggerVersion = '3.0.0'
@@ -110,4 +110,9 @@ jacocoTestReport {
     xml.enabled true
     html.enabled false
   }
+}
+
+wrapper {
+  gradleVersion = "6.8.3"
+  distributionType = Wrapper.DistributionType.ALL
 }
