@@ -78,7 +78,7 @@ ext {
                         "commons-logging:commons-logging:1.2",
                         "org.junit:junit-bom:5.7.1",
                         "org.ow2.asm:asm:9.1",
-                        "org.objenesis:objenesis:3.1"]
+                        "org.objenesis:objenesis:3.2"]
   dependencyGroupVersions = ["org.codehaus.groovy": groovyVersion]
 }
 
