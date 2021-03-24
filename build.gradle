@@ -21,7 +21,7 @@ def postgresqlVersion = '42.2.19'
 def jsonwebtokenVersion = '0.9.1'
 def httpBuilderVersion = '0.7.1'
 def commonsIoVersion = '2.8.0'
-def awsS3SdkVersion = '1.11.978'
+def awsS3SdkVersion = '1.11.981'
 
 configurations {
   developmentOnly
