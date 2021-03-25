@@ -15,7 +15,7 @@ springBoot {
 }
 
 def swaggerVersion = '3.0.0'
-def spockVersion = '2.0-M4-groovy-3.0'
+def spockVersion = '2.0-M5-groovy-3.0'
 def groovyVersion = '3.0.7'
 def postgresqlVersion = '42.2.19'
 def jsonwebtokenVersion = '0.9.1'
