@@ -23,9 +23,7 @@ html blabla
         <tr>
             <td>01.02.2020</td>
             <td>
-                <a>
-                    <img src="http://cover2.com/album.jpg" />
-                </a>
+              <a href="https://time-for-metal.eu/releases/johann-faustus-sunset-blues/"></a>
             </td>
             <td><a>Artist 2 - Album 2</a>
             </td>

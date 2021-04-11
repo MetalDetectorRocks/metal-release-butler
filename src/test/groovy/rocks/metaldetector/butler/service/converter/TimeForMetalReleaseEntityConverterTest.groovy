@@ -9,6 +9,8 @@ import spock.lang.Unroll
 
 import java.time.LocalDate
 
+import static rocks.metaldetector.butler.model.release.ReleaseEntityState.*
+import static rocks.metaldetector.butler.model.release.ReleaseSource.*
 import static rocks.metaldetector.butler.model.release.ReleaseType.FULL_LENGTH
 import static rocks.metaldetector.butler.model.release.ReleaseType.EP
 
@@ -30,12 +32,20 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
                                    albumTitle: "Album 1",
                                    releaseDate: LocalDate.of(2020, 1, 1),
                                    type: FULL_LENGTH)
+    result[0].releaseDetailsUrl == "http://cover1.com/album.jpg"
+    result[0].type == FULL_LENGTH
+    result[0].source == TIME_FOR_METAL
+    result[0].state == OK
 
     and:
     result[1] == new ReleaseEntity(artist: "Artist 2",
                                    albumTitle: "Album 2",
                                    releaseDate: LocalDate.of(2020, 2, 1),
                                    type: FULL_LENGTH)
+    result[1].releaseDetailsUrl == null
+    result[1].type == FULL_LENGTH
+    result[1].source == TIME_FOR_METAL
+    result[1].state == OK
 
     and:
     2 * underTest.xmlSlurper.parseText(*_)

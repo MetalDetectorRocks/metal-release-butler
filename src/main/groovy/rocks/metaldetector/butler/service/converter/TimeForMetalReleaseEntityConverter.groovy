@@ -42,7 +42,10 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
             setAlbumTitle(builder, it.td[2].toString())
             setReleaseDate(builder, it.td[0].toString())
             setReleaseType(builder, it.td[2].toString())
-            setReleaseDetailsUrl(builder, it.td[1].a[0].img[0] as NodeChild)
+            def img = it.td[1].a[0].img[0]
+            if (img instanceof NodeChild) {
+              setReleaseDetailsUrl(builder, img as NodeChild)
+            }
             builder.type(FULL_LENGTH)
             return builder.build()
           }
