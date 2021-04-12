@@ -39,7 +39,7 @@ class ImportJobService {
   @PostConstruct
   private void init() {
     releaseImporters = [
-        //metalArchivesReleaseImporter,
+        metalArchivesReleaseImporter,
         timeForMetalReleaseImporter
     ]
   }
