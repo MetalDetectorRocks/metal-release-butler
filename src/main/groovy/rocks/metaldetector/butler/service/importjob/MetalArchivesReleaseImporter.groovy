@@ -28,7 +28,16 @@ class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
   ImportResult importReleases() {
     def upcomingReleasesRawData = restClient.requestReleases()
     List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
-    return finalizeImport(releaseEntities)
+    List<ReleaseEntity> newReleaseEntities = saveNewReleasesWithCover(releaseEntities)
+
+    def futures = newReleaseEntities.collect {
+      threadPool.submit(createReissueTask(it))
+    }
+
+    futures*.get()
+    releaseRepository.saveAll(newReleaseEntities)
+
+    return finalizeImport(releaseEntities.size(), newReleaseEntities.size())
   }
 
   @Override
@@ -39,5 +48,11 @@ class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
   @Override
   CoverService getCoverService() {
     return metalArchivesCoverService
+  }
+
+  private MetalArchivesReissueTask createReissueTask(ReleaseEntity releaseEntity) {
+    return new MetalArchivesReissueTask(
+        releaseEntity: releaseEntity
+    )
   }
 }

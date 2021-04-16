@@ -15,13 +15,13 @@ import java.time.LocalDate
 @Builder(excludes = "new") // because there is method isNew in super class
 class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
 
-  @Column(name = "artist", nullable = false, columnDefinition = "varchar(255)")
+  @Column(name = "artist", nullable = false)
   String artist
 
-  @Column(name = "album_title", nullable = false, columnDefinition = "varchar(255)")
+  @Column(name = "album_title", nullable = false)
   String albumTitle
 
-  @Column(name = "release_date", nullable = true, columnDefinition = "date")
+  @Column(name = "release_date")
   LocalDate releaseDate
 
   @Column(name = "estimated_release_date", nullable = true)
@@ -34,25 +34,28 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
   @Enumerated(EnumType.STRING)
   ReleaseType type
 
-  @Column(name = "artist_details_url", nullable = true, length = 500)
+  @Column(name = "artist_details_url", length = 500)
   String artistDetailsUrl
 
-  @Column(name = "release_details_url", nullable = true, length = 500)
+  @Column(name = "release_details_url", length = 500)
   String releaseDetailsUrl
 
-  @Column(name = "source", nullable = true)
+  @Column(name = "source")
   @Enumerated(EnumType.STRING)
   ReleaseSource source
 
-  @Column(name = "additional_artists", nullable = true, columnDefinition = "varchar(255)")
+  @Column(name = "additional_artists")
   String additionalArtists
 
   @Column(name = "state", nullable = false)
   @Enumerated(EnumType.STRING)
   ReleaseEntityState state
 
-  @Column(name = "cover_url", nullable = true)
+  @Column(name = "cover_url")
   String coverUrl
+
+  @Column(name = "reissue")
+  boolean reissue = false
 
   List<String> getAdditionalArtists() {
     return additionalArtists ? additionalArtists.tokenize(",")*.trim() : []

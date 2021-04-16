@@ -2,10 +2,10 @@ package rocks.metaldetector.butler.supplier.timeformetal
 
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
 
-@Service
+@Component
 @Slf4j
 class TimeForMetalWebCrawler {
 

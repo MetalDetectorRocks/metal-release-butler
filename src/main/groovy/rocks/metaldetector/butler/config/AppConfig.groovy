@@ -27,7 +27,7 @@ class AppConfig {
   }
 
   @Bean
-  ThreadPoolTaskExecutor coverTransferThreadPool() {
+  ThreadPoolTaskExecutor threadPool() {
     return new ThreadPoolTaskExecutor(corePoolSize: concurrencyConfig.releaseImportPoolSize)
   }
 

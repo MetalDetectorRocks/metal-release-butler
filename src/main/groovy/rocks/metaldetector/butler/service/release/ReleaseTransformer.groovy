@@ -23,6 +23,7 @@ class ReleaseTransformer {
         .source(releaseEntity.source)
         .state(releaseEntity.state)
         .coverUrl(releaseEntity.coverUrl)
+        .reissue(releaseEntity.reissue)
         .build()
   }
 }

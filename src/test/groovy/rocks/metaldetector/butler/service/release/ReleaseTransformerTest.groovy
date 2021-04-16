@@ -31,6 +31,7 @@ class ReleaseTransformerTest extends Specification {
     result.coverUrl == releaseEntity.coverUrl
     result.state == releaseEntity.state
     result.additionalArtists == releaseEntity.additionalArtists
+    result.reissue == releaseEntity.reissue
   }
 
   def "urls can be null"() {

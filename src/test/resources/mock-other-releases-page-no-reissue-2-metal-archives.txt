@@ -1,0 +1,22 @@
+<div>
+    <div>
+        <ul>
+            <li><a href="https://link1.de"></a></li>
+        </ul>
+    </div>
+</div>
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Release date</th>
+                <th>Label</th>
+                <th>Catalog ID</th>
+                <th>Format</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>

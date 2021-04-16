@@ -12,7 +12,7 @@ class CoverTransferTask implements Runnable {
   void run() {
     def targetFolder = composeTargetFolderName()
     String transferTargetAddress = coverService.transfer(releaseEntity.releaseDetailsUrl, targetFolder)
-    releaseEntity.setCoverUrl(transferTargetAddress)
+    releaseEntity.coverUrl = transferTargetAddress
   }
 
   private String composeTargetFolderName() {
