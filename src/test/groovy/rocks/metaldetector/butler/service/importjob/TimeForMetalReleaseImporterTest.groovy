@@ -1,6 +1,5 @@
 package rocks.metaldetector.butler.service.importjob
 
-import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseRepository
 import rocks.metaldetector.butler.service.converter.Converter
 import rocks.metaldetector.butler.service.cover.CoverService
@@ -21,6 +20,7 @@ class TimeForMetalReleaseImporterTest extends Specification {
   def "webCrawler is called with initial page"() {
     given:
     underTest.timeForMetalReleaseEntityConverter.convert(*_) >> []
+    underTest.releaseRepository.saveAll(*_) >> []
 
     when:
     underTest.importReleases()
@@ -33,6 +33,7 @@ class TimeForMetalReleaseImporterTest extends Specification {
     given:
     def rawPage = "releasePage"
     underTest.webCrawler.requestReleases(*_) >> rawPage
+    underTest.releaseRepository.saveAll(*_) >> []
 
     when:
     underTest.importReleases()
@@ -47,6 +48,7 @@ class TimeForMetalReleaseImporterTest extends Specification {
     underTest.timeForMetalReleaseEntityConverter.convert(firstReleasePage) >> [ReleaseEntityFactory.createReleaseEntity("a")]
     underTest.timeForMetalReleaseEntityConverter.convert(null) >> []
     underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >> true
+    underTest.releaseRepository.saveAll(*_) >> []
 
     when:
     underTest.importReleases()
