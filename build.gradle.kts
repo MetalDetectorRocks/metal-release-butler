@@ -1,12 +1,13 @@
 extra.apply {
-  set("swaggerVersion", "3.0.0")
-  set("spockVersion", "2.0-M5-groovy-3.0")
-  set("groovyVersion", "3.0.7")
-  set("postgresqlVersion", "42.2.19")
-  set("jsonwebtokenVersion", "0.9.1")
-  set("httpBuilderVersion", "0.7.1")
-  set("commonsIoVersion", "2.8.0")
   set("awsS3SdkVersion", "1.11.1000")
+  set("commonsIoVersion", "2.8.0")
+  set("groovyVersion", "3.0.7")
+  set("httpBuilderVersion", "0.7.1")
+  set("jsonwebtokenVersion", "0.9.1")
+  set("jsoupVersion", "1.13.1")
+  set("postgresqlVersion", "42.2.19")
+  set("spockVersion", "2.0-M5-groovy-3.0")
+  set("swaggerVersion", "3.0.0")
 }
 
 val javaVersion: JavaVersion = JavaVersion.VERSION_11
@@ -98,6 +99,7 @@ dependencies {
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
   implementation("io.jsonwebtoken:jjwt:${rootProject.extra["jsonwebtokenVersion"]}")
   implementation("com.amazonaws:aws-java-sdk-s3:${rootProject.extra["awsS3SdkVersion"]}")
+  implementation("org.jsoup:jsoup:${rootProject.extra["jsoupVersion"]}")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test") {
     exclude(group = "junit", module = "junit")
