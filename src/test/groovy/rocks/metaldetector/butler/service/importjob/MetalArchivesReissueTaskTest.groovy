@@ -4,14 +4,14 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.springframework.core.io.ClassPathResource
 import rocks.metaldetector.butler.model.release.ReleaseEntity
-import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesWebCrawler
+import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesReleaseVersionsWebCrawler
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class MetalArchivesReissueTaskTest extends Specification {
 
   MetalArchivesReissueTask underTest = new MetalArchivesReissueTask(releaseEntity: new ReleaseEntity(releaseDetailsUrl: "url/666"),
-                                                                    webCrawler: Mock(MetalArchivesWebCrawler))
+                                                                    webCrawler: Mock(MetalArchivesReleaseVersionsWebCrawler))
 
   def "webCrawler is called with releaseId"() {
     when:

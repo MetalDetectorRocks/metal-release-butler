@@ -5,11 +5,11 @@ import org.jsoup.helper.HttpConnection
 import org.jsoup.nodes.Document
 import spock.lang.Specification
 
-import static rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesWebCrawler.REST_ENDPOINT
+import static MetalArchivesReleaseVersionsWebCrawler.REST_ENDPOINT
 
-class MetalArchivesWebCrawlerTest extends Specification {
+class MetalArchivesReleaseVersionsWebCrawlerTest extends Specification {
 
-  MetalArchivesWebCrawler underTest = new MetalArchivesWebCrawler()
+  MetalArchivesReleaseVersionsWebCrawler underTest = new MetalArchivesReleaseVersionsWebCrawler()
 
   void setup() {
     GroovyMock(Jsoup, global: true)

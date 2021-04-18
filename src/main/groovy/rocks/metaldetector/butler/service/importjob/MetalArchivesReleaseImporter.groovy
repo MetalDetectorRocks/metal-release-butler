@@ -7,6 +7,7 @@ import rocks.metaldetector.butler.model.release.ReleaseEntity
 import rocks.metaldetector.butler.model.release.ReleaseSource
 import rocks.metaldetector.butler.service.converter.Converter
 import rocks.metaldetector.butler.service.cover.CoverService
+import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesReleaseVersionsWebCrawler
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 
 import static rocks.metaldetector.butler.model.release.ReleaseSource.METAL_ARCHIVES
@@ -23,6 +24,9 @@ class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
 
   @Autowired
   Converter<String[], List<ReleaseEntity>> releaseEntityConverter
+
+  @Autowired
+  MetalArchivesReleaseVersionsWebCrawler webCrawler
 
   @Override
   ImportResult importReleases() {
@@ -52,7 +56,8 @@ class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
 
   private MetalArchivesReissueTask createReissueTask(ReleaseEntity releaseEntity) {
     return new MetalArchivesReissueTask(
-        releaseEntity: releaseEntity
+        releaseEntity: releaseEntity,
+        webCrawler: webCrawler
     )
   }
 }

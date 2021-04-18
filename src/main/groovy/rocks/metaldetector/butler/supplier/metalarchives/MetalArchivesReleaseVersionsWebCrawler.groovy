@@ -3,9 +3,11 @@ package rocks.metaldetector.butler.supplier.metalarchives
 import groovy.util.logging.Slf4j
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.springframework.stereotype.Component
 
 @Slf4j
-class MetalArchivesWebCrawler {
+@Component
+class MetalArchivesReleaseVersionsWebCrawler {
 
   static final String REST_ENDPOINT = "https://www.metal-archives.com/release/ajax-versions/current/releaseId/parent/releaseId"
 

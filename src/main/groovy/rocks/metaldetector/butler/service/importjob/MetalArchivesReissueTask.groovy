@@ -1,12 +1,12 @@
 package rocks.metaldetector.butler.service.importjob
 
 import rocks.metaldetector.butler.model.release.ReleaseEntity
-import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesWebCrawler
+import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesReleaseVersionsWebCrawler
 
 class MetalArchivesReissueTask implements Runnable {
 
   ReleaseEntity releaseEntity
-  MetalArchivesWebCrawler webCrawler = new MetalArchivesWebCrawler()
+  MetalArchivesReleaseVersionsWebCrawler webCrawler
 
   @Override
   void run() {
