@@ -12,7 +12,7 @@ extra.apply {
 
 val javaVersion: JavaVersion = JavaVersion.VERSION_11
 val dependencyVersions = listOf(
-  "commons-lang:commons-lang:2.4",
+  "commons-lang:commons-lang:2.6",
   "commons-logging:commons-logging:1.2",
   "org.junit:junit-bom:5.7.1",
   "org.ow2.asm:asm:9.1",
