@@ -22,10 +22,7 @@ jobs:
           java-version: 1.11
 
       - name: Execute gradle task 'bootJar'
-        uses: eskatos/gradle-command-action@v1
-        with:
-          gradle-version: 6.5.1
-          arguments: clean bootJar
+        run: ./gradlew clean bootJar --no-daemon --info --stacktrace
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
