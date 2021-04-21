@@ -35,7 +35,8 @@ class TimeForMetalReleaseImporter extends AbstractReleaseImporter {
       releaseEntities.addAll(newReleases)
     } while (newReleases)
 
-    return finalizeImport(releaseEntities)
+    List<ReleaseEntity> newReleaseEntities = saveNewReleasesWithCover(releaseEntities)
+    return finalizeImport(releaseEntities.size(), newReleaseEntities.size())
   }
 
   @Override

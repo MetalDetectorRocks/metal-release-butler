@@ -1,0 +1,40 @@
+<div>
+    <div>
+        <ul>
+            <li><a href="https://link1.de"></a></li>
+        </ul>
+    </div>
+</div>
+<div>
+    <table>
+        <thead>
+            <tr>
+                <th>Release date</th>
+                <th>Label</th>
+                <th>Catalog ID</th>
+                <th>Format</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    <a href="https://link2.de">March 2nd, 1992</a>
+                </td>
+                <td>Peaceville Records</td>
+                <td>VILE 28CD</td>
+                <td>CD</td>
+                <td>Limited edition</td>
+            </tr>
+            <tr>
+                <td>
+                    <a href="https://link3.de">March 2nd, 1992</a>
+                </td>
+                <td>Peaceville Records</td>
+                <td>VILE 28</td>
+                <td>12" vinyl</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>

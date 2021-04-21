@@ -15,7 +15,7 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
   ReleaseRepository releaseRepository
 
   @Autowired
-  ThreadPoolTaskExecutor coverTransferThreadPool
+  ThreadPoolTaskExecutor threadPool
 
   @Override
   void retryCoverDownload() {
@@ -25,7 +25,7 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
               releaseEntity.source == getReleaseSource() && !releaseEntity.coverUrl
             }
             .each { releaseEntity ->
-              futures << coverTransferThreadPool.submit(createCoverTransferTask(releaseEntity))
+              futures << threadPool.submit(createCoverTransferTask(releaseEntity))
             }
             .collect()
 
@@ -33,7 +33,7 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
     releaseRepository.saveAll(releaseEntitiesToUpdate)
   }
 
-  protected ImportResult finalizeImport(List<ReleaseEntity> releaseEntities) {
+  protected List<ReleaseEntity> saveNewReleasesWithCover(List<ReleaseEntity> releaseEntities) {
     List<Future> futures = []
     Comparator<ReleaseEntity> releaseEntityComparator = {release1, release2 ->
       release1.artist.toLowerCase() <=> release2.artist.toLowerCase()
@@ -43,18 +43,19 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
               !releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)
             }
             .each {releaseEntity ->
-              futures << coverTransferThreadPool.submit(createCoverTransferTask(releaseEntity))
+              futures << threadPool.submit(createCoverTransferTask(releaseEntity))
             }
             .collect()
 
     futures*.get()
-    releaseRepository.saveAll(releaseEntitiesToSave)
+    return releaseRepository.saveAll(releaseEntitiesToSave)
+  }
 
+  protected ImportResult finalizeImport(int totalCountRequested, int totalCountImported) {
     log.info("Import of new releases completed for ${getReleaseSource().displayName}!")
-
     return new ImportResult(
-        totalCountRequested: releaseEntities.size(),
-        totalCountImported: releaseEntitiesToSave.size()
+        totalCountRequested: totalCountRequested,
+        totalCountImported: totalCountImported
     )
   }
 

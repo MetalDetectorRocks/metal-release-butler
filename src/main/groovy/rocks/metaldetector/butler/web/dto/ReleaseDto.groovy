@@ -26,5 +26,6 @@ class ReleaseDto {
   ReleaseSource source
   ReleaseEntityState state
   String coverUrl
+  Boolean reissue
 
 }
