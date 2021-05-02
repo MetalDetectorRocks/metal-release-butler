@@ -1,0 +1,10 @@
+[versions]
+awsS3Sdk = "1.11.1000"
+commonsIo = "2.8.0"
+groovy = "3.0.7"
+httpBuilder = "0.7.1"
+jsonwebtoken = "0.9.1"
+jsoup = "1.13.1"
+postgresql = "42.2.19"
+spock = "2.0-M5-groovy-3.0"
+swagger = "3.0.0"
