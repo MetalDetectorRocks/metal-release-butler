@@ -1,7 +1,7 @@
 [versions]
-awsS3Sdk = "1.11.1000"
+awsS3Sdk = "1.11.1015"
 commonsIo = "2.8.0"
-groovy = "3.0.7"
+groovy = "3.0.8"
 httpBuilder = "0.7.1"
 jsonwebtoken = "0.9.1"
 jsoup = "1.13.1"
