@@ -1,13 +1,14 @@
 val javaVersion: JavaVersion = JavaVersion.VERSION_11
 val dependencyVersions = listOf(
-  "commons-lang:commons-lang:2.6",
-  "commons-logging:commons-logging:1.2",
-  "org.junit:junit-bom:5.7.2",
-  "org.ow2.asm:asm:9.1",
-  "org.objenesis:objenesis:3.2"
+    "commons-lang:commons-lang:2.6",
+    "commons-logging:commons-logging:1.2",
+    "org.junit:junit-bom:5.7.2",
+    "org.ow2.asm:asm:9.1",
+    "org.objenesis:objenesis:3.2",
+    "org.jetbrains:annotations:20.1.0"
 )
 val dependencyGroupVersions = mapOf(
-  "org.codehaus.groovy" to libs.versions.groovy.get()
+    "org.codehaus.groovy" to libs.versions.groovy.get()
 )
 
 plugins {
