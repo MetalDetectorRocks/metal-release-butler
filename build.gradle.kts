@@ -5,7 +5,7 @@ val dependencyVersions = listOf(
     "org.junit:junit-bom:5.7.2",
     "org.ow2.asm:asm:9.1",
     "org.objenesis:objenesis:3.2",
-    "org.jetbrains:annotations:21.0.0"
+    "org.jetbrains:annotations:21.0.1"
 )
 val dependencyGroupVersions = mapOf(
     "org.codehaus.groovy" to libs.versions.groovy.get()
