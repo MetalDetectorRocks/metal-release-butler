@@ -18,7 +18,7 @@ EXPOSE $SERVER_PORT
 VOLUME ["/app/images/", "/app/logs/"]
 
 # Arguments
-ARG SOURCE_JAR_FILE="build/libs/*.jar"
+ARG SOURCE_JAR_FILE="build/libs/metal-release-butler.jar"
 ARG BUILD_DATE
 ARG VCS_REF
 
