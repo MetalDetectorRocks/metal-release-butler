@@ -60,6 +60,9 @@ tasks {
       html.isEnabled = false
     }
   }
+  getByName<Jar>("jar") {
+    enabled = false
+  }
 }
 
 dependencies {
