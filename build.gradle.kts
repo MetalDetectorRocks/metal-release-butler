@@ -60,7 +60,7 @@ tasks {
       html.isEnabled = false
     }
   }
-  getByName<Jar>("jar") {
+  jar {
     enabled = false
   }
 }
