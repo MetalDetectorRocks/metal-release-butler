@@ -16,7 +16,7 @@ class MetalArchivesReissueTask implements Runnable {
       def document = webCrawler.requestOtherReleases(releaseId)
       Set<String> distinctDateRows = document?.getElementsByTag("a")?.drop(1)
                                          ?.collect { it?.childNode(0)?.value as String }?.findAll()
-      releaseEntity.reissue = distinctDateRows.size() > 1
+      releaseEntity.reissue = distinctDateRows?.size() > 1
     }
   }
 }
