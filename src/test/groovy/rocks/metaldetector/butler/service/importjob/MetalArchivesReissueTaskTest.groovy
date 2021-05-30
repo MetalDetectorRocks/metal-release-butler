@@ -49,4 +49,15 @@ class MetalArchivesReissueTaskTest extends Specification {
     mock << ["mock-other-releases-page-no-reissue-1-metal-archives.txt",
              "mock-other-releases-page-no-reissue-2-metal-archives.txt"]
   }
+
+  def "sets reissue to false is no document is given"() {
+    given:
+    underTest.webCrawler.requestOtherReleases(*_) >> null
+
+    when:
+    underTest.run()
+
+    then:
+    !underTest.releaseEntity.reissue
+  }
 }
