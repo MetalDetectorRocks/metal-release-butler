@@ -3,7 +3,7 @@ val dependencyVersions = listOf(
     "commons-lang:commons-lang:2.6",
     "commons-logging:commons-logging:1.2",
     "org.junit:junit-bom:5.7.2",
-    "org.ow2.asm:asm:9.1",
+    "org.ow2.asm:asm:9.2",
     "org.objenesis:objenesis:3.2",
     "org.jetbrains:annotations:21.0.1"
 )
