@@ -20,7 +20,7 @@ spring:
   sql:
     init:
       platform: postgres
-      enabled: true
+      mode: always
   flyway:
     baseline-on-migrate: true
     sql-migration-prefix: v
