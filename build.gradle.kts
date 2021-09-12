@@ -80,7 +80,8 @@ dependencies {
   implementation("org.codehaus.groovy:groovy:${libs.versions.groovy.get()}")
   implementation("org.codehaus.groovy:groovy-xml:${libs.versions.groovy.get()}")
   implementation("org.codehaus.groovy:groovy-datetime:${libs.versions.groovy.get()}")
-  implementation("org.codehaus.groovy.modules.http-builder:http-builder:${libs.versions.httpBuilder.get()}")
+//  implementation("org.codehaus.groovy.modules.http-builder:http-builder:${libs.versions.httpBuilder.get()}")
+  implementation("io.github.http-builder-ng:http-builder-ng-core:${libs.versions.httpBuilder.get()}")
 
   implementation("io.springfox:springfox-swagger2:${libs.versions.swagger.get()}")
   implementation("io.springfox:springfox-swagger-ui:${libs.versions.swagger.get()}")
