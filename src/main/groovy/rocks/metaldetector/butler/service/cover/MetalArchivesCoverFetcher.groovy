@@ -1,7 +1,10 @@
 package rocks.metaldetector.butler.service.cover
 
 import groovy.util.logging.Slf4j
-import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.HttpBuilder
+import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -19,7 +22,7 @@ class MetalArchivesCoverFetcher implements CoverFetcher {
   int currentAttempt
 
   @Autowired
-  HTTPBuilderFunction httpBuilderFunction
+  HttpBuilderFunction httpBuilderFunction
 
   @Autowired
   ApplicationEventPublisher eventPublisher
@@ -27,35 +30,36 @@ class MetalArchivesCoverFetcher implements CoverFetcher {
   @Override
   String fetchCoverUrl(String sourceUrl) {
     currentAttempt = 0
-    HTTPBuilder httpBuilder = httpBuilderFunction.apply(sourceUrl)
-    def releasePage = fetchReleasePage(httpBuilder)
-    def coverDivs = releasePage?."**"?.findAll { it.@id == ALBUM_COVER_HTML_ID }
-    def coverDiv = coverDivs ? coverDivs.first() : null
-    def coverLink = coverDiv?.@href?.text() as String
+    HttpBuilder httpBuilder = httpBuilderFunction.apply(sourceUrl)
+    Document releasePage = fetchReleasePage(httpBuilder, sourceUrl)
+    Elements coverDivs = releasePage?.select("a")
+        ?.findAll { it.id() == ALBUM_COVER_HTML_ID }
+    Element coverDiv = coverDivs ? coverDivs.first() : null
+    String coverLink = coverDiv?.attributes()?["href"]
     return coverLink
   }
 
-  private def fetchReleasePage(HTTPBuilder httpBuilder) {
+  private Document fetchReleasePage(HttpBuilder httpBuilder, String sourceUrl) {
     try {
       currentAttempt++
-      return httpBuilder.get([:])
+      return httpBuilder.get() as Document
     }
     catch (Exception e) {
-      return handleErrorAndTryAgain(e, httpBuilder)
+      return handleErrorAndTryAgain(e, httpBuilder, sourceUrl)
     }
   }
 
-  private def handleErrorAndTryAgain(Exception exception, HTTPBuilder httpBuilder) {
+  private Document handleErrorAndTryAgain(Exception exception, HttpBuilder httpBuilder, String sourceUrl) {
     if (exception.message?.containsIgnoreCase(RELEASE_PAGE_NOT_FOUND_ERROR_MESSAGE)) {
-      log.info("The release page '${httpBuilder.uri}' could not be found.")
-      eventPublisher.publishEvent(new ReleaseEntityDeleteRequestEvent(this, httpBuilder.uri.toString()))
+      log.info("The release page '${sourceUrl}' could not be found.")
+      eventPublisher.publishEvent(new ReleaseEntityDeleteRequestEvent(this, sourceUrl))
       return null
     }
     else if (currentAttempt < MAX_ATTEMPTS) {
-      log.info("The release page '${httpBuilder.uri}' could not be fetched. Reason: $exception.message. " +
+      log.info("The release page '${sourceUrl}' could not be fetched. Reason: $exception.message. " +
                "I will wait 1 second and try again ($currentAttempt/$MAX_ATTEMPTS).")
       TimeUnit.SECONDS.sleep(1)
-      return fetchReleasePage(httpBuilder)
+      return fetchReleasePage(httpBuilder, sourceUrl)
     }
     else {
       log.error("5 errors in a row during fetching the release page. I give up.", exception)
