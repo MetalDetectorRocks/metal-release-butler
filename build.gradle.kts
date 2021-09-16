@@ -2,7 +2,7 @@ val javaVersion: JavaVersion = JavaVersion.VERSION_11
 val dependencyVersions = listOf(
     "commons-lang:commons-lang:2.6",
     "commons-logging:commons-logging:1.2",
-    "org.junit:junit-bom:5.7.2",
+    "org.junit:junit-bom:5.8.0",
     "org.ow2.asm:asm:9.2",
     "org.objenesis:objenesis:3.2",
     "org.jetbrains:annotations:22.0.0"
