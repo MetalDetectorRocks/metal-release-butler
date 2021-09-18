@@ -28,7 +28,7 @@ repositories {
   mavenCentral()
 }
 
-configure<JavaPluginConvention> {
+configure<JavaPluginExtension> {
   sourceCompatibility = javaVersion
   targetCompatibility = javaVersion
 }
@@ -56,8 +56,8 @@ tasks {
   }
   withType<JacocoReport> {
     reports {
-      xml.isEnabled = true
-      html.isEnabled = false
+      xml.required.set(true)
+      html.required.set(false)
     }
   }
   jar {
@@ -80,7 +80,7 @@ dependencies {
   implementation("org.codehaus.groovy:groovy:${libs.versions.groovy.get()}")
   implementation("org.codehaus.groovy:groovy-xml:${libs.versions.groovy.get()}")
   implementation("org.codehaus.groovy:groovy-datetime:${libs.versions.groovy.get()}")
-  implementation("org.codehaus.groovy.modules.http-builder:http-builder:${libs.versions.httpBuilder.get()}")
+  implementation("io.github.http-builder-ng:http-builder-ng-core:${libs.versions.httpBuilder.get()}")
 
   implementation("io.springfox:springfox-swagger2:${libs.versions.swagger.get()}")
   implementation("io.springfox:springfox-swagger-ui:${libs.versions.swagger.get()}")
@@ -104,7 +104,7 @@ dependencies {
 
 tasks {
   wrapper {
-    gradleVersion = "7.1.1"
+    gradleVersion = "7.2"
     distributionType = Wrapper.DistributionType.ALL
   }
 }

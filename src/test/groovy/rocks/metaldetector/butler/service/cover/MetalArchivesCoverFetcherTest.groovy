@@ -1,7 +1,7 @@
 package rocks.metaldetector.butler.service.cover
 
-import groovy.xml.XmlSlurper
-import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.HttpBuilder
+import org.jsoup.Jsoup
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.core.io.ClassPathResource
 import spock.lang.Specification
@@ -9,13 +9,13 @@ import spock.lang.Specification
 class MetalArchivesCoverFetcherTest extends Specification {
 
   MetalArchivesCoverFetcher underTest = new MetalArchivesCoverFetcher(
-      httpBuilderFunction: Mock(HTTPBuilderFunction),
+      httpBuilderFunction: Mock(HttpBuilderFunction),
       eventPublisher: Mock(ApplicationEventPublisher)
   )
-  HTTPBuilder mockHttpBuilder = Mock(HTTPBuilder)
+  HttpBuilder mockHttpBuilder = Mock(HttpBuilder)
   String requestUrl = "http://www.internet.de"
 
-  def "httpBuilderFunction is called to get new instance of HTTPBuilder"() {
+  def "httpBuilderFunction is called to get new instance of HttpBuilder"() {
     when:
     underTest.fetchCoverUrl(requestUrl)
 
@@ -31,15 +31,15 @@ class MetalArchivesCoverFetcherTest extends Specification {
     underTest.fetchCoverUrl(requestUrl)
 
     then:
-    1 * mockHttpBuilder.get(*_)
+    1 * mockHttpBuilder.get()
   }
 
   def "URL containing release cover link is returned"() {
     given:
     def mockReleasePageResource = new ClassPathResource("mock-release-page-metal-archives.html")
-    def mockReleasePage = new XmlSlurper().parse(mockReleasePageResource.inputStream)
+    def mockReleasePage = Jsoup.parse(mockReleasePageResource.inputStream, "UTF-8", "mock-release-page-metal-archives.html")
     underTest.httpBuilderFunction.apply(requestUrl) >> mockHttpBuilder
-    mockHttpBuilder.get(*_) >> mockReleasePage
+    mockHttpBuilder.get() >> mockReleasePage
 
     when:
     def result = underTest.fetchCoverUrl(requestUrl)
@@ -84,9 +84,7 @@ class MetalArchivesCoverFetcherTest extends Specification {
 
   def "should publish ReleaseEntityDeleteRequest on status code 404 when getting the release page"() {
     given:
-    def releaseDetailsUrl = "release-details-url"
     underTest.httpBuilderFunction.apply(requestUrl) >> mockHttpBuilder
-    mockHttpBuilder.uri >> releaseDetailsUrl
     mockHttpBuilder.get(*_) >> { throw new RuntimeException("(status code: 404, reason phrase: Not Found)") }
 
     when:
@@ -95,7 +93,7 @@ class MetalArchivesCoverFetcherTest extends Specification {
     then:
     1 * underTest.eventPublisher.publishEvent({ args ->
       args.source == underTest
-      args.releaseDetailsUrl == releaseDetailsUrl
+      args.releaseDetailsUrl == requestUrl
     })
   }
 }
