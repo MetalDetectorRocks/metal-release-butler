@@ -9,8 +9,8 @@ import spock.lang.Specification
 class MetalArchivesCoverFetcherTest extends Specification {
 
   MetalArchivesCoverFetcher underTest = new MetalArchivesCoverFetcher(
-          httpBuilderFunction: Mock(HTTPBuilderFunction),
-          eventPublisher: Mock(ApplicationEventPublisher)
+      httpBuilderFunction: Mock(HTTPBuilderFunction),
+      eventPublisher: Mock(ApplicationEventPublisher)
   )
   HTTPBuilder mockHttpBuilder = Mock(HTTPBuilder)
   String requestUrl = "http://www.internet.de"
@@ -56,7 +56,7 @@ class MetalArchivesCoverFetcherTest extends Specification {
     def result = underTest.fetchCoverUrl(requestUrl)
 
     then:
-    5 * mockHttpBuilder.get(*_) >> {throw new RuntimeException()}
+    5 * mockHttpBuilder.get(*_) >> { throw new RuntimeException() }
 
     and:
     !result

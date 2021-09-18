@@ -1,14 +1,14 @@
 package rocks.metaldetector.butler.supplier.timeformetal
 
 import org.springframework.http.ResponseEntity
-import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.RestOperations
 import spock.lang.Specification
 
 import static rocks.metaldetector.butler.supplier.timeformetal.TimeForMetalWebCrawler.getUPCOMING_RELEASES_URL
 
 class TimeForMetalWebCrawlerTest extends Specification {
 
-  TimeForMetalWebCrawler underTest = new TimeForMetalWebCrawler(restTemplate: Mock(RestTemplate))
+  TimeForMetalWebCrawler underTest = new TimeForMetalWebCrawler(restOperations: Mock(RestOperations))
   ResponseEntity responseMock = Mock(ResponseEntity)
 
   def "RestTemplate is called with correct URL"() {
@@ -16,7 +16,7 @@ class TimeForMetalWebCrawlerTest extends Specification {
     underTest.requestReleases(1)
 
     then:
-    1 * underTest.restTemplate.getForEntity(UPCOMING_RELEASES_URL, _, _) >> responseMock
+    1 * underTest.restOperations.getForEntity(UPCOMING_RELEASES_URL, _, _) >> responseMock
   }
 
   def "RestTemplate is called with correct return type"() {
@@ -24,7 +24,7 @@ class TimeForMetalWebCrawlerTest extends Specification {
     underTest.requestReleases(1)
 
     then:
-    1 * underTest.restTemplate.getForEntity(_, String, _) >> responseMock
+    1 * underTest.restOperations.getForEntity(_, String, _) >> responseMock
   }
 
   def "RestTemplate is called with page parameter"() {
@@ -35,12 +35,12 @@ class TimeForMetalWebCrawlerTest extends Specification {
     underTest.requestReleases(page)
 
     then:
-    1 * underTest.restTemplate.getForEntity(_, _, [page: page]) >> responseMock
+    1 * underTest.restOperations.getForEntity(_, _, [page: page]) >> responseMock
   }
 
   def "ResponseBody is returned"() {
     given:
-    underTest.restTemplate.getForEntity(*_) >> responseMock
+    underTest.restOperations.getForEntity(*_) >> responseMock
     def responsePage = "page"
 
     when:
@@ -55,7 +55,7 @@ class TimeForMetalWebCrawlerTest extends Specification {
 
   def "nothing happens on exception and null is returned"() {
     given:
-    underTest.restTemplate.getForEntity(*_) >> {throw new Exception()}
+    underTest.restOperations.getForEntity(*_) >> { throw new RuntimeException() }
 
     when:
     def result = underTest.requestReleases(1)

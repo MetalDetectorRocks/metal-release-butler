@@ -53,17 +53,19 @@ class MetalArchivesReleaseVersionsWebCrawlerTest extends Specification {
     result == document
   }
 
-  def "exceptions on GET are caught"() {
+  def "exceptions on GET are caught and null is returned"() {
     given:
     def mockConnection = Mock(HttpConnection)
-    def document = new Document("")
     Jsoup.connect(*_) >> mockConnection
     mockConnection.get() >> { throw new IOException() }
 
     when:
-    underTest.requestOtherReleases("666")
+    def result = underTest.requestOtherReleases("666")
 
     then:
     noExceptionThrown()
+
+    and:
+    !result
   }
 }

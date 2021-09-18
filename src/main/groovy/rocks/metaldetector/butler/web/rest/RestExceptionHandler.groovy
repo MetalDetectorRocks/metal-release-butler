@@ -77,7 +77,7 @@ class RestExceptionHandler {
   }
 
   @ExceptionHandler([AccessDeniedException])
-  ResponseEntity<ErrorResponse> handleAccessDeniedException(RuntimeException exception, WebRequest webRequest) {
+  ResponseEntity<ErrorResponse> handleAccessDeniedException(Exception exception, WebRequest webRequest) {
     log.warn("${webRequest.contextPath}: ${exception.message}", exception)
     return ResponseEntity
             .status(FORBIDDEN)

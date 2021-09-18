@@ -9,23 +9,24 @@ import spock.lang.Specification
 
 class JwtsSupportTest extends Specification {
 
-  JwtsSupport underTest = new JwtsSupport("secret", Mock(JwtParser))
+  JwtsSupport underTest = new JwtsSupport(tokenSecret: "secret",
+                                          jwtParser: Mock(JwtParser))
 
   def "SigningKey is set to validate token"() {
     given:
-    underTest.jwtParser.parseClaimsJws(_) >> Mock(Jws)
+    underTest.jwtParser.parseClaimsJws(*_) >> Mock(Jws)
 
     when:
     underTest.getClaims("token")
 
     then:
-    1 * underTest.jwtParser.setSigningKey(underTest.TOKEN_SECRET.bytes.encodeBase64().toString()) >> underTest.jwtParser
+    1 * underTest.jwtParser.setSigningKey(underTest.tokenSecret.bytes.encodeBase64().toString()) >> underTest.jwtParser
   }
 
   def "Token is passed to parser"() {
     given:
     def token = "token"
-    underTest.jwtParser.setSigningKey(_) >> underTest.jwtParser
+    underTest.jwtParser.setSigningKey(*_) >> underTest.jwtParser
 
     when:
     underTest.getClaims(token)
@@ -38,8 +39,8 @@ class JwtsSupportTest extends Specification {
     given:
     def jws = Mock(Jws)
     def claims = Mock(Claims)
-    underTest.jwtParser.setSigningKey(_) >> underTest.jwtParser
-    underTest.jwtParser.parseClaimsJws(_) >> jws
+    underTest.jwtParser.setSigningKey(*_) >> underTest.jwtParser
+    underTest.jwtParser.parseClaimsJws(*_) >> jws
 
     when:
     def result = underTest.getClaims("token")
@@ -62,7 +63,7 @@ class JwtsSupportTest extends Specification {
     results.size() == 2
 
     and:
-    results.each {it instanceof SimpleGrantedAuthority}
+    results.each { it instanceof SimpleGrantedAuthority }
 
     and:
     results[0].authority == "User"

@@ -15,17 +15,14 @@ class JwtsSupport {
 
   static final String AUTHORITIES_KEY = "auth"
 
-  String TOKEN_SECRET
-  JwtParser jwtParser
+  @Value('${security.token-secret}')
+  String tokenSecret
 
   @Autowired
-  JwtsSupport(@Value('${security.token-secret}') String tokenSecret, JwtParser jwtParser) {
-    this.TOKEN_SECRET = tokenSecret
-    this.jwtParser = jwtParser
-  }
+  JwtParser jwtParser
 
   Claims getClaims(String token) {
-    jwtParser.setSigningKey(TOKEN_SECRET.bytes.encodeBase64().toString())
+    jwtParser.setSigningKey(tokenSecret.bytes.encodeBase64().toString())
              .parseClaimsJws(token)
              .getBody()
   }

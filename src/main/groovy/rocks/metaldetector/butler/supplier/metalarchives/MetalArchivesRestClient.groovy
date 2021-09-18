@@ -4,7 +4,7 @@ import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.RestOperations
 
 @Service
 @Slf4j
@@ -14,7 +14,7 @@ class MetalArchivesRestClient {
   static final int MAX_ATTEMPTS = 5
 
   @Autowired
-  RestTemplate restTemplate
+  RestOperations restOperations
 
   /*
    * The REST-interface of metal-archives.com responds only with a list of strings for each release.
@@ -31,7 +31,7 @@ class MetalArchivesRestClient {
       // (1) request
       ResponseEntity<MetalArchivesReleasesResponse> responseEntity
       try {
-        responseEntity = restTemplate.getForEntity(UPCOMING_RELEASES_URL, MetalArchivesReleasesResponse, startOfRange)
+        responseEntity = restOperations.getForEntity(UPCOMING_RELEASES_URL, MetalArchivesReleasesResponse, startOfRange)
       }
       catch (Exception e) {
         if (++attempt < MAX_ATTEMPTS) {
