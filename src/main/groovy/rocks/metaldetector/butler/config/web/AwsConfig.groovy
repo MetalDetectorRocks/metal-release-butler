@@ -15,14 +15,9 @@ import static com.amazonaws.regions.Regions.EU_CENTRAL_1
 @Profile(["dev", "preview", "prod"])
 class AwsConfig {
 
-  @Value('${aws.access-key}')
-  String awsAccessKey
-
-  @Value('${aws.secret-key}')
-  String awsSecretKey
-
   @Bean
-  AmazonS3 amazonS3Client() {
+  AmazonS3 amazonS3Client(@Value('${aws.access-key}') String awsAccessKey,
+                          @Value('${aws.secret-key}') String awsSecretKey) {
     AmazonS3ClientBuilder
         .standard()
         .withCredentials(new AWSStaticCredentialsProvider(

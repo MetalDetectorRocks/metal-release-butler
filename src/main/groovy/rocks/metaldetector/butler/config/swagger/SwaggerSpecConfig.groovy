@@ -24,5 +24,4 @@ class SwaggerSpecConfig {
       return resources
     }
   }
-
 }

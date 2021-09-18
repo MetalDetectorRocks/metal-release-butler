@@ -18,6 +18,7 @@ class MetalArchivesReleaseVersionsWebCrawler {
     }
     catch (Exception e) {
       log.error("Error during fetching other releases page for metal archives release id '${releaseId}'", e)
+      return null
     }
   }
 }

@@ -12,7 +12,6 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
 import org.apache.http.message.BasicHeaderElementIterator
 import org.apache.http.protocol.HTTP
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,19 +26,12 @@ import static java.util.concurrent.TimeUnit.MINUTES
 @Configuration
 class ApacheHttpClientConfig {
 
-  private static final int MAX_ROUTE_CONNECTIONS     = 2
-  private static final int MAX_TOTAL_CONNECTIONS     = 5
+  private static final int MAX_ROUTE_CONNECTIONS = 2
+  private static final int MAX_TOTAL_CONNECTIONS = 5
   private static final int MAX_LOCALHOST_CONNECTIONS = 10
 
-  final int port
-
-  @Autowired
-  ApacheHttpClientConfig(@Value('${server.port}') int port) {
-    this.port = port
-  }
-
   @Bean
-  PoolingHttpClientConnectionManager poolingConnectionManager() {
+  PoolingHttpClientConnectionManager poolingConnectionManager(@Value('${server.port}') int port) {
     PoolingHttpClientConnectionManager poolingConnectionManager = new PoolingHttpClientConnectionManager()
 
     // set total amount of connections across all HTTP routes
@@ -65,7 +57,7 @@ class ApacheHttpClientConfig {
         HeaderElement element = elementIterator.nextElement()
         String param = element.name
         String value = element.value
-        if (value != null && param.equalsIgnoreCase("timeout")) {
+        if (value && param.equalsIgnoreCase("timeout")) {
           return Long.parseLong(value) * 1000 // convert to ms
         }
       }
@@ -77,11 +69,12 @@ class ApacheHttpClientConfig {
   @Bean
   Runnable idleConnectionMonitor(PoolingHttpClientConnectionManager pool) {
     return new Runnable() {
+
       @Override
       @Scheduled(fixedDelay = 60000L)
       void run() {
         // only if connection pool is initialised
-        if (pool != null) {
+        if (pool) {
           pool.closeExpiredConnections()
           pool.closeIdleConnections(10, MINUTES)
         }
@@ -91,24 +84,23 @@ class ApacheHttpClientConfig {
 
   @Bean
   TaskScheduler taskScheduler() {
-    ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler()
-    scheduler.threadNamePrefix = "idleMonitor"
-    scheduler.poolSize = 1
-    return scheduler
+    return new ThreadPoolTaskScheduler(threadNamePrefix: "idleMonitor",
+                                       poolSize: 1)
   }
 
   @Bean
-  CloseableHttpClient httpClient() {
+  CloseableHttpClient httpClient(PoolingHttpClientConnectionManager poolingConnectionManager,
+                                 ConnectionKeepAliveStrategy connectionKeepAliveStrategy) {
     RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectTimeout(Duration.ofSeconds(20).toMillis() as int) // the time for waiting until a connection is established
-            .setConnectionRequestTimeout(Duration.ofSeconds(20).toMillis() as int) // the time for waiting for a connection from connection pool
-            .setSocketTimeout(Duration.ofSeconds(30).toMillis() as int) // the time for waiting for data
-            .build()
+        .setConnectTimeout(Duration.ofSeconds(20).toMillis() as int) // the time for waiting until a connection is established
+        .setConnectionRequestTimeout(Duration.ofSeconds(20).toMillis() as int) // the time for waiting for a connection from connection pool
+        .setSocketTimeout(Duration.ofSeconds(30).toMillis() as int) // the time for waiting for data
+        .build()
 
     return HttpClients.custom()
-            .setDefaultRequestConfig(requestConfig)
-            .setConnectionManager(poolingConnectionManager())
-            .setKeepAliveStrategy(connectionKeepAliveStrategy())
-            .build()
+        .setDefaultRequestConfig(requestConfig)
+        .setConnectionManager(poolingConnectionManager)
+        .setKeepAliveStrategy(connectionKeepAliveStrategy)
+        .build()
   }
 }
