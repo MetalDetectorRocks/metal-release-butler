@@ -11,7 +11,7 @@ val dependencyVersions = listOf(
     "org.assertj:assertj-core:3.21.0",
     "org.slf4j:slf4j-api:1.7.32",
     "org.apiguardian:apiguardian-api:1.1.2",
-    "org.jboss.logging:jboss-logging:3.4.1.Final"
+    "org.jboss.logging:jboss-logging:3.4.2.Final"
 )
 
 val dependencyGroupVersions = mapOf(
