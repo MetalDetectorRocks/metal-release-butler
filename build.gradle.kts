@@ -7,7 +7,7 @@ val dependencyVersions = listOf(
     "org.junit:junit-bom:5.8.1",
     "org.ow2.asm:asm:9.2",
     "junit:junit:4.13.2",
-    "net.bytebuddy:byte-buddy:1.11.18",
+    "net.bytebuddy:byte-buddy:1.11.19",
     "org.assertj:assertj-core:3.21.0",
     "org.slf4j:slf4j-api:1.7.32",
     "org.apiguardian:apiguardian-api:1.1.2",
