@@ -1,10 +1,10 @@
-val javaVersion: JavaVersion = JavaVersion.VERSION_11
+val javaVersion: JavaVersion = JavaVersion.VERSION_17
 
 val dependencyVersions = listOf(
     "commons-lang:commons-lang:2.6",
     "commons-logging:commons-logging:1.2",
     "commons-codec:commons-codec:1.15",
-    "org.junit:junit-bom:5.8.1",
+    "org.junit:junit-bom:${libs.versions.junit.get()}",
     "org.ow2.asm:asm:9.2",
     "junit:junit:4.13.2",
     "net.bytebuddy:byte-buddy:1.11.20",
@@ -17,10 +17,10 @@ val dependencyVersions = listOf(
 val dependencyGroupVersions = mapOf(
     "org.codehaus.groovy" to libs.versions.groovy.get(),
     "org.springframework" to "5.3.10",
-    "org.springframework.boot" to "2.5.5",
+    "org.springframework.boot" to libs.versions.springBoot.get(),
     "com.fasterxml.jackson.core" to "2.12.5",
     "com.fasterxml.jackson.dataformat" to "2.12.5",
-    "org.junit.jupiter" to "5.8.1"
+    "org.junit.jupiter" to libs.versions.junit.get()
 )
 
 plugins {
