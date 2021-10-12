@@ -1,6 +1,6 @@
 dependencies {
 
-  implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation("org.springframework.boot:spring-boot-starter-web:${libs.versions.springBoot.get()}")
 
   implementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
 
@@ -12,7 +12,7 @@ dependencies {
 
   implementation(projects.persistence)
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test") {
+  testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}") {
     exclude(group = "junit", module = "junit")
   }
   testImplementation("org.codehaus.groovy:groovy-test:${libs.versions.groovy.get()}")

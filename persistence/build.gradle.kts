@@ -3,13 +3,13 @@ plugins {
 }
 
 dependencies {
-  api("org.springframework.boot:spring-boot-starter-data-jpa")
+  api("org.springframework.boot:spring-boot-starter-data-jpa:${libs.versions.springBoot.get()}")
 
   implementation("org.codehaus.groovy:groovy:${libs.versions.groovy.get()}")
 
   runtimeOnly("org.postgresql:postgresql:${libs.versions.postgresql.get()}")
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test") {
+  testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}") {
     exclude(group = "junit", module = "junit")
   }
   testImplementation("org.codehaus.groovy:groovy-test:${libs.versions.groovy.get()}")

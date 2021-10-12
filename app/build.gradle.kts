@@ -18,14 +18,14 @@ tasks {
 }
 
 dependencies {
-  implementation("org.springframework.boot:spring-boot-starter-web")
-  implementation("org.springframework.boot:spring-boot-starter-validation")
-  implementation("org.springframework.boot:spring-boot-starter-security")
-  implementation("org.springframework.boot:spring-boot-starter-actuator")
+  implementation("org.springframework.boot:spring-boot-starter-web:${libs.versions.springBoot.get()}")
+  implementation("org.springframework.boot:spring-boot-starter-validation:${libs.versions.springBoot.get()}")
+  implementation("org.springframework.boot:spring-boot-starter-security:${libs.versions.springBoot.get()}")
+  implementation("org.springframework.boot:spring-boot-starter-actuator:${libs.versions.springBoot.get()}")
 
-  implementation("org.apache.httpcomponents:httpclient")
-  implementation("io.micrometer:micrometer-registry-prometheus")
-  implementation("org.flywaydb:flyway-core")
+  implementation("org.apache.httpcomponents:httpclient:${libs.versions.httpClient.get()}")
+  implementation("io.micrometer:micrometer-registry-prometheus:${libs.versions.micrometer.get()}")
+  implementation("org.flywaydb:flyway-core:${libs.versions.flyway.get()}")
   implementation("io.jsonwebtoken:jjwt:${libs.versions.jsonwebtoken.get()}")
 
   implementation("org.codehaus.groovy:groovy:${libs.versions.groovy.get()}")
@@ -40,16 +40,16 @@ dependencies {
   implementation(projects.supplier.timeForMetal)
   implementation(projects.supplier.metalArchives)
 
-  developmentOnly("org.springframework.boot:spring-boot-devtools")
-  annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+  developmentOnly("org.springframework.boot:spring-boot-devtools:${libs.versions.springBoot.get()}")
+  annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${libs.versions.springBoot.get()}")
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test") {
+  testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}") {
     exclude(group = "junit", module = "junit")
   }
   testImplementation("org.codehaus.groovy:groovy-test:${libs.versions.groovy.get()}")
   testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
   testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")
-  testImplementation("org.springframework.security:spring-security-test")
+  testImplementation("org.springframework.security:spring-security-test:${libs.versions.springSecurity.get()}")
   testRuntimeOnly("com.h2database:h2:${libs.versions.h2.get()}")
 }
 
