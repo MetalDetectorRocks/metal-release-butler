@@ -6,7 +6,6 @@ dependencies {
 
   implementation("org.codehaus.groovy:groovy:${libs.versions.groovy.get()}")
   implementation("org.codehaus.groovy:groovy-xml:${libs.versions.groovy.get()}")
-  implementation("io.github.http-builder-ng:http-builder-ng-core:${libs.versions.httpBuilder.get()}")
 
   implementation("com.amazonaws:aws-java-sdk-s3:${libs.versions.awsS3Sdk.get()}")
 
