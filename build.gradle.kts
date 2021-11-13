@@ -1,12 +1,9 @@
 val javaVersion: JavaVersion = JavaVersion.VERSION_17
 
 val dependencyVersions = listOf(
-    "commons-lang:commons-lang:2.6",
     "commons-logging:commons-logging:1.2",
     "commons-codec:commons-codec:1.15",
-    "org.junit:junit-bom:${libs.versions.junit.get()}",
     "org.ow2.asm:asm:9.2",
-    "junit:junit:4.13.2",
     "net.bytebuddy:byte-buddy:1.12.1",
     "org.assertj:assertj-core:3.21.0",
     "org.slf4j:slf4j-api:1.7.32",
@@ -16,11 +13,14 @@ val dependencyVersions = listOf(
 
 val dependencyGroupVersions = mapOf(
     "org.codehaus.groovy" to libs.versions.groovy.get(),
-    "org.springframework" to "5.3.10",
+    "org.springframework" to libs.versions.spring.get(),
     "org.springframework.boot" to libs.versions.springBoot.get(),
-    "com.fasterxml.jackson.core" to "2.12.5",
-    "com.fasterxml.jackson.dataformat" to "2.12.5",
-    "org.junit.jupiter" to libs.versions.junit.get()
+    "com.fasterxml.jackson.core" to libs.versions.jackson.get(),
+    "com.fasterxml.jackson.dataformat" to libs.versions.jackson.get(),
+    "com.fasterxml.jackson.datatype" to libs.versions.jackson.get(),
+    "com.fasterxml.jackson.module" to libs.versions.jackson.get(),
+    "org.junit.jupiter" to libs.versions.junit.get(),
+    "org.junit" to libs.versions.junit.get()
 )
 
 plugins {
