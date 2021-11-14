@@ -2,20 +2,7 @@
 [![codecov](https://codecov.io/gh/MetalDetectorRocks/metal-release-butler/branch/master/graph/badge.svg)](https://codecov.io/gh/MetalDetectorRocks/metal-release-butler)
 ![Docker Image](https://github.com/MetalDetectorRocks/metal-release-butler/workflows/Docker%20Image/badge.svg)
 
-## Table of contents
-1. [ Introduction ](#introduction)
-
-2. [ Download source code ](#download-source-code)
-
-3. [ Run application locally ](#run-application-locally)
-
-4. [ Generate access token ](#generate-access-token)
-
-5. [ Start the application ](#start-application)
-
-6. [ Execute tests locally ](#execute-tests-locally)
-
-7. [ API documentation ](#api-documentation)
+![Alt](https://repobeats.axiom.co/api/embed/d2d3638d8a96caa8af0b6d9d56910316be6192a5.svg "Repobeats analytics image")
 
 <a name="introduction"></a>
 ## 1 Introduction
