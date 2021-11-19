@@ -22,6 +22,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-validation:${libs.versions.springBoot.get()}")
   implementation("org.springframework.boot:spring-boot-starter-security:${libs.versions.springBoot.get()}")
   implementation("org.springframework.boot:spring-boot-starter-actuator:${libs.versions.springBoot.get()}")
+  implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server:${libs.versions.springBoot.get()}")
 
   implementation("org.apache.httpcomponents:httpclient:${libs.versions.httpClient.get()}")
   implementation("io.micrometer:micrometer-registry-prometheus:${libs.versions.micrometer.get()}")
