@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.config.security
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -13,6 +14,9 @@ import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.AntPa
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+  @Autowired
+  JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
+
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.csrf().ignoringAntMatchers(REST_ENDPOINTS)
@@ -21,7 +25,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
         .and().authorizeRequests()
         .antMatchers(ACTUATOR_ENDPOINTS).permitAll()
         .anyRequest().authenticated()
-    http.oauth2ResourceServer()
+    http.oauth2ResourceServer().authenticationEntryPoint(jwtAuthenticationEntryPoint)
         .jwt()
         .jwtAuthenticationConverter(new JwtAuthenticationConverter())
   }

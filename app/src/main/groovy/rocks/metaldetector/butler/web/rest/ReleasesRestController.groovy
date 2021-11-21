@@ -33,7 +33,6 @@ class ReleasesRestController {
 
   @PostMapping(path = RELEASES, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   @PreAuthorize("hasRole('ROLE_USER')")
-//  @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request,
                                                         @SortDefault(sort = ["releaseDate", "artist", "albumTitle"], direction = ASC) Sort sorting) {
     def releasesResponse
