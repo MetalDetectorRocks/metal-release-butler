@@ -24,13 +24,13 @@ git clone https://github.com/MetalDetectorRocks/metal-release-butler.git
 
 To start the application locally, the following preparatory actions are necessary:
 
-1. Install Java 11
+1. Install Java 17
 
-2. Install Groovy (v3.0.2 or higher)
+2. Install Groovy (v3.0.x)
 
 3. Install Docker CE
 
-4. Run `docker-compose up -d --no-recreate` from the root directory of the project. This starts a postgresql database that is needed locally to run the Metal Release Butler Application.
+4. Run `docker-compose up -d --no-recreate` from the root directory of the project. This starts a postgresql database that is needed locally to run the application.
 
 5. Define the data source connection details in file `application.yml`:
     - `spring.datasource.username` (you have to use user `postgres`)
