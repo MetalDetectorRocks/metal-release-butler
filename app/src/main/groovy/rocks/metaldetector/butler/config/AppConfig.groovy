@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.EnableAsync
 import org.springframework.scheduling.annotation.EnableScheduling
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.web.util.pattern.PathPatternParser
 
 @Configuration
@@ -16,6 +17,11 @@ class AppConfig {
   @Bean
   JwtParser jwtParser() {
     return Jwts.parser()
+  }
+
+  @Bean
+  JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter() {
+    return new JwtGrantedAuthoritiesConverter()
   }
 
   @Bean

@@ -17,6 +17,9 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
 
+  @Autowired
+  JwtAuthenticationConverter jwtAuthenticationConverter
+
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.csrf().ignoringAntMatchers(REST_ENDPOINTS)
@@ -27,6 +30,6 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
         .anyRequest().authenticated()
     http.oauth2ResourceServer().authenticationEntryPoint(jwtAuthenticationEntryPoint)
         .jwt()
-        .jwtAuthenticationConverter(new JwtAuthenticationConverter())
+        .jwtAuthenticationConverter(jwtAuthenticationConverter)
   }
 }

@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.config.security
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.core.GrantedAuthority
@@ -7,10 +8,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
+import org.springframework.stereotype.Component
 
+@Component
 class JwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
-  JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter()
+  @Autowired
+  JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter
 
   @Override
   AbstractAuthenticationToken convert(Jwt source) {
