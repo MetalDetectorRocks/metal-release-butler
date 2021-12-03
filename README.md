@@ -48,8 +48,6 @@ Before executing the script, the environment variable `JWT_SECRET` must be expos
 
 The generated token is displayed on the console after script execution. Send the token with every request in the `Authorization` Header as Bearer Token.
 
-To disable authorization, start the application with the environment variable 'ROCKS_METALDETECTOR_AUTHENTICATION_ENABLED' and the value 'FALSE'.
-
 ## 5 Start the application
 
 via gradle
@@ -61,7 +59,7 @@ via your IDE
 ## 6 Execute tests locally
 
 via gradle
-- Execute command `./gradlew clean test` in root directory
+- Execute command `./gradlew clean check` in root directory
 
 via your IDE
 - Execute the task `test` from folder `verification`

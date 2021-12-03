@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:9000
+          issuer-uri: https://metal-detector-auth-preview.herokuapp.com
 
 server:
   port: 8080
