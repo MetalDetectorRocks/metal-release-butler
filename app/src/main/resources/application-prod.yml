@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://auth-app:8080
+          issuer-uri: https://auth.metal-detector.rocks
 
 server:
   port: 8080
