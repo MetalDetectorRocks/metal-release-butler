@@ -28,27 +28,16 @@ To start the application locally, the following preparatory actions are necessar
 
 3. Install Docker CE
 
-4. Run `docker-compose up -d --no-recreate` from the root directory of the project. This starts a postgresql database that is needed locally to run the application.
+4. Run `docker-compose up -d --no-recreate` from the root directory of the project. This starts all peripheral docker containers that are needed locally to run the Metal Release Butler Application.
 
 5. Define the data source connection details in file `application.yml`:
     - `spring.datasource.username` (you have to use user `postgres`)
     - `spring.datasource.password` (password from `docker-compose.yml`)
     - `spring.datasource.url` (`jdbc:postgresql://localhost:5432/metal-release-butler`, the database name must match `POSTGRES_DB` of service `butler-db` from `docker-compose.yml` file)
 
-6. Define a secret for JWT (choose any value you want) for property:
-  - `security.token-secret`
-
 It is also possible to define all mentioned connection details and secrets as environment variables. In this case no variables in `application.yml` need to be changed. The names of the environment variables are already in the `application.yml` file. You can define the environment variables for example within a Run Configuration in IntelliJ (other IDEs have similar possibilities).
 
-## 4 Generate Access Token
-
-The endpoints are secured with a static Json Web Token. Use the groovy script 'create-detector-jwt.groovy' to create a token for a local setup. You can find the script in folder `src/main/resources/config`.
-
-Before executing the script, the environment variable `JWT_SECRET` must be exposed. Please use the value from `security.token-secret` in `application.yml`.
-
-The generated token is displayed on the console after script execution. Send the token with every request in the `Authorization` Header as Bearer Token.
-
-## 5 Start the application
+## 4 Start the application
 
 via gradle
 - Execute command `./gradlew bootRun` in root directory
@@ -56,11 +45,23 @@ via gradle
 via your IDE
 - Execute main class `rocks.metaldetector.butler.MetalReleaseButlerApplication`
 
+## 5 Getting access tokens
+
+The application is secured via oauth2, so to access the api you need to fetch an access token first. The auth service in the `docker-compose.yml` provides these.
+Tools like Postman offer support for doing this automatically. The required information to get an access token are:
+ - Grant Type: Client Credentials
+ - Access Token Url: http://localhost:9000/oauth2/token
+ - Client ID: from `docker-compose.yml`
+ - Client Secret: from `docker-compose.yml`
+ - Scope: `admin` or `user` depending on client used
+
+The client authentication has to be sent as basic authentication and the authorization data returned has to be added as a request header.
+
 ## 6 Execute tests locally
 
 via gradle
 - Execute command `./gradlew clean check` in root directory
 
 via your IDE
-- Execute the task `test` from folder `verification`
+- Execute the task `check` from folder `verification`
 - Please note: You might get the message "Test events were not received" if you do this via IntelliJ. This is intentional behaviour of gradle. If nothing changes in the tests themselves, they will not be executed repeatedly. If you still want to run the tests, you have to execute `clean` before.
