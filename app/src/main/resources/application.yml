@@ -39,6 +39,11 @@ spring:
   cache:
     jcache:
       config: classpath:config/cache/ehcache.xml
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9000
 
 server:
   port: 8095
@@ -59,9 +64,6 @@ httpclient:
 
 concurrency:
   release-import-pool-size: 4
-
-security:
-  token-secret: ${JWT_SECRET}
 
 aws:
   access-key: ${AWS_ACCESS_KEY}

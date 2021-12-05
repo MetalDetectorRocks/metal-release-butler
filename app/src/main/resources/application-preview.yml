@@ -2,6 +2,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://metal-detector-auth-preview.herokuapp.com
 
 server:
   port: 8080

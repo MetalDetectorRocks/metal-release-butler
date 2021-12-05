@@ -2,6 +2,11 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://auth.metal-detector.rocks
 
 server:
   port: 8080
