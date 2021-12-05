@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "75016a18-8faa-4de2-98cc-ea5f423619c3",
+		"_postman_id": "61846274-9f29-47fa-bd3e-e98fdb2f2c61",
 		"name": "Metal Release Butler",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -8,6 +8,9 @@
 		{
 			"name": "Metal Archives Query",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -127,6 +130,9 @@
 		{
 			"name": "Import releases",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -296,5 +302,74 @@
 			"response": []
 		}
 	],
-	"protocolProfileBehavior": {}
+	"auth": {
+		"type": "oauth2",
+		"oauth2": [
+			{
+				"key": "tokenName",
+				"value": "Butler",
+				"type": "string"
+			},
+			{
+				"key": "challengeAlgorithm",
+				"value": "S256",
+				"type": "string"
+			},
+			{
+				"key": "scope",
+				"value": "admin",
+				"type": "string"
+			},
+			{
+				"key": "grant_type",
+				"value": "client_credentials",
+				"type": "string"
+			},
+			{
+				"key": "clientSecret",
+				"value": "adminSecret",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "metal-detector-admin",
+				"type": "string"
+			},
+			{
+				"key": "addTokenTo",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "client_authentication",
+				"value": "header",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "http://localhost:9000/oauth2/token",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
 }
