@@ -1,161 +1,136 @@
 {
 	"info": {
-		"_postman_id": "61846274-9f29-47fa-bd3e-e98fdb2f2c61",
+		"_postman_id": "4c4fa581-fb68-4f03-9be9-ff918134d13e",
 		"name": "Metal Release Butler",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Metal Archives Query",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "User-Agent",
-						"value": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart=0",
-					"protocol": "https",
-					"host": [
-						"www",
-						"metal-archives",
-						"com"
-					],
-					"path": [
-						"release",
-						"ajax-upcoming",
-						"json",
-						"1"
-					],
-					"query": [
-						{
-							"key": "sEcho",
-							"value": "1"
+			"name": "Metal Archives",
+			"item": [
+				{
+					"name": "Metal Archives Query",
+					"request": {
+						"auth": {
+							"type": "noauth"
 						},
-						{
-							"key": "iColumns",
-							"value": "5",
-							"disabled": true
-						},
-						{
-							"key": "sColumns",
-							"value": "",
-							"disabled": true
-						},
-						{
-							"key": "mDataProp_0",
-							"value": "0",
-							"disabled": true
-						},
-						{
-							"key": "mDataProp_1",
-							"value": "1",
-							"disabled": true
-						},
-						{
-							"key": "mDataProp_2",
-							"value": "2",
-							"disabled": true
-						},
-						{
-							"key": "mDataProp_3",
-							"value": "3",
-							"disabled": true
-						},
-						{
-							"key": "mDataProp_4",
-							"value": "4",
-							"disabled": true
-						},
-						{
-							"key": "iSortCol_0",
-							"value": "4",
-							"disabled": true
-						},
-						{
-							"key": "sSortDir_0",
-							"value": "asc",
-							"disabled": true
-						},
-						{
-							"key": "iSortingCols",
-							"value": "1",
-							"disabled": true
-						},
-						{
-							"key": "bSortable_0",
-							"value": "true",
-							"disabled": true
-						},
-						{
-							"key": "bSortable_1",
-							"value": "true",
-							"disabled": true
-						},
-						{
-							"key": "bSortable_2",
-							"value": "true",
-							"disabled": true
-						},
-						{
-							"key": "bSortable_3",
-							"value": "true",
-							"disabled": true
-						},
-						{
-							"key": "bSortable_4",
-							"value": "true",
-							"disabled": true
-						},
-						{
-							"key": "_",
-							"value": "1564161149090",
-							"disabled": true
-						},
-						{
-							"key": "iDisplayStart",
-							"value": "0"
+						"method": "GET",
+						"header": [
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart=0",
+							"protocol": "https",
+							"host": [
+								"www",
+								"metal-archives",
+								"com"
+							],
+							"path": [
+								"release",
+								"ajax-upcoming",
+								"json",
+								"1"
+							],
+							"query": [
+								{
+									"key": "sEcho",
+									"value": "1"
+								},
+								{
+									"key": "iColumns",
+									"value": "5",
+									"disabled": true
+								},
+								{
+									"key": "sColumns",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "mDataProp_0",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "mDataProp_1",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "mDataProp_2",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "mDataProp_3",
+									"value": "3",
+									"disabled": true
+								},
+								{
+									"key": "mDataProp_4",
+									"value": "4",
+									"disabled": true
+								},
+								{
+									"key": "iSortCol_0",
+									"value": "4",
+									"disabled": true
+								},
+								{
+									"key": "sSortDir_0",
+									"value": "asc",
+									"disabled": true
+								},
+								{
+									"key": "iSortingCols",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "bSortable_0",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "bSortable_1",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "bSortable_2",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "bSortable_3",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "bSortable_4",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "_",
+									"value": "1564161149090",
+									"disabled": true
+								},
+								{
+									"key": "iDisplayStart",
+									"value": "0"
+								}
+							]
 						}
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "Import releases",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:8095/rest/v1/releases?action=import",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8095",
-					"path": [
-						"rest",
-						"v1",
-						"releases"
-					],
-					"query": [
-						{
-							"key": "action",
-							"value": "import"
-						}
-					]
-				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "Query all upcoming releases",
@@ -300,11 +275,48 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Create Import Job",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8095/rest/v1/releases/import",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8095",
+					"path": [
+						"rest",
+						"v1",
+						"releases",
+						"import"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
 		"type": "oauth2",
 		"oauth2": [
+			{
+				"key": "clientSecret",
+				"value": "adminSecret",
+				"type": "string"
+			},
+			{
+				"key": "scope",
+				"value": "admin",
+				"type": "string"
+			},
+			{
+				"key": "clientId",
+				"value": "metal-detector-admin",
+				"type": "string"
+			},
 			{
 				"key": "tokenName",
 				"value": "Butler",
@@ -316,23 +328,8 @@
 				"type": "string"
 			},
 			{
-				"key": "scope",
-				"value": "admin",
-				"type": "string"
-			},
-			{
 				"key": "grant_type",
 				"value": "client_credentials",
-				"type": "string"
-			},
-			{
-				"key": "clientSecret",
-				"value": "adminSecret",
-				"type": "string"
-			},
-			{
-				"key": "clientId",
-				"value": "metal-detector-admin",
 				"type": "string"
 			},
 			{
