@@ -49,6 +49,7 @@ services:
     container_name: butler-auth-app
     image: metaldetector/metal-detector-auth
     environment:
+      SERVER_PORT: 9000
       DATASOURCE_URL: jdbc:postgresql://auth-db:5432/metal-detector-auth
       DATASOURCE_USERNAME: postgres
       DATASOURCE_PASSWORD: secret
@@ -61,7 +62,7 @@ services:
     networks:
       - auth-network
     ports:
-      - "9000:8080"
+      - "9000:9000"
     deploy:
       restart_policy:
         condition: on-failure
