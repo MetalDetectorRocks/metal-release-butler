@@ -35,6 +35,13 @@ To start the application locally, the following preparatory actions are necessar
     - `spring.datasource.password` (password from `docker-compose.yml`)
     - `spring.datasource.url` (`jdbc:postgresql://localhost:5432/metal-release-butler`, the database name must match `POSTGRES_DB` of service `butler-db` from `docker-compose.yml` file)
 
+6. Add the following snippet to `/etc/hosts`:
+
+```
+# Metal Release Butler
+127.0.0.1 auth-app
+```
+
 It is also possible to define all mentioned connection details and secrets as environment variables. In this case no variables in `application.yml` need to be changed. The names of the environment variables are already in the `application.yml` file. You can define the environment variables for example within a Run Configuration in IntelliJ (other IDEs have similar possibilities).
 
 ## 4 Start the application
