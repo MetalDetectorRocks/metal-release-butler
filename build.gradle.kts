@@ -5,7 +5,7 @@ val dependencyVersions = listOf(
     "commons-codec:commons-codec:1.15",
     "org.ow2.asm:asm:9.2",
     "net.bytebuddy:byte-buddy:1.12.6",
-    "org.assertj:assertj-core:3.21.0",
+    "org.assertj:assertj-core:3.22.0",
     "org.slf4j:slf4j-api:1.7.32",
     "org.apiguardian:apiguardian-api:1.1.2",
     "org.jboss.logging:jboss-logging:3.4.2.Final"
