@@ -32,7 +32,7 @@ class ReleasesRestController {
   ReleaseService releaseService
 
   @PostMapping(path = RELEASES, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasRole('ROLE_USER')")
+  @PreAuthorize("hasAuthority('SCOPE_releases-read')")
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request,
                                                         @SortDefault(sort = ["releaseDate", "artist", "albumTitle"], direction = ASC) Sort sorting) {
     def releasesResponse
@@ -57,14 +57,14 @@ class ReleasesRestController {
   }
 
   @PutMapping(path = UPDATE_RELEASE, consumes = APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+  @PreAuthorize("hasAuthority('SCOPE_releases-write')")
   ResponseEntity<Void> updateReleaseState(@Valid @RequestBody ReleaseUpdateRequest request, @PathVariable long releaseId) {
     releaseService.updateReleaseState(releaseId, request.state)
     return ResponseEntity.ok().build()
   }
 
   @PostMapping(path = RELEASES_UNPAGINATED, consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
+  @PreAuthorize("hasAuthority('SCOPE_releases-read-all')")
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request,
                                                   @SortDefault(sort = ["releaseDate", "artist", "albumTitle"], direction = ASC) Sort sorting) {
     def releasesResponse

@@ -5,7 +5,6 @@ import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.http.MediaType
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.test.web.servlet.MockMvc
@@ -19,6 +18,7 @@ import spock.lang.Specification
 import static org.mockito.Mockito.reset
 import static org.springframework.http.HttpStatus.FORBIDDEN
 import static org.springframework.http.HttpStatus.OK
+import static org.springframework.http.MediaType.APPLICATION_JSON
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseEntityState.FAULTY
@@ -32,12 +32,7 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   private static Jwt USER_JWT = Jwt.withTokenValue("token")
       .header("alg", "none")
-      .claim("scope", "user")
-      .build()
-
-  private static Jwt ADMIN_JWT = Jwt.withTokenValue("token")
-      .header("alg", "none")
-      .claim("scope", "admin")
+      .claim("scope", "releases-read")
       .build()
 
   @SpringBean
@@ -61,8 +56,8 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     def requestBody = new ReleasesRequestPaginated(page: 1, size: 10, artists: [])
     def request = post(RELEASES)
         .content(objectMapper.writeValueAsString(requestBody))
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + USER_JWT.getTokenValue())
+        .contentType(APPLICATION_JSON)
+        .header("Authorization", "Bearer $USER_JWT.tokenValue")
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -73,12 +68,13 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   def "Admin can access releases endpoint"() {
     given:
-    jwtDecoder.decode(*_) >> ADMIN_JWT
+    def token = createTokenWithScope("releases-read")
+    jwtDecoder.decode(*_) >> token
     def requestBody = new ReleasesRequestPaginated(page: 1, size: 10, artists: [])
     def request = post(RELEASES)
         .content(objectMapper.writeValueAsString(requestBody))
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + ADMIN_JWT.getTokenValue())
+        .contentType(APPLICATION_JSON)
+        .header("Authorization", "Bearer $token.tokenValue")
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -89,12 +85,13 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   def "Admin can access unpaginated releases endpoint"() {
     given:
-    jwtDecoder.decode(*_) >> ADMIN_JWT
+    def token = createTokenWithScope("releases-read-all")
+    jwtDecoder.decode(*_) >> token
     def requestBody = new ReleasesRequest(artists: [])
     def request = post(RELEASES_UNPAGINATED)
         .content(objectMapper.writeValueAsString(requestBody))
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + ADMIN_JWT.getTokenValue())
+        .contentType(APPLICATION_JSON)
+        .header("Authorization", "Bearer $token.tokenValue")
     releaseService.findAllUpcomingReleases(*_) >> []
 
     when:
@@ -110,8 +107,8 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     def requestBody = new ReleasesRequest(artists: [])
     def request = post(RELEASES_UNPAGINATED)
         .content(objectMapper.writeValueAsString(requestBody))
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + USER_JWT.getTokenValue())
+        .contentType(APPLICATION_JSON)
+        .header("Authorization", "Bearer $USER_JWT.tokenValue")
     releaseService.findAllUpcomingReleases(*_) >> []
 
     when:
@@ -127,8 +124,8 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
     def requestBody = new ReleaseUpdateRequest(state: FAULTY)
     def request = put(UPDATE_RELEASE, 1)
         .content(objectMapper.writeValueAsString(requestBody))
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + USER_JWT.getTokenValue())
+        .contentType(APPLICATION_JSON)
+        .header("Authorization", "Bearer $USER_JWT.tokenValue")
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -139,17 +136,25 @@ class ReleasesRestControllerIT extends Specification implements WithIntegrationT
 
   def "Admin can access release update endpoint"() {
     given:
-    jwtDecoder.decode(*_) >> ADMIN_JWT
+    def token = createTokenWithScope("releases-write")
+    jwtDecoder.decode(*_) >> token
     def requestBody = new ReleaseUpdateRequest(state: FAULTY)
     def request = put(UPDATE_RELEASE, 1)
         .content(objectMapper.writeValueAsString(requestBody))
-        .contentType(MediaType.APPLICATION_JSON)
-        .header("Authorization", "Bearer " + ADMIN_JWT.getTokenValue())
+        .contentType(APPLICATION_JSON)
+        .header("Authorization", "Bearer $token.tokenValue")
 
     when:
     def result = mockMvc.perform(request).andReturn()
 
     then:
     result.response.status == OK.value()
+  }
+
+  private Jwt createTokenWithScope(String scope) {
+    Jwt.withTokenValue("token")
+        .header("alg", "none")
+        .claim("scope", scope)
+        .build()
   }
 }
