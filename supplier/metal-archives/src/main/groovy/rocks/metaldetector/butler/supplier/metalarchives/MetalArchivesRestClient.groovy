@@ -27,12 +27,12 @@ class MetalArchivesRestClient {
     def dataAvailable = true
     def startOfRange = 0
     def attempt = 0
+    def today = LocalDate.now().toString()
 
     // The REST endpoint of metal archives responds a maximum of 100 records per request
     while (dataAvailable) {
       // (1) request
       ResponseEntity<MetalArchivesReleasesResponse> responseEntity
-      def today = LocalDate.now().toString()
       try {
         responseEntity = restOperations.getForEntity(UPCOMING_RELEASES_URL, MetalArchivesReleasesResponse, startOfRange, today)
       }
