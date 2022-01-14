@@ -6,11 +6,13 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestOperations
 
+import java.time.LocalDate
+
 @Service
 @Slf4j
 class MetalArchivesRestClient {
 
-  static final String UPCOMING_RELEASES_URL = "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart={startOfRange}"
+  static final String UPCOMING_RELEASES_URL = "https://www.metal-archives.com/release/ajax-upcoming/json/1?sEcho=1&iDisplayStart={startOfRange}&fromDate={fromDate}"
   static final int MAX_ATTEMPTS = 5
 
   @Autowired
@@ -30,8 +32,9 @@ class MetalArchivesRestClient {
     while (dataAvailable) {
       // (1) request
       ResponseEntity<MetalArchivesReleasesResponse> responseEntity
+      def today = LocalDate.now().toString()
       try {
-        responseEntity = restOperations.getForEntity(UPCOMING_RELEASES_URL, MetalArchivesReleasesResponse, startOfRange)
+        responseEntity = restOperations.getForEntity(UPCOMING_RELEASES_URL, MetalArchivesReleasesResponse, startOfRange, today)
       }
       catch (Exception e) {
         if (++attempt < MAX_ATTEMPTS) {
