@@ -35,7 +35,7 @@ class ReleasesRestController {
   @PreAuthorize("hasAuthority('SCOPE_releases-read')")
   ResponseEntity<ReleasesResponse> getPaginatedReleases(@Valid @RequestBody ReleasesRequestPaginated request,
                                                         @SortDefault(sort = ["releaseDate", "artist", "albumTitle"], direction = ASC) Sort sorting) {
-    def releasesResponse
+    def releasesResponse = null
     def query = request.query != null ? request.query.trim() : ""
     def artists = request.artists ? request.artists.collect { it?.toLowerCase() } - null : []
 
@@ -48,9 +48,6 @@ class ReleasesRestController {
     }
     else if (request.dateFrom != null) {
       releasesResponse = releaseService.findAllReleasesSince(artists, request.dateFrom, query, request.page, request.size, sorting)
-    }
-    else {
-      throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' or only for 'dateFrom' with format 'YYYY-MM-DD'.")
     }
 
     return ResponseEntity.ok(releasesResponse)
@@ -67,7 +64,7 @@ class ReleasesRestController {
   @PreAuthorize("hasAuthority('SCOPE_releases-read-all')")
   ResponseEntity<ReleasesResponse> getAllReleases(@Valid @RequestBody ReleasesRequest request,
                                                   @SortDefault(sort = ["releaseDate", "artist", "albumTitle"], direction = ASC) Sort sorting) {
-    def releasesResponse
+    def releasesResponse = null
     def artists = request.artists ? request.artists.collect { it?.toLowerCase() } - null : []
 
     if (request.dateFrom == null && request.dateTo == null) {
@@ -78,9 +75,6 @@ class ReleasesRestController {
     }
     else if (request.dateFrom != null) {
       releasesResponse = releaseService.findAllReleasesSince(artists, request.dateFrom, sorting)
-    }
-    else {
-      throw new IllegalArgumentException("Please specify a valid date for 'dateFrom' and 'dateTo' or only for 'dateFrom' with format 'YYYY-MM-DD'.")
     }
 
     return ResponseEntity.ok(releasesResponse)

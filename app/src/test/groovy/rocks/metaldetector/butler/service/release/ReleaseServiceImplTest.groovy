@@ -3,6 +3,7 @@ package rocks.metaldetector.butler.service.release
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
+import rocks.metaldetector.butler.config.web.ResourceNotFoundException
 import rocks.metaldetector.butler.persistence.domain.TimeRange
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseRepository
 import rocks.metaldetector.butler.web.api.ReleasesResponse
@@ -404,7 +405,7 @@ class ReleaseServiceImplTest extends Specification {
     underTest.updateReleaseState(0L, FAULTY)
 
     then:
-    thrown(IllegalArgumentException)
+    thrown(ResourceNotFoundException)
   }
 
   def "updateReleaseState: should call release repository to update release if present"() {

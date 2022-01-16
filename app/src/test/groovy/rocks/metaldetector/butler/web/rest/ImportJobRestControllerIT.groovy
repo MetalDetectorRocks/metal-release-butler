@@ -11,7 +11,6 @@ import rocks.metaldetector.butler.service.importjob.ImportJobService
 import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import spock.lang.Specification
 
-import static org.mockito.Mockito.reset
 import static org.springframework.http.HttpStatus.FORBIDDEN
 import static org.springframework.http.HttpStatus.OK
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -23,15 +22,8 @@ import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.IMPOR
 @AutoConfigureMockMvc
 class ImportJobRestControllerIT extends Specification implements WithIntegrationTestConfig {
 
-  private static Jwt USER_JWT = Jwt.withTokenValue("token")
-      .header("alg", "none")
-      .claim("scope", "releases-read")
-      .build()
-
-  private static Jwt ADMIN_JWT = Jwt.withTokenValue("token")
-      .header("alg", "none")
-      .claim("scope", "import")
-      .build()
+  private final Jwt OTHER_SCOPE_JWT = createTokenWithScope("other-scope")
+  private final Jwt IMPORT_JWT = createTokenWithScope("import")
 
   @SpringBean
   ImportJobService importJobService = Mock(ImportJobService)
@@ -42,14 +34,10 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
   @Autowired
   MockMvc mockMvc
 
-  void tearDown() {
-    reset(importJobService)
-  }
-
-  def "Admin can GET on import endpoint"() {
+  def "Scope 'import' can GET on import endpoint"() {
     given:
-    jwtDecoder.decode(*_) >> ADMIN_JWT
-    def request = get(IMPORT_JOB).header("Authorization", "Bearer $ADMIN_JWT.tokenValue")
+    jwtDecoder.decode(*_) >> IMPORT_JWT
+    def request = get(IMPORT_JOB).header("Authorization", "Bearer $IMPORT_JWT.tokenValue")
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -58,10 +46,10 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
     result.response.status == OK.value()
   }
 
-  def "User cannot GET on import endpoint"() {
+  def "Other scopes cannot GET on import endpoint"() {
     given:
-    jwtDecoder.decode(*_) >> USER_JWT
-    def request = get(IMPORT_JOB).header("Authorization", "Bearer $USER_JWT.tokenValue")
+    jwtDecoder.decode(*_) >> OTHER_SCOPE_JWT
+    def request = get(IMPORT_JOB).header("Authorization", "Bearer $OTHER_SCOPE_JWT.tokenValue")
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -70,10 +58,10 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
     result.response.status == FORBIDDEN.value()
   }
 
-  def "Admin can POST on import endpoint"() {
+  def "Scope 'import' can POST on import endpoint"() {
     given:
-    jwtDecoder.decode(*_) >> ADMIN_JWT
-    def request = post(IMPORT_JOB).header("Authorization", "Bearer $ADMIN_JWT.tokenValue")
+    jwtDecoder.decode(*_) >> IMPORT_JWT
+    def request = post(IMPORT_JOB).header("Authorization", "Bearer $IMPORT_JWT.tokenValue")
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -82,10 +70,10 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
     result.response.status == OK.value()
   }
 
-  def "User cannot POST on import endpoint"() {
+  def "Other scopes cannot POST on import endpoint"() {
     given:
-    jwtDecoder.decode(*_) >> USER_JWT
-    def request = post(IMPORT_JOB).header("Authorization", "Bearer $USER_JWT.tokenValue")
+    jwtDecoder.decode(*_) >> OTHER_SCOPE_JWT
+    def request = post(IMPORT_JOB).header("Authorization", "Bearer $OTHER_SCOPE_JWT.tokenValue")
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -94,10 +82,10 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
     result.response.status == FORBIDDEN.value()
   }
 
-  def "Admin can POST on cover reload endpoint"() {
+  def "Scope 'import' can POST on cover reload endpoint"() {
     given:
-    jwtDecoder.decode(*_) >> ADMIN_JWT
-    def request = post(COVER_JOB).header("Authorization", "Bearer " + ADMIN_JWT.tokenValue)
+    jwtDecoder.decode(*_) >> IMPORT_JWT
+    def request = post(COVER_JOB).header("Authorization", "Bearer " + IMPORT_JWT.tokenValue)
 
     when:
     def result = mockMvc.perform(request).andReturn()
@@ -106,10 +94,10 @@ class ImportJobRestControllerIT extends Specification implements WithIntegration
     result.response.status == OK.value()
   }
 
-  def "User cannot POST on cover reload endpoint"() {
+  def "Other scopes cannot POST on cover reload endpoint"() {
     given:
-    jwtDecoder.decode(*_) >> USER_JWT
-    def request = post(COVER_JOB).header("Authorization", "Bearer " + USER_JWT.tokenValue)
+    jwtDecoder.decode(*_) >> OTHER_SCOPE_JWT
+    def request = post(COVER_JOB).header("Authorization", "Bearer " + OTHER_SCOPE_JWT.tokenValue)
 
     when:
     def result = mockMvc.perform(request).andReturn()

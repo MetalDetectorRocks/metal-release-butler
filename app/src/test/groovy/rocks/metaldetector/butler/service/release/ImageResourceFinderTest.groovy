@@ -1,8 +1,14 @@
 package rocks.metaldetector.butler.service.release
 
+import rocks.metaldetector.butler.config.web.ResourceNotFoundException
 import spock.lang.Specification
 
 import java.nio.file.Paths
+
+import static rocks.metaldetector.butler.service.release.ImageResourceFinder.ERROR_MESSAGE_DOTS
+import static rocks.metaldetector.butler.service.release.ImageResourceFinder.ERROR_MESSAGE_EXTENSION
+import static rocks.metaldetector.butler.service.release.ImageResourceFinder.ERROR_MESSAGE_NOT_FOUND
+import static rocks.metaldetector.butler.service.release.ImageResourceFinder.VALID_FILE_EXTENSIONS
 
 class ImageResourceFinderTest extends Specification {
 
@@ -16,18 +22,19 @@ class ImageResourceFinderTest extends Specification {
     def result = underTest.findImage(location)
 
     then:
-    result.isPresent()
+    result
   }
 
-  def "should return empty optional if no image resource was found"() {
+  def "should return throw ResourceNotFoundException if no image resource was found"() {
     given:
     def location = Paths.get("not-existing-image.jpg")
 
     when:
-    def result = underTest.findImage(location)
+    underTest.findImage(location)
 
     then:
-    result.isEmpty()
+    def thrown = thrown(ResourceNotFoundException)
+    thrown.message == ERROR_MESSAGE_NOT_FOUND
   }
 
   def "should throw exception if no image location is given"() {
@@ -38,7 +45,8 @@ class ImageResourceFinderTest extends Specification {
     underTest.findImage(location)
 
     then:
-    thrown(IllegalArgumentException)
+    def thrown = thrown(ResourceNotFoundException)
+    thrown.message == "$ERROR_MESSAGE_EXTENSION$VALID_FILE_EXTENSIONS"
   }
 
   def "should throw exception if image location contains two dots"() {
@@ -49,6 +57,7 @@ class ImageResourceFinderTest extends Specification {
     underTest.findImage(location)
 
     then:
-    thrown(IllegalArgumentException)
+    def thrown = thrown(ResourceNotFoundException)
+    thrown.message == ERROR_MESSAGE_DOTS
   }
 }

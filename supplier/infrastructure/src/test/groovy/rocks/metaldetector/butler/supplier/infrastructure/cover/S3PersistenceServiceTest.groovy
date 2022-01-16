@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.services.s3.model.ObjectMetadata
 import spock.lang.Specification
-import spock.lang.Unroll
 
 import static rocks.metaldetector.butler.supplier.infrastructure.cover.S3PersistenceService.PATH
 
@@ -78,8 +77,7 @@ class S3PersistenceServiceTest extends Specification {
     })
   }
 
-  @Unroll
-  "if upload fails with 'FileNotFoundException' null is returned"() {
+  def "if upload fails with 'FileNotFoundException' null is returned"() {
     given:
     underTest.amazonS3Client.putObject(*_) >> { throw new FileNotFoundException() }
 

@@ -16,7 +16,6 @@ class LocalCoverPersistenceServiceTest extends Specification {
     def url = GroovyMock(URL) {
       getPath() >> "foo.jpg"
     }
-
     underTest.fileTransferService.transferFileFromUrl(*_) >> 1
 
     when:
@@ -27,5 +26,20 @@ class LocalCoverPersistenceServiceTest extends Specification {
 
     and:
     result.endsWith("jpg")
+  }
+
+  def "null is returned if empty file is created"() {
+    given:
+    def targetFolder = "path/to/target"
+    def url = GroovyMock(URL) {
+      getPath() >> "foo.jpg"
+    }
+    underTest.fileTransferService.transferFileFromUrl(*_) >> 0
+
+    when:
+    def result = underTest.persistCover(url, targetFolder)
+
+    then:
+    !result
   }
 }

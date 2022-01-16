@@ -8,7 +8,6 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import rocks.metaldetector.butler.persistence.domain.TimeRange
 import rocks.metaldetector.butler.service.release.ReleaseService
-import rocks.metaldetector.butler.testutil.WithExceptionResolver
 import rocks.metaldetector.butler.web.api.Pagination
 import rocks.metaldetector.butler.web.api.ReleaseUpdateRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequest
@@ -21,7 +20,6 @@ import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 import static org.springframework.data.domain.Sort.Direction.ASC
-import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.OK
 import static org.springframework.http.MediaType.APPLICATION_JSON
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -31,13 +29,13 @@ import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEA
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEASES_UNPAGINATED
 import static rocks.metaldetector.butler.testutil.DtoFactory.ReleaseDtoFactory
 
-class ReleasesRestControllerTest extends Specification implements WithExceptionResolver {
+class ReleasesRestControllerTest extends Specification {
 
-  static final List<String> ARTISTS = ["a1"]
-  static final Sort DEFAULT_SORTING = Sort.by(ASC, "releaseDate", "artist", "albumTitle")
+  private static final List<String> ARTISTS = ["a1"]
+  private static final Sort DEFAULT_SORTING = Sort.by(ASC, "releaseDate", "artist", "albumTitle")
 
   ReleasesRestController underTest = new ReleasesRestController(releaseService: Mock(ReleaseService))
-  MockMvc mockMvc = MockMvcBuilders.standaloneSetup(underTest, exceptionResolver())
+  MockMvc mockMvc = MockMvcBuilders.standaloneSetup(underTest)
       .setCustomArgumentResolvers(new SortHandlerMethodArgumentResolver()).build()
   ObjectMapper objectMapper = new ObjectMapper(dateFormat: new SimpleDateFormat("yyyy-MM-dd"))
 
@@ -318,26 +316,6 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
              new ReleasesRequest(artists: ARTISTS, dateFrom: null, dateTo: LocalDate.of(2020, 2, 1))]
   }
 
-  @Unroll
-  "getAllReleases: bad request should return status bad request"() {
-    given:
-    def request = post(RELEASES_UNPAGINATED)
-        .contentType(APPLICATION_JSON)
-        .accept(APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(body))
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == BAD_REQUEST.value()
-
-    where:
-    body << ["",
-             null,
-             new ReleasesRequest(artists: ARTISTS, dateFrom: null, dateTo: LocalDate.of(2020, 2, 1))]
-  }
-
   def "getPaginatedReleases: valid request without time range should call releases service"() {
     given:
     def releasesRequest = new ReleasesRequestPaginated(artists: ARTISTS, page: 1, size: 10, query: "query")
@@ -590,40 +568,6 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
     releasesResponse == expectedReleasesResponse
   }
 
-  @Unroll
-  "getPaginatedReleases: bad request should return status bad request"() {
-    given:
-    def request = post(RELEASES)
-        .contentType(APPLICATION_JSON)
-        .accept(APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(body))
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == BAD_REQUEST.value()
-
-    and:
-    0 * underTest.releaseService.findAllUpcomingReleases(*_)
-    0 * underTest.releaseService.findAllReleasesForTimeRange(*_)
-
-    where:
-    body << ["",
-             null,
-             new ReleasesRequestPaginated(artists: ARTISTS, dateFrom: null, dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 10),
-             new ReleasesRequestPaginated(artists: ARTISTS, dateFrom: LocalDate.of(2020, 1, 1),
-                                          dateTo: LocalDate.of(2020, 2, 1), page: 0, size: 10),
-             new ReleasesRequestPaginated(artists: ARTISTS, dateFrom: LocalDate.of(2020, 1, 1),
-                                          dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 0),
-             new ReleasesRequestPaginated(artists: ARTISTS, dateFrom: LocalDate.of(2020, 1, 1),
-                                          dateTo: LocalDate.of(2020, 2, 1), page: 1, size: 51),
-             new ReleasesRequestPaginated(dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2020, 2, 1),
-                                          page: 1, size: 51),
-             new ReleasesRequestPaginated(artists: ARTISTS, dateFrom: LocalDate.of(2020, 1, 1), dateTo: LocalDate.of(2019, 1, 1),
-                                          page: 1, size: 10)]
-  }
-
   def "updateReleaseState: should call releasesService"() {
     given:
     def releaseId = 1L
@@ -651,33 +595,6 @@ class ReleasesRestControllerTest extends Specification implements WithExceptionR
 
     then:
     result.response.status == OK.value()
-  }
-
-  def "updateReleaseState: should return BAD REQUEST for wrong body"() {
-    given:
-    def request = put("${RELEASES}/1")
-        .contentType(APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(new ReleaseUpdateRequest(null)))
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == BAD_REQUEST.value()
-  }
-
-  def "updateReleaseState: should return BAD REQUEST for wrong release id"() {
-    given:
-    def request = put("${RELEASES}/0")
-        .contentType(APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(new ReleaseUpdateRequest(FAULTY)))
-    underTest.releaseService.updateReleaseState(*_) >> { throw new IllegalArgumentException() }
-
-    when:
-    def result = mockMvc.perform(request).andReturn()
-
-    then:
-    result.response.status == BAD_REQUEST.value()
   }
 
   private static ReleasesResponse createReleasesResponse() {

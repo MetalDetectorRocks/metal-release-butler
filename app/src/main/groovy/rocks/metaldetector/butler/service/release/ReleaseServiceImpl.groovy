@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import rocks.metaldetector.butler.config.web.ResourceNotFoundException
 import rocks.metaldetector.butler.persistence.domain.TimeRange
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseEntityState
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseRepository
@@ -97,11 +98,8 @@ class ReleaseServiceImpl implements ReleaseService {
   @Override
   @Transactional
   void updateReleaseState(long releaseId, ReleaseEntityState state) {
-    def releaseEntityOptional = releaseRepository.findById(releaseId)
-    if (releaseEntityOptional.empty) {
-      throw new IllegalArgumentException("${releaseId} not present!")
-    }
-    def releaseEntity = releaseEntityOptional.get()
+    def releaseEntity = releaseRepository.findById(releaseId)
+        .orElseThrow(() -> new ResourceNotFoundException("${releaseId} not present!"))
     releaseEntity.state = state
     releaseRepository.save(releaseEntity)
   }
