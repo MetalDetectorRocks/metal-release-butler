@@ -44,7 +44,7 @@ class ImageResourceFinderTest extends Specification {
 
     then:
     def thrown = thrown(ResourceNotFoundException)
-    thrown.message == ERROR_MESSAGE_EXTENSION$VALID_FILE_EXTENSIONS
+    thrown.message == "$ERROR_MESSAGE_EXTENSION$VALID_FILE_EXTENSIONS"
   }
 
   def "should throw exception if image location contains two dots"() {
