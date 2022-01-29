@@ -6,7 +6,9 @@ import spock.lang.Specification
 import java.nio.file.Paths
 
 import static rocks.metaldetector.butler.service.release.ImageResourceFinder.ERROR_MESSAGE_DOTS
+import static rocks.metaldetector.butler.service.release.ImageResourceFinder.ERROR_MESSAGE_EXTENSION
 import static rocks.metaldetector.butler.service.release.ImageResourceFinder.ERROR_MESSAGE_NOT_FOUND
+import static rocks.metaldetector.butler.service.release.ImageResourceFinder.VALID_FILE_EXTENSIONS
 
 class ImageResourceFinderTest extends Specification {
 
