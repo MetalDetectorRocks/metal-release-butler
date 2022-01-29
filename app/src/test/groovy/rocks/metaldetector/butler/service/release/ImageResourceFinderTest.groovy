@@ -25,7 +25,7 @@ class ImageResourceFinderTest extends Specification {
     result
   }
 
-  def "should return throw ResourceNotFoundException if no image resource was found"() {
+  def "should throw ResourceNotFoundException if no image resource was found"() {
     given:
     def location = Paths.get("not-existing-image.jpg")
 
