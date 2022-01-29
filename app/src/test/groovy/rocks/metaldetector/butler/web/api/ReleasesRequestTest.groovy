@@ -14,7 +14,7 @@ class ReleasesRequestTest extends Specification {
                                       dateTo: dateTo)
 
     when:
-    var result = request.isValidIfSetFromBeforeTo()
+    var result = request.isDateFromBeforeDateTo()
 
     then:
     result == expectedResult
@@ -34,7 +34,7 @@ class ReleasesRequestTest extends Specification {
                                       dateTo: dateTo)
 
     when:
-    var result = request.isValidNotOnlyDateToSet()
+    var result = request.isValidRange()
 
     then:
     result == expectedResult

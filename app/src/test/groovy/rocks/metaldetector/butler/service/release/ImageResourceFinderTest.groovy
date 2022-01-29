@@ -6,9 +6,7 @@ import spock.lang.Specification
 import java.nio.file.Paths
 
 import static rocks.metaldetector.butler.service.release.ImageResourceFinder.ERROR_MESSAGE_DOTS
-import static rocks.metaldetector.butler.service.release.ImageResourceFinder.ERROR_MESSAGE_EXTENSION
 import static rocks.metaldetector.butler.service.release.ImageResourceFinder.ERROR_MESSAGE_NOT_FOUND
-import static rocks.metaldetector.butler.service.release.ImageResourceFinder.VALID_FILE_EXTENSIONS
 
 class ImageResourceFinderTest extends Specification {
 
@@ -46,7 +44,7 @@ class ImageResourceFinderTest extends Specification {
 
     then:
     def thrown = thrown(ResourceNotFoundException)
-    thrown.message == "$ERROR_MESSAGE_EXTENSION$VALID_FILE_EXTENSIONS"
+    thrown.message == ERROR_MESSAGE_EXTENSION$VALID_FILE_EXTENSIONS
   }
 
   def "should throw exception if image location contains two dots"() {

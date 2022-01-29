@@ -22,7 +22,7 @@ class ReleasesRequest {
   }
 
   @AssertTrue(message = "If both dates are set, dateFrom has to be equal to or before dateTo!")
-  boolean isValidIfSetFromBeforeTo() {
+  boolean isDateFromBeforeDateTo() {
     if (dateFrom != null && dateTo != null) {
       return dateFrom == dateTo || dateFrom.isBefore(dateTo)
     }
@@ -30,7 +30,7 @@ class ReleasesRequest {
   }
 
   @AssertTrue(message = "dateTo cannot be set without dateFrom!")
-  boolean isValidNotOnlyDateToSet() {
+  boolean isValidRange() {
     return dateTo == null || dateFrom != null
   }
 }
