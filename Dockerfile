@@ -1,4 +1,4 @@
-FROM openjdk:17-slim-buster
+FROM eclipse-temurin:17-jre
 
 ENV TZ=Europe/Berlin
 ENV SERVER_PORT 8080
