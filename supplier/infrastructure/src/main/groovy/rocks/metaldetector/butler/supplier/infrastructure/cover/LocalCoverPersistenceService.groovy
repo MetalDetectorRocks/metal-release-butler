@@ -31,7 +31,7 @@ class LocalCoverPersistenceService implements CoverPersistenceService {
       return "$RELEASE_IMAGES?id=$localFileName"
     }
     catch (Exception e) {
-      log.error("Could not persist cover from '${coverUrl}'", e)
+      log.error("Could not persist cover from '${coverUrl.toString()}'", e)
       return null
     }
   }
@@ -52,7 +52,7 @@ class LocalCoverPersistenceService implements CoverPersistenceService {
     log.info("Transfer '${coverUrl.toExternalForm()}' to '${localFilePath}'")
     long bytesTransferred = fileTransferService.transferFileFromUrl(coverUrl, localFilePath)
     if (bytesTransferred <= 0) {
-      throw new RuntimeException("no bytes are transferred from $coverUrl")
+      throw new RuntimeException("no bytes are transferred from '${coverUrl.toString()}'")
     }
   }
 }
