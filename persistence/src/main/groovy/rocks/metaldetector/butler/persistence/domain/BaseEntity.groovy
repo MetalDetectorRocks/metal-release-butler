@@ -24,7 +24,6 @@ abstract class BaseEntity {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  @Column(columnDefinition = "serial")
   Long id
 
   @CreatedDate
