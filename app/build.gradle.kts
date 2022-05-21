@@ -38,9 +38,9 @@ dependencies {
   implementation("org.flywaydb:flyway-core:${libs.versions.flyway.get()}")
   implementation("io.jsonwebtoken:jjwt:${libs.versions.jsonwebtoken.get()}")
 
-  implementation("org.codehaus.groovy:groovy:${libs.versions.groovy.get()}")
-  implementation("org.codehaus.groovy:groovy-xml:${libs.versions.groovy.get()}")
-  implementation("org.codehaus.groovy:groovy-datetime:${libs.versions.groovy.get()}")
+  implementation("org.apache.groovy:groovy:${libs.versions.groovy.get()}")
+  implementation("org.apache.groovy:groovy-xml:${libs.versions.groovy.get()}")
+  implementation("org.apache.groovy:groovy-datetime:${libs.versions.groovy.get()}")
 
   implementation("io.springfox:springfox-swagger2:${libs.versions.swagger.get()}")
   implementation("io.springfox:springfox-swagger-ui:${libs.versions.swagger.get()}")
@@ -56,7 +56,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}") {
     exclude(group = "junit", module = "junit")
   }
-  testImplementation("org.codehaus.groovy:groovy-test:${libs.versions.groovy.get()}")
+  testImplementation("org.apache.groovy:groovy-test:${libs.versions.groovy.get()}")
   testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
   testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")
   testImplementation("org.springframework.security:spring-security-test:${libs.versions.springSecurity.get()}")
