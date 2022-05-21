@@ -12,7 +12,7 @@ val dependencyVersions = listOf(
 )
 
 val dependencyGroupVersions = mapOf(
-    "org.codehaus.groovy" to libs.versions.groovy.get(),
+    "org.apache.groovy" to libs.versions.groovy.get(),
     "org.springframework" to libs.versions.spring.get(),
     "org.springframework.boot" to libs.versions.springBoot.get(),
     "com.fasterxml.jackson.core" to libs.versions.jackson.get(),

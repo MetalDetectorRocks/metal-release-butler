@@ -4,8 +4,8 @@ dependencies {
 
   implementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
 
-  implementation("org.codehaus.groovy:groovy:${libs.versions.groovy.get()}")
-  implementation("org.codehaus.groovy:groovy-xml:${libs.versions.groovy.get()}")
+  implementation("org.apache.groovy:groovy:${libs.versions.groovy.get()}")
+  implementation("org.apache.groovy:groovy-xml:${libs.versions.groovy.get()}")
 
   implementation("com.amazonaws:aws-java-sdk-s3:${libs.versions.awsS3Sdk.get()}")
 
@@ -14,7 +14,7 @@ dependencies {
   testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}") {
     exclude(group = "junit", module = "junit")
   }
-  testImplementation("org.codehaus.groovy:groovy-test:${libs.versions.groovy.get()}")
+  testImplementation("org.apache.groovy:groovy-test:${libs.versions.groovy.get()}")
   testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
   testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")
 }
