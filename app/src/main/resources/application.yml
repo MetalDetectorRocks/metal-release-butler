@@ -6,6 +6,17 @@ spring:
   groovy:
     template:
       check-template-location: false
+  lifecycle:
+    timeout-per-shutdown-phase: 60s
+  task:
+    scheduling:
+      shutdown:
+        await-termination: true
+        await-termination-period: PT1M
+    execution:
+      shutdown:
+        await-termination: true
+        await-termination-period: PT1M
   datasource:
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}

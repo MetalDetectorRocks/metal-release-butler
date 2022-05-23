@@ -15,9 +15,7 @@ import org.apache.http.protocol.HTTP
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.annotation.Scheduled
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 
 import java.time.Duration
 
@@ -80,12 +78,6 @@ class ApacheHttpClientConfig {
         }
       }
     }
-  }
-
-  @Bean
-  TaskScheduler taskScheduler() {
-    return new ThreadPoolTaskScheduler(threadNamePrefix: "idleMonitor",
-                                       poolSize: 1)
   }
 
   @Bean
