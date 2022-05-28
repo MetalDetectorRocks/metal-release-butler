@@ -25,7 +25,7 @@ import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEA
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class RestExceptionHandlerIT extends Specification implements WithIntegrationTestConfig {
+class RestExceptionHandlerIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
   private final Jwt READ_JWT = createTokenWithScope("releases-read")
 
@@ -41,9 +41,12 @@ class RestExceptionHandlerIT extends Specification implements WithIntegrationTes
   @SpringBean
   ReleaseService releaseService = Mock(ReleaseService)
 
+  def setup() {
+    jwtDecoder.decode(*_) >> READ_JWT
+  }
+
   def "invalid request method returns 405"() {
     given:
-    jwtDecoder.decode(*_) >> READ_JWT
     def request = get(RELEASES)
         .contentType(APPLICATION_JSON)
         .header("Authorization", "Bearer $READ_JWT.tokenValue")
@@ -57,7 +60,6 @@ class RestExceptionHandlerIT extends Specification implements WithIntegrationTes
 
   def "invalid media type returns 415"() {
     given:
-    jwtDecoder.decode(*_) >> READ_JWT
     def requestBody = new ReleasesRequestPaginated(page: 1, size: 10, artists: [])
     def request = post(RELEASES)
         .content(objectMapper.writeValueAsString(requestBody))
@@ -73,7 +75,6 @@ class RestExceptionHandlerIT extends Specification implements WithIntegrationTes
 
   def "invalid request returns 422"() {
     given:
-    jwtDecoder.decode(*_) >> READ_JWT
     def requestBody = new ReleasesRequestPaginated(page: -1, size: 10, artists: [])
     def request = post(RELEASES)
         .content(objectMapper.writeValueAsString(requestBody))
@@ -89,7 +90,6 @@ class RestExceptionHandlerIT extends Specification implements WithIntegrationTes
 
   def "other errors return 500"() {
     given:
-    jwtDecoder.decode(*_) >> READ_JWT
     def requestBody = new ReleasesRequestPaginated(page: 1, size: 10, artists: [])
     def request = post(RELEASES)
         .content(objectMapper.writeValueAsString(requestBody))

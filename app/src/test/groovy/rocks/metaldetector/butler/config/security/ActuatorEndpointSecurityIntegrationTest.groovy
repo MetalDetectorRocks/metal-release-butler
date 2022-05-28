@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ActuatorEndpointSecurityIT extends Specification implements WithIntegrationTestConfig {
+class ActuatorEndpointSecurityIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
   @Autowired
   MockMvc mockMvc

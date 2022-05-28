@@ -16,7 +16,7 @@ import static rocks.metaldetector.butler.persistence.DtoFactory.ReleaseEntityFac
 
 @DataJpaTest
 @ContextConfiguration(classes = [PersistenceConfig])
-class ReleaseRepositoryIT extends Specification implements WithIntegrationTestConfig {
+class ReleaseRepositoryIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
   @Autowired
   ReleaseRepository underTest

@@ -32,7 +32,7 @@ import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.UPDAT
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ReleasesRestControllerIT extends Specification implements WithIntegrationTestConfig {
+class ReleasesRestControllerIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
   private final Jwt RELEASES_READ_JWT = createTokenWithScope("releases-read")
   private final Jwt RELEASES_READ_ALL_JWT = createTokenWithScope("releases-read-all")

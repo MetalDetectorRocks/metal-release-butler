@@ -6,10 +6,10 @@ import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import spock.lang.Specification
 
 @SpringBootTest
-@ActiveProfiles("preview")
-class MetalReleaseButlerApplicationPreviewIT extends Specification implements WithIntegrationTestConfig {
+@ActiveProfiles("default")
+class MetalReleaseButlerApplicationDefaultIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
-  def "Should load the application context with preview profile"() {
+  def "Should load the application context with default profile" () {
     expect:
     true
   }

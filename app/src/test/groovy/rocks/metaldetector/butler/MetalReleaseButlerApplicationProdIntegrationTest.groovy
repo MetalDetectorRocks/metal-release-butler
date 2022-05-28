@@ -6,10 +6,10 @@ import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
 import spock.lang.Specification
 
 @SpringBootTest
-@ActiveProfiles("default")
-class MetalReleaseButlerApplicationDefaultIT extends Specification implements WithIntegrationTestConfig {
+@ActiveProfiles("prod")
+class MetalReleaseButlerApplicationProdIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
-  def "Should load the application context with default profile" () {
+  def "Should load the application context with prod profile"() {
     expect:
     true
   }
