@@ -8,7 +8,8 @@ val dependencyVersions = listOf(
     "org.assertj:assertj-core:3.23.1",
     "org.slf4j:slf4j-api:1.7.36",
     "org.apiguardian:apiguardian-api:1.1.2",
-    "org.jboss.logging:jboss-logging:3.5.0.Final"
+    "org.jboss.logging:jboss-logging:3.5.0.Final",
+    "org.junit:junit-bom:${libs.versions.junit.get()}"
 )
 
 val dependencyGroupVersions = mapOf(
@@ -19,8 +20,7 @@ val dependencyGroupVersions = mapOf(
     "com.fasterxml.jackson.dataformat" to libs.versions.jackson.get(),
     "com.fasterxml.jackson.datatype" to libs.versions.jackson.get(),
     "com.fasterxml.jackson.module" to libs.versions.jackson.get(),
-    "org.junit.jupiter" to libs.versions.junit.get(),
-    "org.junit" to libs.versions.junit.get()
+    "org.junit.jupiter" to libs.versions.junit.get()
 )
 
 plugins {

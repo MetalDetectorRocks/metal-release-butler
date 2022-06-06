@@ -27,7 +27,7 @@ import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.UPDAT
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ReleasesRestControllerSecurityIT extends Specification implements WithIntegrationTestConfig {
+class ReleasesRestControllerSecurityIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
   private final Jwt OTHER_SCOPE_JWT = createTokenWithScope("other-scope")
 

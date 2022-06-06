@@ -9,9 +9,7 @@ dependencies {
 
   runtimeOnly("org.postgresql:postgresql:${libs.versions.postgresql.get()}")
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}") {
-    exclude(group = "junit", module = "junit")
-  }
+  testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}")
   testImplementation("org.apache.groovy:groovy-test:${libs.versions.groovy.get()}")
   testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
   testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")

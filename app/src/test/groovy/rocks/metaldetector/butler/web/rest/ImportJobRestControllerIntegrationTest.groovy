@@ -20,7 +20,7 @@ import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.IMPOR
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ImportJobRestControllerIT extends Specification implements WithIntegrationTestConfig {
+class ImportJobRestControllerIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
   private final Jwt OTHER_SCOPE_JWT = createTokenWithScope("other-scope")
   private final Jwt IMPORT_JWT = createTokenWithScope("import")

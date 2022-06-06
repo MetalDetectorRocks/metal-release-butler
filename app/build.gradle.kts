@@ -9,10 +9,13 @@ plugins {
 dockerPublish {
   organisation.set("metaldetector")
   imageName.set(rootProject.name)
-  imageTag.set(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss")))
 }
+
 springBoot {
   mainClass.set("rocks.metaldetector.butler.MetalReleaseButlerApplication")
+  buildInfo().apply {
+    version = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss"))
+  }
 }
 
 tasks {
@@ -53,9 +56,7 @@ dependencies {
   developmentOnly("org.springframework.boot:spring-boot-devtools:${libs.versions.springBoot.get()}")
   annotationProcessor("org.springframework.boot:spring-boot-configuration-processor:${libs.versions.springBoot.get()}")
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}") {
-    exclude(group = "junit", module = "junit")
-  }
+  testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}")
   testImplementation("org.apache.groovy:groovy-test:${libs.versions.groovy.get()}")
   testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
   testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")
