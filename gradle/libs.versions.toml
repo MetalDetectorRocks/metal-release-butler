@@ -1,8 +1,8 @@
 [versions]
-awsS3Sdk = "1.12.222"
+awsS3Sdk = "1.12.247"
 commonsIo = "2.11.0"
 flyway = "8.5.13"
-groovy = "4.0.2"
+groovy = "4.0.3"
 httpClient = "4.5.13"
 h2 = "2.1.214"
 jackson = "2.13.3"
