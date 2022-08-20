@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: https://metal-detector-auth-preview.herokuapp.com
+          issuer-uri: http://auth-app:8080
 
 server:
   port: 8080
@@ -16,9 +16,6 @@ server:
   tomcat:
     accesslog:
       enabled: false
-
-concurrency:
-  release-import-pool-size: ${RELEASE_IMPORT_CORE_POOL_SIZE}
 
 aws:
   bucket-name: preview.rocks.metal-detector.s3.images
