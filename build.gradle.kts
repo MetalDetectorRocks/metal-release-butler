@@ -4,7 +4,7 @@ val dependencyVersions = listOf(
     "commons-logging:commons-logging:1.2",
     "commons-codec:commons-codec:1.15",
     "org.ow2.asm:asm:9.3",
-    "org.slf4j:slf4j-api:1.7.36",
+    "org.slf4j:slf4j-api:2.0.0",
     "org.jboss.logging:jboss-logging:3.5.0.Final",
     "org.junit:junit-bom:${libs.versions.junit.get()}"
 )
