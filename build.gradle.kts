@@ -1,3 +1,6 @@
+import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
+import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+
 val javaVersion: JavaVersion = JavaVersion.VERSION_17
 
 val dependencyVersions = listOf(
@@ -11,8 +14,6 @@ val dependencyVersions = listOf(
 
 val dependencyGroupVersions = mapOf(
     "org.apache.groovy" to libs.versions.groovy.get(),
-    "org.springframework" to libs.versions.spring.get(),
-    "org.springframework.boot" to libs.versions.springBoot.get(),
     "com.fasterxml.jackson.core" to libs.versions.jackson.get(),
     "com.fasterxml.jackson.dataformat" to libs.versions.jackson.get(),
     "com.fasterxml.jackson.datatype" to libs.versions.jackson.get(),
@@ -30,6 +31,12 @@ subprojects {
   project.apply(plugin = "groovy")
   project.apply(plugin = "io.spring.dependency-management")
   project.apply(plugin = "jacoco")
+
+  the<DependencyManagementExtension>().apply {
+    imports {
+      mavenBom(BOM_COORDINATES)
+    }
+  }
 
   configurations {
     all {

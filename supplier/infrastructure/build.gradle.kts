@@ -1,6 +1,6 @@
 dependencies {
 
-  implementation("org.springframework.boot:spring-boot-starter-web:${libs.versions.springBoot.get()}")
+  implementation("org.springframework.boot:spring-boot-starter-web")
 
   implementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
 
@@ -11,7 +11,7 @@ dependencies {
 
   implementation(projects.persistence)
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test:${libs.versions.springBoot.get()}")
+  testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.apache.groovy:groovy-test:${libs.versions.groovy.get()}")
   testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
   testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")
