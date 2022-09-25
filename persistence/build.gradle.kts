@@ -13,7 +13,7 @@ dependencies {
   testImplementation("org.apache.groovy:groovy-test:${libs.versions.groovy.get()}")
   testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
   testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")
-  testRuntimeOnly("com.h2database:h2:${libs.versions.h2.get()}")
+  testRuntimeOnly("com.h2database:h2")
 }
 
 description = "persistence"

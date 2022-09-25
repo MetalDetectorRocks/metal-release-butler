@@ -36,9 +36,9 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-actuator")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
-  implementation("org.apache.httpcomponents:httpclient:${libs.versions.httpClient.get()}")
-  implementation("io.micrometer:micrometer-registry-prometheus:${libs.versions.micrometer.get()}")
-  implementation("org.flywaydb:flyway-core:${libs.versions.flyway.get()}")
+  implementation("org.apache.httpcomponents:httpclient")
+  implementation("io.micrometer:micrometer-registry-prometheus")
+  implementation("org.flywaydb:flyway-core")
   implementation("io.jsonwebtoken:jjwt:${libs.versions.jsonwebtoken.get()}")
 
   implementation("org.apache.groovy:groovy:${libs.versions.groovy.get()}")
@@ -61,7 +61,7 @@ dependencies {
   testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
   testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")
   testImplementation("org.springframework.security:spring-security-test")
-  testRuntimeOnly("com.h2database:h2:${libs.versions.h2.get()}")
+  testRuntimeOnly("com.h2database:h2")
 }
 
 description = "app"
