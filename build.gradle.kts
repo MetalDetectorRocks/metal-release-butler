@@ -5,19 +5,11 @@ val javaVersion: JavaVersion = JavaVersion.VERSION_17
 
 val dependencyVersions = listOf(
     "commons-logging:commons-logging:1.2",
-    "commons-codec:commons-codec:1.15",
-    "org.ow2.asm:asm:9.3",
-    "org.slf4j:slf4j-api:2.0.2",
-    "org.jboss.logging:jboss-logging:3.5.0.Final",
     "org.junit:junit-bom:${libs.versions.junit.get()}"
 )
 
 val dependencyGroupVersions = mapOf(
     "org.apache.groovy" to libs.versions.groovy.get(),
-    "com.fasterxml.jackson.core" to libs.versions.jackson.get(),
-    "com.fasterxml.jackson.dataformat" to libs.versions.jackson.get(),
-    "com.fasterxml.jackson.datatype" to libs.versions.jackson.get(),
-    "com.fasterxml.jackson.module" to libs.versions.jackson.get(),
     "org.junit.jupiter" to libs.versions.junit.get()
 )
 
