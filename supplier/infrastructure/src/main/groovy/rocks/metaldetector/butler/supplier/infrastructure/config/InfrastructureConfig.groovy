@@ -15,7 +15,9 @@ class InfrastructureConfig {
   }
 
   @Bean
-  ThreadPoolTaskExecutor threadPool(@Value('${concurrency.release-import-pool-size}') int releaseImportPoolSize) {
-    return new ThreadPoolTaskExecutor(corePoolSize: releaseImportPoolSize)
+  ThreadPoolTaskExecutor threadPoolTaskExecutor(@Value('${concurrency.release-import-pool-size}') int releaseImportPoolSize) {
+    return new ThreadPoolTaskExecutor(corePoolSize: releaseImportPoolSize,
+                                      waitForTasksToCompleteOnShutdown: true,
+                                      awaitTerminationSeconds: 60)
   }
 }

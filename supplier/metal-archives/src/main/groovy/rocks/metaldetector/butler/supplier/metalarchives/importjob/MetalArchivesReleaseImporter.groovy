@@ -3,6 +3,7 @@ package rocks.metaldetector.butler.supplier.metalarchives.importjob
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseEntity
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseSource
 import rocks.metaldetector.butler.supplier.infrastructure.converter.Converter
@@ -31,13 +32,14 @@ class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
   MetalArchivesReleaseVersionsWebCrawler webCrawler
 
   @Override
+  @Transactional
   ImportResult importReleases() {
     def upcomingReleasesRawData = restClient.requestReleases()
     List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
     List<ReleaseEntity> newReleaseEntities = saveNewReleasesWithCover(releaseEntities)
 
     def futures = newReleaseEntities.collect {
-      threadPool.submit(createReissueTask(it))
+      threadPoolTaskExecutor.submit(createReissueTask(it))
     }
 
     futures*.get()

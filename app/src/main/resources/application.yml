@@ -13,10 +13,6 @@ spring:
       shutdown:
         await-termination: true
         await-termination-period: PT1M
-    execution:
-      shutdown:
-        await-termination: true
-        await-termination-period: PT1M
   datasource:
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
