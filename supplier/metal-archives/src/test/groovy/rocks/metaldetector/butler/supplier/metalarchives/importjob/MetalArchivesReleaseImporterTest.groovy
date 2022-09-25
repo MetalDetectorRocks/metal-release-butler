@@ -18,7 +18,7 @@ class MetalArchivesReleaseImporterTest extends Specification {
       releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
       metalArchivesCoverService: Mock(CoverService),
       releaseRepository: Mock(ReleaseRepository),
-      threadPool: Mock(ThreadPoolTaskExecutor)
+      threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor)
   )
 
   def "rest client is called once on import"() {
@@ -62,7 +62,7 @@ class MetalArchivesReleaseImporterTest extends Specification {
     underTest.importReleases()
 
     then:
-    2 * underTest.threadPool.submit({ args -> args instanceof MetalArchivesReissueTask })
+    2 * underTest.threadPoolTaskExecutor.submit({ args -> args instanceof MetalArchivesReissueTask })
   }
 
   def "new releases are saved after reissue task"() {
@@ -77,7 +77,7 @@ class MetalArchivesReleaseImporterTest extends Specification {
     underTest.importReleases()
 
     then:
-    1 * underTest.threadPool.submit({ args -> args instanceof MetalArchivesReissueTask })
+    1 * underTest.threadPoolTaskExecutor.submit({ args -> args instanceof MetalArchivesReissueTask })
 
     then:
     underTest.releaseRepository.saveAll(newReleaseEntity)

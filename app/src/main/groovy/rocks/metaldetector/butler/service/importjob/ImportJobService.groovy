@@ -3,6 +3,7 @@ package rocks.metaldetector.butler.service.importjob
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobEntity
@@ -33,6 +34,7 @@ class ImportJobService {
   List<ReleaseImporter> releaseImporters
 
   @Async
+  @Scheduled(cron = "0 0 2 * * *")
   void importFromExternalSources() {
     releaseImporters.each { releaseImporter ->
       ImportJobEntity job = createImportJob(releaseImporter.releaseSource)
@@ -66,7 +68,7 @@ class ImportJobService {
     }
   }
 
-  @Transactional(readOnly = false)
+  @Transactional
   void updateImportJob(ImportJobEntity importJobEntity, ImportResult importResult, JobState jobState) {
     importJobEntity.totalCountRequested = importResult.totalCountRequested
     importJobEntity.totalCountImported = importResult.totalCountImported
@@ -75,7 +77,7 @@ class ImportJobService {
     importJobRepository.save(importJobEntity)
   }
 
-  @Transactional(readOnly = false)
+  @Transactional
   ImportJobEntity createImportJob(ReleaseSource source) {
     ImportJobEntity importJobEntity = new ImportJobEntity(
         jobId: UUID.randomUUID(),

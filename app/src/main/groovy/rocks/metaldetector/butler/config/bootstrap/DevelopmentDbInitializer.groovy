@@ -31,7 +31,7 @@ class DevelopmentDbInitializer implements ApplicationRunner {
   }
 
   @Override
-  @Transactional(readOnly = false)
+  @Transactional
   void run(ApplicationArguments args) throws Exception {
     List<ReleaseEntity> currentExistingReleases = entityManager.createQuery("select r from releases r", ReleaseEntity).getResultList()
     if (currentExistingReleases.isEmpty()) {

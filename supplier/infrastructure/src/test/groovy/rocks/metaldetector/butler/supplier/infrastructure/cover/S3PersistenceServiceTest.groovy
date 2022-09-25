@@ -10,9 +10,9 @@ import static rocks.metaldetector.butler.supplier.infrastructure.cover.S3Persist
 class S3PersistenceServiceTest extends Specification {
 
   S3PersistenceService underTest = new S3PersistenceService(
-          amazonS3Client: Mock(AmazonS3Client),
-          awsS3Host: "https://s3.eu-central-1.amazonaws.com",
-          bucketName: "bucket"
+      amazonS3Client: Mock(AmazonS3Client),
+      awsS3Host: "https://s3.eu-central-1.amazonaws.com",
+      bucketName: "bucket"
   )
 
   UUID uuid = UUID.randomUUID()
@@ -63,7 +63,7 @@ class S3PersistenceServiceTest extends Specification {
 
     then:
     1 * underTest.amazonS3Client.putObject({ arg ->
-      assert arg.metadata.contentType == "image/jpeg"
+      arg.metadata.contentType == "image/jpeg"
     })
   }
 
@@ -73,7 +73,7 @@ class S3PersistenceServiceTest extends Specification {
 
     then:
     1 * underTest.amazonS3Client.putObject({ arg ->
-      assert arg.metadata.contentLength == "bytes".bytes.length
+      arg.metadata.contentLength == "bytes".bytes.length
     })
   }
 

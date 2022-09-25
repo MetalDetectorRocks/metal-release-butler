@@ -2,7 +2,6 @@ package rocks.metaldetector.butler.service.importjob
 
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobEntity
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobRepository
-import rocks.metaldetector.butler.service.importjob.ImportJobTransformer
 import rocks.metaldetector.butler.supplier.infrastructure.importjob.ImportResult
 import rocks.metaldetector.butler.supplier.infrastructure.importjob.ReleaseImporter
 import spock.lang.Specification
@@ -75,9 +74,9 @@ class ImportJobServiceTest extends Specification {
 
     then:
     1 * underTest.importJobRepository.save({
-      assert it.jobId != null
-      assert it.startTime != null
-      assert it.source == METAL_ARCHIVES
+      it.jobId != null
+      it.startTime != null
+      it.source == METAL_ARCHIVES
     }) >> metalArchivesImportJob
 
     then:
@@ -85,11 +84,11 @@ class ImportJobServiceTest extends Specification {
 
     then:
     1 * underTest.importJobRepository.save({ args ->
-      assert args.jobId == metalArchivesImportJob.jobId
-      assert args.totalCountRequested == importResult.totalCountRequested
-      assert args.totalCountImported == importResult.totalCountImported
-      assert args.state == SUCCESSFUL
-      assert args.endTime
+      args.jobId == metalArchivesImportJob.jobId
+      args.totalCountRequested == importResult.totalCountRequested
+      args.totalCountImported == importResult.totalCountImported
+      args.state == SUCCESSFUL
+      args.endTime
     })
   }
 
@@ -107,11 +106,11 @@ class ImportJobServiceTest extends Specification {
 
     then:
     1 * underTest.importJobRepository.save({ args ->
-      assert args.jobId == metalArchivesImportJob.jobId
-      assert args.totalCountRequested == null
-      assert args.totalCountImported == null
-      assert args.state == ERROR
-      assert args.endTime
+      args.jobId == metalArchivesImportJob.jobId
+      args.totalCountRequested == null
+      args.totalCountImported == null
+      args.state == ERROR
+      args.endTime
     })
 
     and:
@@ -151,10 +150,10 @@ class ImportJobServiceTest extends Specification {
 
     then:
     1 * underTest.importJobRepository.save({ args ->
-      assert args.jobId == importJobEntity.jobId
-      assert args.totalCountRequested == importResult.totalCountRequested
-      assert args.totalCountImported == importResult.totalCountImported
-      assert args.endTime
+      args.jobId == importJobEntity.jobId
+      args.totalCountRequested == importResult.totalCountRequested
+      args.totalCountImported == importResult.totalCountImported
+      args.endTime
     })
   }
 
@@ -167,10 +166,10 @@ class ImportJobServiceTest extends Specification {
 
     then:
     1 * underTest.importJobRepository.save({ args ->
-      assert args.jobId
-      assert args.startTime
-      assert args.state == RUNNING
-      assert args.source == givenReleaseSource
+      args.jobId
+      args.startTime
+      args.state == RUNNING
+      args.source == givenReleaseSource
     })
   }
 

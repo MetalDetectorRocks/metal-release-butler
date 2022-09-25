@@ -16,7 +16,7 @@ import static rocks.metaldetector.butler.supplier.infrastructure.DtoFactory.Rele
 class AbstractReleaseImporterTest extends Specification {
 
   AbstractReleaseImporter underTest = new TestReleaseImporter(releaseRepository: Mock(ReleaseRepository),
-                                                              threadPool: Mock(ThreadPoolTaskExecutor))
+                                                              threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor))
 
   def "saveNewReleasesWithCover: Duplicates are filtered out before the database query checks whether the release already exists"() {
     given:
@@ -44,13 +44,13 @@ class AbstractReleaseImporterTest extends Specification {
     underTest.saveNewReleasesWithCover(releaseEntities)
 
     then:
-    1 * underTest.threadPool.submit({ args ->
+    1 * underTest.threadPoolTaskExecutor.submit({ args ->
       args.releaseEntity == releaseEntities[0] &&
       args.coverService == underTest.getCoverService()
     })
 
     and:
-    1 * underTest.threadPool.submit({ args ->
+    1 * underTest.threadPoolTaskExecutor.submit({ args ->
       args.releaseEntity == releaseEntities[1] &&
       args.coverService == underTest.getCoverService()
     })
@@ -67,7 +67,7 @@ class AbstractReleaseImporterTest extends Specification {
     1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >> true
 
     and:
-    0 * underTest.threadPool.submit(_)
+    0 * underTest.threadPoolTaskExecutor.submit(_)
   }
 
   def "saveNewReleasesWithCover: should call release repository to save all new releases"() {
@@ -131,13 +131,13 @@ class AbstractReleaseImporterTest extends Specification {
     underTest.retryCoverDownload()
 
     then:
-    1 * underTest.threadPool.submit({ args ->
+    1 * underTest.threadPoolTaskExecutor.submit({ args ->
       args.releaseEntity == release1
       args.coverService == underTest.getCoverService()
     })
 
     then:
-    0 * underTest.threadPool.submit(*_)
+    0 * underTest.threadPoolTaskExecutor.submit(*_)
   }
 
   def "retryCoverDownload: should call release repository to update releases"() {
