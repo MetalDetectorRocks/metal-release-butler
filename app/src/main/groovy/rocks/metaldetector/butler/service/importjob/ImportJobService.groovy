@@ -50,6 +50,7 @@ class ImportJobService {
   }
 
   @Async
+  @Scheduled(cron = "0 0 3 * * *")
   void retryCoverDownload() {
     releaseImporters.each { releaseImporter ->
       try {
