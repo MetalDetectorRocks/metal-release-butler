@@ -1,15 +1,19 @@
 package rocks.metaldetector.butler.supplier.infrastructure.cover
 
-import com.amazonaws.services.s3.AmazonS3
-import com.amazonaws.services.s3.model.CannedAccessControlList
-import com.amazonaws.services.s3.model.ObjectMetadata
-import com.amazonaws.services.s3.model.PutObjectRequest
 import groovy.util.logging.Slf4j
 import org.apache.commons.io.FilenameUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
+import software.amazon.awssdk.awscore.exception.AwsServiceException
+import software.amazon.awssdk.core.exception.SdkClientException
+import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.model.GetUrlRequest
+import software.amazon.awssdk.services.s3.model.PutObjectRequest
+
+import static software.amazon.awssdk.services.s3.model.ObjectCannedACL.PUBLIC_READ
 
 @Slf4j
 @Service
@@ -25,7 +29,7 @@ class S3PersistenceService implements CoverPersistenceService {
   String bucketName
 
   @Autowired
-  AmazonS3 amazonS3Client
+  S3Client s3Client
 
   @Override
   String persistCover(URL coverUrl, String targetFolder) {
@@ -33,31 +37,30 @@ class S3PersistenceService implements CoverPersistenceService {
     try {
       log.info("Upload cover from '${coverUrl.toExternalForm()}'")
       PutObjectRequest request = createPutObjectRequest(key, coverUrl)
-      amazonS3Client.putObject(request)
+      RequestBody requestBody = RequestBody.fromBytes(coverUrl.openStream().bytes)
+      s3Client.putObject(request, requestBody)
 
-      URL s3Url = amazonS3Client.getUrl(bucketName, key)
-      return "${awsS3Host}/${bucketName}${s3Url.path}"
+      URL s3Url = s3Client.utilities().getUrl(GetUrlRequest.builder().bucket(bucketName).key(key).build())
+      return "${awsS3Host}/${bucketName}${s3Url?.path}"
     }
-    catch (FileNotFoundException ex) {
+    catch (AwsServiceException | SdkClientException ex) {
       log.warn("Could not find cover '${coverUrl.toExternalForm()}'. The upload to S3 is skipped.", ex)
       return null
     }
   }
 
-  private createPutObjectRequest(String key, URL coverUrl) {
-    return new PutObjectRequest(
-            bucketName,
-            key,
-            coverUrl.openStream(),
-            createObjectMetaData(coverUrl)
-    ).withCannedAcl(CannedAccessControlList.PublicRead)
+  private PutObjectRequest createPutObjectRequest(String key, URL coverUrl) {
+    return PutObjectRequest.builder()
+        .bucket(bucketName)
+        .key(key)
+        .acl(PUBLIC_READ)
+        .metadata(createObjectMetaData(coverUrl))
+        .build() as PutObjectRequest
   }
 
-  private ObjectMetadata createObjectMetaData(URL coverUrl) {
-    return new ObjectMetadata(
-            contentLength: coverUrl.openStream().bytes.length,
-            contentType: fetchContentType(coverUrl)
-    )
+  private Map<String, String> createObjectMetaData(URL coverUrl) {
+    return [contentLength: coverUrl.openStream().bytes.length.toString(),
+            contentType  : fetchContentType(coverUrl)]
   }
 
   private String fetchContentType(URL url) {

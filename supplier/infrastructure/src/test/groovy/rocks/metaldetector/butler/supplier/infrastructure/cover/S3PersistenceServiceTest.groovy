@@ -1,16 +1,22 @@
 package rocks.metaldetector.butler.supplier.infrastructure.cover
 
-import com.amazonaws.services.s3.AmazonS3Client
-import com.amazonaws.services.s3.model.CannedAccessControlList
-import com.amazonaws.services.s3.model.ObjectMetadata
+import software.amazon.awssdk.awscore.exception.AwsServiceException
+import software.amazon.awssdk.core.exception.SdkClientException
+import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.S3Utilities
+import software.amazon.awssdk.services.s3.model.PutObjectRequest
+import software.amazon.awssdk.services.s3.model.S3Exception
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static rocks.metaldetector.butler.supplier.infrastructure.cover.S3PersistenceService.PATH
+import static software.amazon.awssdk.services.s3.model.ObjectCannedACL.PUBLIC_READ
 
 class S3PersistenceServiceTest extends Specification {
 
   S3PersistenceService underTest = new S3PersistenceService(
-      amazonS3Client: Mock(AmazonS3Client),
+      s3Client: Mock(S3Client),
       awsS3Host: "https://s3.eu-central-1.amazonaws.com",
       bucketName: "bucket"
   )
@@ -35,7 +41,6 @@ class S3PersistenceServiceTest extends Specification {
       getPath() >> "/images/2021/1/image.jpg"
     }
 
-    underTest.amazonS3Client.getUrl(*_) >> responseUrl
     GroovyMock(UUID, global: true)
   }
 
@@ -43,69 +48,91 @@ class S3PersistenceServiceTest extends Specification {
     given:
     def targetFolder = "path/to/target"
     UUID.randomUUID() >> uuid
+    def expectedRequest = PutObjectRequest.builder()
+        .bucket(underTest.bucketName)
+        .key(PATH + targetFolder + "/" + uuid + ".jpg")
+        .acl(PUBLIC_READ)
+        .metadata([contentLength: coverUrl.openStream().bytes.length.toString(),
+                   contentType  : "image/jpeg"])
+        .build()
+    S3Utilities utilities = GroovyMock(S3Utilities)
+    underTest.s3Client.utilities() >> utilities
+    utilities.getUrl(*_) >> responseUrl
 
     when:
     underTest.persistCover(coverUrl, targetFolder)
 
     then:
-    1 * underTest.amazonS3Client.putObject({ arg ->
-      arg.bucketName == underTest.bucketName &&
-      arg.key == PATH + targetFolder + "/" + uuid + ".jpg" &&
-      arg.inputStream == coverUrl.openStream() &&
-      arg.metadata instanceof ObjectMetadata &&
-      arg.cannedAcl == CannedAccessControlList.PublicRead
-    })
+    1 * underTest.s3Client.putObject(expectedRequest, _)
   }
 
-  def "putObject: client is called with content type, fetched via URLConnection, set in meta data"() {
-    when:
-    underTest.persistCover(coverUrl, "path/to/target")
-
-    then:
-    1 * underTest.amazonS3Client.putObject({ arg ->
-      arg.metadata.contentType == "image/jpeg"
-    })
-  }
-
-  def "putObject: client is called with content length set in meta data"() {
-    when:
-    underTest.persistCover(coverUrl, "path/to/target")
-
-    then:
-    1 * underTest.amazonS3Client.putObject({ arg ->
-      arg.metadata.contentLength == "bytes".bytes.length
-    })
-  }
-
-  def "if upload fails with 'FileNotFoundException' null is returned"() {
+  def "putObject: client is called with RequestBody"() {
     given:
-    underTest.amazonS3Client.putObject(*_) >> { throw new FileNotFoundException() }
+    GroovyMock(RequestBody, global: true)
+    def targetFolder = "path/to/target"
+    def expectedRequestBody = GroovyMock(RequestBody)
+    UUID.randomUUID() >> uuid
+    S3Utilities utilities = GroovyMock(S3Utilities)
+    underTest.s3Client.utilities() >> utilities
+    utilities.getUrl(*_) >> coverUrl
+
+    when:
+    underTest.persistCover(coverUrl, targetFolder)
+
+    then:
+    1 * RequestBody.fromBytes(coverUrl.openStream().bytes) >> expectedRequestBody
+
+    and:
+    1 * underTest.s3Client.putObject(_, expectedRequestBody)
+  }
+
+  @Unroll
+  "if upload fails with '#exception' null is returned"() {
+    given:
+    underTest.s3Client.putObject(*_) >> { throw exception as Exception }
 
     expect:
     underTest.persistCover(coverUrl, "path/to/target") == null
+
+    where:
+    exception << [AwsServiceException.builder().build(), SdkClientException.builder().build(), S3Exception.builder().build()]
   }
 
-  def "getUrl: client is called with bucket name"() {
+  def "getUrl: utilities are called with bucket name"() {
+    given:
+    S3Utilities utilities = GroovyMock(S3Utilities)
+
     when:
     underTest.persistCover(coverUrl, "path/to/target")
 
     then:
-    1 * underTest.amazonS3Client.getUrl("bucket", _) >> responseUrl
+    1 * underTest.s3Client.utilities() >> utilities
+
+    then:
+    1 * utilities.getUrl({ args -> args.bucket == underTest.bucketName }) >> responseUrl
   }
 
   def "getUrl: client is called with key"() {
     given:
-    def targetFolder = "path/to/target"
-    UUID.randomUUID() >> uuid
+    def key = "images/path/to/target/null.jpg"
+    S3Utilities utilities = GroovyMock(S3Utilities)
 
     when:
-    underTest.persistCover(coverUrl, targetFolder)
+    underTest.persistCover(coverUrl, "path/to/target")
 
     then:
-    1 * underTest.amazonS3Client.getUrl(_, PATH + targetFolder + "/" + uuid + ".jpg") >> responseUrl
+    1 * underTest.s3Client.utilities() >> utilities
+
+    then:
+    1 * utilities.getUrl({ args -> args.key == key }) >> responseUrl
   }
 
   def "the image url is composed of the aws s3 host, the bucket name and the image path on s3"() {
+    given:
+    S3Utilities utilities = GroovyMock(S3Utilities)
+    underTest.s3Client.utilities() >> utilities
+    utilities.getUrl(*_) >> responseUrl
+
     expect:
     underTest.persistCover(coverUrl, "path/to/target") == "${underTest.awsS3Host}/${underTest.bucketName}${responseUrl.path}"
   }
