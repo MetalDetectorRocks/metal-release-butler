@@ -16,7 +16,7 @@ class AppConfig {
 
   @Bean
   JwtParser jwtParser() {
-    return Jwts.parser()
+    return Jwts.parserBuilder().build()
   }
 
   @Bean

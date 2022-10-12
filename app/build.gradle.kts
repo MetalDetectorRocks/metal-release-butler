@@ -39,7 +39,9 @@ dependencies {
   implementation("org.apache.httpcomponents:httpclient")
   implementation("io.micrometer:micrometer-registry-prometheus")
   implementation("org.flywaydb:flyway-core")
-  implementation("io.jsonwebtoken:jjwt:${libs.versions.jsonwebtoken.get()}")
+  implementation("io.jsonwebtoken:jjwt-api:${libs.versions.jsonwebtoken.get()}")
+  implementation("io.jsonwebtoken:jjwt-impl:${libs.versions.jsonwebtoken.get()}")
+  implementation("io.jsonwebtoken:jjwt-jackson:${libs.versions.jsonwebtoken.get()}")
 
   implementation("org.apache.groovy:groovy:${libs.versions.groovy.get()}")
   implementation("org.apache.groovy:groovy-xml:${libs.versions.groovy.get()}")
