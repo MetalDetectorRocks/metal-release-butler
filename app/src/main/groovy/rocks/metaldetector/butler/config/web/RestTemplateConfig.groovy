@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import org.apache.http.impl.client.CloseableHttpClient
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.context.annotation.Bean
@@ -51,9 +51,7 @@ class RestTemplateConfig {
 
   @Bean
   HttpComponentsClientHttpRequestFactory clientHttpRequestFactory(CloseableHttpClient httpClient) {
-    HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory()
-    clientHttpRequestFactory.httpClient = httpClient
-    return clientHttpRequestFactory
+    return new HttpComponentsClientHttpRequestFactory(httpClient: httpClient)
   }
 
   @Bean

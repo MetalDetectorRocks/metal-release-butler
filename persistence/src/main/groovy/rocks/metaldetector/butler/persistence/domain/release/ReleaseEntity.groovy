@@ -2,12 +2,12 @@ package rocks.metaldetector.butler.persistence.domain.release
 
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.builder.Builder
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import rocks.metaldetector.butler.persistence.domain.BaseEntity
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
 import java.time.LocalDate
 
 @Entity(name = "releases")

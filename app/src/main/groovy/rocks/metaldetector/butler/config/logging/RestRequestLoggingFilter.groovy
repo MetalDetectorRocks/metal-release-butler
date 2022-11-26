@@ -1,8 +1,7 @@
 package rocks.metaldetector.butler.config.logging
 
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.filter.CommonsRequestLoggingFilter
-
-import javax.servlet.http.HttpServletRequest
 
 class RestRequestLoggingFilter extends CommonsRequestLoggingFilter {
 
