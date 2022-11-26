@@ -1,17 +1,15 @@
 package rocks.metaldetector.butler.config.web
 
-import org.apache.http.HeaderElement
-import org.apache.http.HeaderElementIterator
-import org.apache.http.HeaderIterator
-import org.apache.http.HttpHost
-import org.apache.http.client.config.RequestConfig
-import org.apache.http.conn.ConnectionKeepAliveStrategy
-import org.apache.http.conn.routing.HttpRoute
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
-import org.apache.http.message.BasicHeaderElementIterator
-import org.apache.http.protocol.HTTP
+import org.apache.hc.client5.http.ConnectionKeepAliveStrategy
+import org.apache.hc.client5.http.HttpRoute
+import org.apache.hc.client5.http.config.RequestConfig
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
+import org.apache.hc.client5.http.impl.classic.HttpClients
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager
+import org.apache.hc.core5.http.Header
+import org.apache.hc.core5.http.HttpHost
+import org.apache.hc.core5.util.TimeValue
+import org.apache.hc.core5.util.Timeout
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -27,6 +25,7 @@ class ApacheHttpClientConfig {
   private static final int MAX_ROUTE_CONNECTIONS = 2
   private static final int MAX_TOTAL_CONNECTIONS = 5
   private static final int MAX_LOCALHOST_CONNECTIONS = 10
+  private static final String KEEP_ALIVE_HEADER_NAME = "Keep-alive"
 
   @Bean
   PoolingHttpClientConnectionManager poolingConnectionManager(@Value('${server.port}') int port) {
@@ -48,11 +47,10 @@ class ApacheHttpClientConfig {
   @Bean
   ConnectionKeepAliveStrategy connectionKeepAliveStrategy() {
     return { httpResponse, httpContext ->
-      HeaderIterator headerIterator = httpResponse.headerIterator(HTTP.CONN_KEEP_ALIVE)
-      HeaderElementIterator elementIterator = new BasicHeaderElementIterator(headerIterator)
+      Iterator<Header> headerIterator = httpResponse.headerIterator(KEEP_ALIVE_HEADER_NAME)
 
-      while (elementIterator.hasNext()) {
-        HeaderElement element = elementIterator.nextElement()
+      while (headerIterator.hasNext()) {
+        Header element = headerIterator.next()
         String param = element.name
         String value = element.value
         if (value && param.equalsIgnoreCase("timeout")) {
@@ -73,8 +71,8 @@ class ApacheHttpClientConfig {
       void run() {
         // only if connection pool is initialised
         if (pool) {
-          pool.closeExpiredConnections()
-          pool.closeIdleConnections(10, MINUTES)
+          pool.closeExpired()
+          pool.closeIdle(TimeValue.of(10, MINUTES))
         }
       }
     }
@@ -84,9 +82,9 @@ class ApacheHttpClientConfig {
   CloseableHttpClient httpClient(PoolingHttpClientConnectionManager poolingConnectionManager,
                                  ConnectionKeepAliveStrategy connectionKeepAliveStrategy) {
     RequestConfig requestConfig = RequestConfig.custom()
-        .setConnectTimeout(Duration.ofSeconds(20).toMillis() as int) // the time for waiting until a connection is established
-        .setConnectionRequestTimeout(Duration.ofSeconds(20).toMillis() as int) // the time for waiting for a connection from connection pool
-        .setSocketTimeout(Duration.ofSeconds(30).toMillis() as int) // the time for waiting for data
+        .setConnectTimeout(Timeout.ofSeconds(20)) // the time for waiting until a connection is established
+        .setConnectionRequestTimeout(Timeout.ofSeconds(20)) // the time for waiting for a connection from connection pool
+        .setResponseTimeout(Timeout.ofSeconds(20)) // the time for waiting for data
         .build()
 
     return HttpClients.custom()

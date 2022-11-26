@@ -5,5 +5,4 @@ include(
 
 rootProject.name = "metal-release-butler"
 
-enableFeaturePreview("VERSION_CATALOGS")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

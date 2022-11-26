@@ -1,9 +1,8 @@
 package rocks.metaldetector.butler.web.api
 
 import groovy.transform.Canonical
-
-import javax.validation.constraints.Max
-import javax.validation.constraints.Min
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 
 @Canonical
 class ReleasesRequestPaginated extends ReleasesRequest {

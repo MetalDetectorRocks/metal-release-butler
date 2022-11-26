@@ -1,9 +1,8 @@
 package rocks.metaldetector.butler.web.api
 
 import groovy.transform.Canonical
+import jakarta.validation.constraints.NotNull
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseEntityState
-
-import javax.validation.constraints.NotNull
 
 @Canonical
 class ReleaseUpdateRequest {

@@ -11,6 +11,5 @@ class WebMvcConfig implements WebMvcConfigurer {
   void addResourceHandlers(final ResourceHandlerRegistry registry) {
     registry
         .addResourceHandler("/resources/**")
-        .addResourceLocations("/resources/config/swagger/")
   }
 }

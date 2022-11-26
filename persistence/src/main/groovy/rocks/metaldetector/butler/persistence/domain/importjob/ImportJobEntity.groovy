@@ -2,13 +2,13 @@ package rocks.metaldetector.butler.persistence.domain.importjob
 
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.builder.Builder
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import rocks.metaldetector.butler.persistence.domain.BaseEntity
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseSource
 
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
 import java.time.LocalDateTime
 
 @Entity(name = "import_jobs")

@@ -1,6 +1,7 @@
 package rocks.metaldetector.butler.web.rest
 
 import groovy.util.logging.Slf4j
+import jakarta.validation.ValidationException
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.access.AccessDeniedException
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import rocks.metaldetector.butler.config.web.ResourceNotFoundException
 import rocks.metaldetector.butler.web.api.ErrorResponse
-
-import javax.validation.ValidationException
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.FORBIDDEN

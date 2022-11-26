@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.web.rest
 
+import jakarta.validation.Valid
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Sort
 import org.springframework.data.web.SortDefault
@@ -16,8 +17,6 @@ import rocks.metaldetector.butler.web.api.ReleaseUpdateRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequest
 import rocks.metaldetector.butler.web.api.ReleasesRequestPaginated
 import rocks.metaldetector.butler.web.api.ReleasesResponse
-
-import javax.validation.Valid
 
 import static org.springframework.data.domain.Sort.Direction.ASC
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE

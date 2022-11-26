@@ -1,9 +1,9 @@
 package rocks.metaldetector.butler.web.api
 
 import groovy.transform.Canonical
+import jakarta.validation.constraints.AssertTrue
 import org.springframework.format.annotation.DateTimeFormat
 
-import javax.validation.constraints.AssertTrue
 import java.time.LocalDate
 
 @Canonical

@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
+import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import rocks.metaldetector.butler.service.release.ReleaseService
 import rocks.metaldetector.butler.testutil.WithIntegrationTestConfig
@@ -25,6 +26,7 @@ import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEA
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ContextConfiguration
 class RestExceptionHandlerIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
   private final Jwt READ_JWT = createTokenWithScope("releases-read")

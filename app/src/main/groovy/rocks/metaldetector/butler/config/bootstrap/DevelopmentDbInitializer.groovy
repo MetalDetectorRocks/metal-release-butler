@@ -1,5 +1,7 @@
 package rocks.metaldetector.butler.config.bootstrap
 
+import jakarta.persistence.EntityManager
+import jakarta.persistence.PersistenceContext
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
@@ -8,8 +10,6 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseEntity
 
-import javax.persistence.EntityManager
-import javax.persistence.PersistenceContext
 import java.time.LocalDate
 
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseEntityState.DEMO
