@@ -40,7 +40,7 @@ class ReleaseCoverRestControllerIntegrationTest extends Specification implements
   def "should return NOT FOUND for wrong path"() {
     given:
     jwtDecoder.decode(*_) >> RELEASES_READ_JWT
-    def request = get("${RELEASE_IMAGES}/?id=test-id")
+    def request = get("${RELEASE_IMAGES}?id=test-id")
         .header("Authorization", "Bearer $RELEASES_READ_JWT.tokenValue")
     imageResourceFinder.findImage(*_) >> { throw new ResourceNotFoundException("not found") }
 

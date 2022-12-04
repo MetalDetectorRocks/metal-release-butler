@@ -11,8 +11,12 @@ import org.springframework.security.web.SecurityFilterChain
 import static org.springframework.http.HttpMethod.GET
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.AntPattern.ACTUATOR_ENDPOINTS
-import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.AntPattern.REST_ENDPOINTS
+import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.COVER_JOB
+import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.IMPORT_JOB
+import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEASES
+import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEASES_UNPAGINATED
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEASE_IMAGES
+import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.UPDATE_RELEASE
 
 @Configuration
 @EnableWebSecurity
@@ -24,14 +28,22 @@ class SecurityConfig {
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf().ignoringRequestMatchers(REST_ENDPOINTS)
-        .and().sessionManagement().sessionCreationPolicy(STATELESS)
-    http.exceptionHandling()
-        .and().authorizeHttpRequests()
-        .requestMatchers(ACTUATOR_ENDPOINTS).permitAll()
-        .requestMatchers(GET, RELEASE_IMAGES).permitAll()
-        .anyRequest().authenticated()
-    http.oauth2ResourceServer().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+    http.csrf().disable()
+        .sessionManagement().sessionCreationPolicy(STATELESS)
+        .and()
+        .exceptionHandling()
+        .and()
+        .authorizeHttpRequests { registry ->
+          registry
+              .requestMatchers(ACTUATOR_ENDPOINTS).permitAll()
+              .requestMatchers(GET, RELEASE_IMAGES).permitAll()
+              .requestMatchers(RELEASES).hasAuthority("SCOPE_releases-read")
+              .requestMatchers(UPDATE_RELEASE).hasAuthority("SCOPE_releases-write")
+              .requestMatchers(RELEASES_UNPAGINATED).hasAuthority("SCOPE_releases-read-all")
+              .requestMatchers(IMPORT_JOB, COVER_JOB).hasAuthority("SCOPE_import")
+              .anyRequest().denyAll()
+        }
+        .oauth2ResourceServer().authenticationEntryPoint(jwtAuthenticationEntryPoint)
         .jwt()
     return http.build()
   }
