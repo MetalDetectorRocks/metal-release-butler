@@ -1,9 +1,9 @@
 [versions]
-awsS3Sdk = "2.19.16"
+awsS3Sdk = "2.20.12"
 commonsIo = "2.11.0"
-groovy = "4.0.7"
+groovy = "4.0.9"
 jsonwebtoken = "0.11.5"
-jsoup = "1.15.3"
+jsoup = "1.15.4"
 junit = "5.9.2"
-postgresql = "42.5.1"
+postgresql = "42.5.4"
 spock = "2.3-groovy-4.0"
