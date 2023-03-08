@@ -2,6 +2,7 @@ package rocks.metaldetector.butler.supplier.timeformetal.converter
 
 import groovy.xml.XmlSlurper
 import groovy.xml.slurpersupport.NodeChild
+import org.ccil.cowan.tagsoup.Parser
 import org.springframework.core.io.ClassPathResource
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseEntity
 import spock.lang.Specification
@@ -16,7 +17,9 @@ import static rocks.metaldetector.butler.persistence.domain.release.ReleaseType.
 
 class TimeForMetalReleaseEntityConverterTest extends Specification {
 
-  TimeForMetalReleaseEntityConverter underTest = new TimeForMetalReleaseEntityConverter(xmlSlurper: Spy(XmlSlurper))
+  def xmlSlurper = new XmlSlurper(new Parser())
+  TimeForMetalReleaseEntityConverter underTest = new TimeForMetalReleaseEntityConverter(xmlSlurper: Spy(xmlSlurper))
+
   def sourceString = new ClassPathResource("mock-releases-page-time-for-metal.txt").inputStream.text
   static final String LONG_DASH = "–"
 
@@ -25,14 +28,14 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     def result = underTest.convert(sourceString)
 
     then:
-    result.size() == 2
+    result.size() == 3
 
     and:
     result[0] == new ReleaseEntity(artist: "Artist 1",
                                    albumTitle: "Album 1",
-                                   releaseDate: LocalDate.of(2020, 1, 1),
-                                   type: FULL_LENGTH)
-    result[0].releaseDetailsUrl == "http://cover1.com/album.jpg"
+                                   releaseDate: LocalDate.of(2023, 3, 9))
+    result[0].releaseDetailsUrl == "https://cover1.com/album.jpg"
+    result[0].genre == "Death Metal"
     result[0].type == FULL_LENGTH
     result[0].source == TIME_FOR_METAL
     result[0].state == OK
@@ -40,12 +43,22 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     and:
     result[1] == new ReleaseEntity(artist: "Artist 2",
                                    albumTitle: "Album 2",
-                                   releaseDate: LocalDate.of(2020, 2, 1),
-                                   type: FULL_LENGTH)
-    result[1].releaseDetailsUrl == null
+                                   releaseDate: LocalDate.of(2023, 3, 10))
+    result[1].releaseDetailsUrl == "https://cover2.com/album.jpg"
+    result[1].genre == "Black Metal"
     result[1].type == FULL_LENGTH
     result[1].source == TIME_FOR_METAL
     result[1].state == OK
+
+    and:
+    result[2] == new ReleaseEntity(artist: "Artist 3",
+                                   albumTitle: "Album 3",
+                                   releaseDate: LocalDate.of(2023, 3, 19))
+    result[2].releaseDetailsUrl == "https://cover3.com/album.jpg"
+    result[2].genre == "Death Metal"
+    result[2].type == EP
+    result[2].source == TIME_FOR_METAL
+    result[2].state == OK
 
     and:
     2 * underTest.xmlSlurper.parseText(*_)
@@ -86,6 +99,7 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     where:
     title                                       | expectedTitle
     "Artist 1 - Album 1"                        | "Album 1"
+    "Artist-1 - Album 1"                        | "Album 1"
     "Artist 1 -      Album 1        "           | "Album 1"
     "Artist 1 - Album 1 (EP)"                   | "Album 1"
     "Artist 1 - Album 1 - Live - 1964"          | "Album 1 - Live - 1964"
@@ -135,5 +149,27 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     then:
     def releaseEntity = releaseEntityBuilder.build()
     releaseEntity.releaseDetailsUrl == sourceUrl
+  }
+
+  @Unroll
+  def "genre is set"() {
+    given:
+    def releaseEntityBuilder = ReleaseEntity.builder()
+    def nodeChildMock = Mock(NodeChild)
+    nodeChildMock.localText() >> [rawValue]
+
+    when:
+    underTest.setGenre(releaseEntityBuilder, nodeChildMock)
+
+    then:
+    def releaseEntity = releaseEntityBuilder.build()
+    releaseEntity.genre == expectedGenre
+
+    where:
+    rawValue           | expectedGenre
+    "Black Metal"      | "Black Metal"
+    "Black Metal   "   | "Black Metal"
+    "Black Metal\n"    | "Black Metal"
+    "Black Metal \n "  | "Black Metal"
   }
 }

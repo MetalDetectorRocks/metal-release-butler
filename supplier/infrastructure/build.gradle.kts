@@ -6,6 +6,7 @@ dependencies {
 
   implementation("org.apache.groovy:groovy:${libs.versions.groovy.get()}")
   implementation("org.apache.groovy:groovy-xml:${libs.versions.groovy.get()}")
+  implementation("org.ccil.cowan.tagsoup:tagsoup:${libs.versions.tagsoup.get()}")
 
   implementation("software.amazon.awssdk:s3:${libs.versions.awsS3Sdk.get()}")
 

@@ -1,6 +1,7 @@
 package rocks.metaldetector.butler.supplier.infrastructure.config
 
 import groovy.xml.XmlSlurper
+import org.ccil.cowan.tagsoup.Parser
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -15,7 +16,7 @@ class InfrastructureConfig {
 
   @Bean
   XmlSlurper xmlSlurper() {
-    return new XmlSlurper()
+    return new XmlSlurper(new Parser())
   }
 
   @Bean
