@@ -55,7 +55,8 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
   }
 
   protected ImportResult finalizeImport(int totalCountRequested, int totalCountImported) {
-    log.info("Import of new releases completed for ${getReleaseSource().displayName}!")
+    log.info("Import of new releases completed for ${getReleaseSource().displayName}. " +
+            "${totalCountImported} out of ${totalCountRequested} requested releases were imported.")
     return new ImportResult(
         totalCountRequested: totalCountRequested,
         totalCountImported: totalCountImported
