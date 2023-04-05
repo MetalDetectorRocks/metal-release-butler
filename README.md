@@ -1,5 +1,4 @@
 ![Continous Integration](https://github.com/MetalDetectorRocks/metal-release-butler/workflows/Continous%20Integration/badge.svg)
-[![codecov](https://codecov.io/gh/MetalDetectorRocks/metal-release-butler/branch/master/graph/badge.svg)](https://codecov.io/gh/MetalDetectorRocks/metal-release-butler)
 ![Docker Image](https://github.com/MetalDetectorRocks/metal-release-butler/workflows/Docker%20Image/badge.svg)
 
 ![Alt](https://repobeats.axiom.co/api/embed/d2d3638d8a96caa8af0b6d9d56910316be6192a5.svg "Repobeats analytics image")
