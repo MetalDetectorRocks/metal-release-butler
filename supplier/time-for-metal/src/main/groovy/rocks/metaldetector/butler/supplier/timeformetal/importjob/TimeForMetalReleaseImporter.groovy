@@ -29,10 +29,10 @@ class TimeForMetalReleaseImporter extends AbstractReleaseImporter {
   @Override
   ImportResult importReleases() {
     List<ReleaseEntity> releaseEntities = []
-    def count = 1
+    def count = 0
     def newReleases
     do {
-      def rawReleasesPage = webCrawler.requestReleases(count++)
+      def rawReleasesPage = webCrawler.requestReleases(++count)
       newReleases = timeForMetalReleaseEntityConverter.convert(rawReleasesPage)
       releaseEntities.addAll(newReleases)
     } while (newReleases)

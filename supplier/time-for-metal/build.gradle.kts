@@ -1,9 +1,8 @@
 dependencies {
-
   implementation("org.springframework.boot:spring-boot-starter-web")
-
   implementation("org.apache.groovy:groovy:${libs.versions.groovy.get()}")
   implementation("org.apache.groovy:groovy-xml:${libs.versions.groovy.get()}")
+  implementation("org.ccil.cowan.tagsoup:tagsoup:${libs.versions.tagsoup.get()}")
 
   implementation(projects.persistence)
   implementation(projects.supplier.infrastructure)
