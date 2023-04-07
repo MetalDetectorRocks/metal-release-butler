@@ -1,16 +1,16 @@
+plugins {
+  id("java-library")
+}
+
 dependencies {
-
   implementation("org.springframework.boot:spring-boot-starter-web")
-
   implementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
-
   implementation("org.apache.groovy:groovy:${libs.versions.groovy.get()}")
   implementation("org.apache.groovy:groovy-xml:${libs.versions.groovy.get()}")
-  implementation("org.ccil.cowan.tagsoup:tagsoup:${libs.versions.tagsoup.get()}")
-
   implementation("software.amazon.awssdk:s3:${libs.versions.awsS3Sdk.get()}")
-
   implementation(projects.persistence)
+
+  api("org.ccil.cowan.tagsoup:tagsoup:${libs.versions.tagsoup.get()}")
 
   testImplementation("org.springframework.boot:spring-boot-starter-test")
   testImplementation("org.apache.groovy:groovy-test:${libs.versions.groovy.get()}")
