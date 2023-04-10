@@ -6,6 +6,45 @@ jsonwebtoken = "0.11.5"
 jsoup = "1.15.4"
 junit = "5.9.2"
 lokiLogbackAppender = "1.4.0"
-postgresql = "42.5.4"
+postgres = "42.5.4"
 spock = "2.3-groovy-4.0"
 tagsoup = "1.2.1"
+
+[libraries]
+commonsIo = { module = "commons-io:commons-io", version.ref = "commonsIo" }
+flyway = { module = "org.flywaydb:flyway-core" }
+groovy = { module = "org.apache.groovy:groovy", version.ref = "groovy" }
+groovyXml = { module = "org.apache.groovy:groovy-xml", version.ref = "groovy" }
+groovyDatetime = { module = "org.apache.groovy:groovy-datetime", version.ref = "groovy" }
+groovyTest = { module = "org.apache.groovy:groovy-test", version.ref = "groovy" }
+h2 = { module = "com.h2database:h2" }
+httpClient = { module = "org.apache.httpcomponents.client5:httpclient5" }
+junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
+jupiterApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
+jjwtApi = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
+jjwtImpl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
+jjwtJackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jsonwebtoken" }
+lokiLogbackAppender = { module = "com.github.loki4j:loki-logback-appender", version.ref = "lokiLogbackAppender" }
+micrometerRegistryPrometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
+postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsS3Sdk" }
+spockCore = { module = "org.spockframework:spock-core", version.ref = "spock" }
+spockSpring = { module = "org.spockframework:spock-spring", version.ref = "spock" }
+springBootConfigurationProcessor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
+springBootDevTools = { module = "org.springframework.boot:spring-boot-devtools" }
+springBootStarterActuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+springBootStarterDataJpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
+springBootStarterOauth2ResourceServer = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server" }
+springBootStarterSecurity = { module = "org.springframework.boot:spring-boot-starter-security" }
+springBootStarterTest = { module = "org.springframework.boot:spring-boot-starter-test" }
+springBootStarterValidation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+springBootStarterWeb = { module = "org.springframework.boot:spring-boot-starter-web" }
+springSecurityTest = { module = "org.springframework.security:spring-security-test" }
+tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
+
+[bundles]
+groovyApp = ["groovy", "groovyXml", "groovyDatetime"]
+jjwt = ["jjwtApi", "jjwtImpl", "jjwtJackson"]
+testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest"]
+springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2ResourceServer", "springBootStarterSecurity", "springBootStarterValidation", "springBootStarterWeb"]

@@ -1,19 +1,16 @@
 dependencies {
 
-  implementation("org.springframework.boot:spring-boot-starter-web")
+  implementation(libs.springBootStarterWeb)
 
-  implementation("org.apache.groovy:groovy:${libs.versions.groovy.get()}")
-  implementation("org.apache.groovy:groovy-xml:${libs.versions.groovy.get()}")
+  implementation(libs.groovy)
+  implementation(libs.groovyXml)
 
-  implementation("org.jsoup:jsoup:${libs.versions.jsoup.get()}")
+  implementation(libs.jsoup)
 
   implementation(projects.persistence)
   implementation(projects.supplier.infrastructure)
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.apache.groovy:groovy-test:${libs.versions.groovy.get()}")
-  testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
-  testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")
+  testImplementation(libs.bundles.testing)
 }
 
 description = "metal-archives"
