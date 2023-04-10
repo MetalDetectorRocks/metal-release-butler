@@ -5,12 +5,12 @@ val javaVersion: JavaVersion = JavaVersion.VERSION_17
 
 val dependencyVersions = listOf(
     "commons-logging:commons-logging:1.2",
-    "org.junit:junit-bom:${libs.versions.junit.get()}"
+    libs.junitBom.get().toString()
 )
 
 val dependencyGroupVersions = mapOf(
-    "org.apache.groovy" to libs.versions.groovy.get(),
-    "org.junit.jupiter" to libs.versions.junit.get()
+    libs.groovy.get().group to libs.groovy.get().version,
+    libs.jupiterApi.get().group to libs.jupiterApi.get().version
 )
 
 plugins {

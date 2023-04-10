@@ -3,19 +3,17 @@ plugins {
 }
 
 dependencies {
-  implementation("org.springframework.boot:spring-boot-starter-web")
-  implementation("commons-io:commons-io:${libs.versions.commonsIo.get()}")
-  implementation("org.apache.groovy:groovy:${libs.versions.groovy.get()}")
-  implementation("org.apache.groovy:groovy-xml:${libs.versions.groovy.get()}")
-  implementation("software.amazon.awssdk:s3:${libs.versions.awsS3Sdk.get()}")
+  implementation(libs.springBootStarterWeb)
+  implementation(libs.commonsIo)
+  implementation(libs.groovy)
+  implementation(libs.groovyXml)
+  implementation(libs.s3)
+
   implementation(projects.persistence)
 
-  api("org.ccil.cowan.tagsoup:tagsoup:${libs.versions.tagsoup.get()}")
+  api(libs.tagsoup)
 
-  testImplementation("org.springframework.boot:spring-boot-starter-test")
-  testImplementation("org.apache.groovy:groovy-test:${libs.versions.groovy.get()}")
-  testImplementation("org.spockframework:spock-core:${libs.versions.spock.get()}")
-  testImplementation("org.spockframework:spock-spring:${libs.versions.spock.get()}")
+  testImplementation(libs.bundles.testing)
 }
 
 description = "infrastructure"
