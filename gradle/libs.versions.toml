@@ -6,7 +6,7 @@ jsonwebtoken = "0.11.5"
 jsoup = "1.15.4"
 junit = "5.9.2"
 lokiLogbackAppender = "1.4.0"
-postgres = "42.5.4"
+postgres = "42.6.0"
 spock = "2.3-groovy-4.0"
 tagsoup = "1.2.1"
 
