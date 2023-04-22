@@ -15,8 +15,13 @@ import static java.time.temporal.ChronoUnit.SECONDS
 class InfrastructureConfig {
 
   @Bean
-  XmlSlurper xmlSlurper() {
+  XmlSlurper timeForMetalXmlSlurper() {
     return new XmlSlurper(new Parser())
+  }
+
+  @Bean
+  XmlSlurper metalArchivesXmlSlurper() {
+    return new XmlSlurper()
   }
 
   @Bean

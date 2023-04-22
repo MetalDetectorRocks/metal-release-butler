@@ -21,7 +21,7 @@ class MetalArchivesReleaseEntityConverter implements Converter<String[], List<Re
   static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.US)
 
   @Autowired
-  XmlSlurper xmlSlurper
+  XmlSlurper metalArchivesXmlSlurper
 
   /*
    * Returns a list of ReleaseEntity, since a split album from Metal Archives
@@ -104,13 +104,13 @@ class MetalArchivesReleaseEntityConverter implements Converter<String[], List<Re
   }
 
   private String parseAnchorName(String text) {
-    def xml = xmlSlurper.parseText(text)
+    def xml = metalArchivesXmlSlurper.parseText(text)
 
     return xml.text().trim()
   }
 
   private String parseAnchorHref(String text) {
-    def xml = xmlSlurper.parseText(text)
+    def xml = metalArchivesXmlSlurper.parseText(text)
 
     return xml.@href.text()
   }
