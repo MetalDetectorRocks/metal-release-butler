@@ -4,7 +4,7 @@ spring:
       ddl-auto: update
 
 server:
-  port: 8080
+  port: 8095
   error:
     whitelabel:
       enabled: false

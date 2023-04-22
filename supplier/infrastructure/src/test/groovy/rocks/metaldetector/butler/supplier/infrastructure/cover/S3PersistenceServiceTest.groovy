@@ -38,7 +38,7 @@ class S3PersistenceServiceTest extends Specification {
     }
 
     responseUrl = GroovyMock(URL) {
-      getPath() >> "/images/2021/1/image.jpg"
+      getPath() >> "/bucket/images/2021/1/image.jpg"
     }
 
     GroovyMock(UUID, global: true)
@@ -134,6 +134,6 @@ class S3PersistenceServiceTest extends Specification {
     utilities.getUrl(*_) >> responseUrl
 
     expect:
-    underTest.persistCover(coverUrl, "path/to/target") == "${underTest.awsS3Host}/${underTest.bucketName}${responseUrl.path}"
+    underTest.persistCover(coverUrl, "path/to/target") == "${underTest.awsS3Host}${responseUrl.path}"
   }
 }

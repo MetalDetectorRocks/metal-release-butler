@@ -36,7 +36,7 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
   }
 
   @Transactional
-  protected List<ReleaseEntity> saveNewReleasesWithCover(List<ReleaseEntity> releaseEntities) {
+  List<ReleaseEntity> saveNewReleasesWithCover(List<ReleaseEntity> releaseEntities) {
     List<Future> futures = []
     Comparator<ReleaseEntity> releaseEntityComparator = { release1, release2 ->
       release1.artist.toLowerCase() <=> release2.artist.toLowerCase()

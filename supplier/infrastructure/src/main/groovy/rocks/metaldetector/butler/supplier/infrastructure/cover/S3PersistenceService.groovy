@@ -40,8 +40,9 @@ class S3PersistenceService implements CoverPersistenceService {
       RequestBody requestBody = RequestBody.fromBytes(coverUrl.openStream().bytes)
       s3Client.putObject(request, requestBody)
 
-      URL s3Url = s3Client.utilities().getUrl(GetUrlRequest.builder().bucket(bucketName).key(key).build())
-      return "${awsS3Host}/${bucketName}${s3Url?.path}"
+      GetUrlRequest urlRequest = GetUrlRequest.builder().bucket(bucketName).key(key).build()
+      URL s3Url = s3Client.utilities().getUrl(urlRequest)
+      return "${awsS3Host}${s3Url?.path}"
     }
     catch (AwsServiceException | SdkClientException ex) {
       log.warn("Could not find cover '${coverUrl.toExternalForm()}'. The upload to S3 is skipped.", ex)
