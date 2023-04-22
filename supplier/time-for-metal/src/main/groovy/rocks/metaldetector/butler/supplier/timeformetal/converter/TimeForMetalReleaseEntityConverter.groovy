@@ -27,7 +27,7 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
   static final String ARTIST_ALBUM_NAME_DELIMITER_REGEX = "${ANY_WHITESPACE_REGEX}${ANY_DASH_REGEX}${ANY_WHITESPACE_REGEX}"
 
   @Autowired
-  XmlSlurper xmlSlurper
+  XmlSlurper timeForMetalXmlSlurper
 
   @Override
   List<ReleaseEntity> convert(String source) {
@@ -35,7 +35,7 @@ class TimeForMetalReleaseEntityConverter implements Converter<String, List<Relea
     List<ReleaseEntity> releases = []
 
     releaseTables?.each {table ->
-      def releasesTable = xmlSlurper.parseText(replaceTableTag(table))
+      def releasesTable = timeForMetalXmlSlurper.parseText(replaceTableTag(table))
       releasesTable.tr.eachWithIndex { it, index ->
         if (index != 0) { // skip table header
           def builder = ReleaseEntity.builder()

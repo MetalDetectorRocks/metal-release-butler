@@ -18,7 +18,7 @@ import static rocks.metaldetector.butler.persistence.domain.release.ReleaseType.
 class TimeForMetalReleaseEntityConverterTest extends Specification {
 
   def xmlSlurper = new XmlSlurper(new Parser())
-  TimeForMetalReleaseEntityConverter underTest = new TimeForMetalReleaseEntityConverter(xmlSlurper: Spy(xmlSlurper))
+  TimeForMetalReleaseEntityConverter underTest = new TimeForMetalReleaseEntityConverter(timeForMetalXmlSlurper: Spy(xmlSlurper))
 
   def sourceString = new ClassPathResource("mock-releases-page-time-for-metal.txt").inputStream.text
   static final String LONG_DASH = "–"
@@ -61,7 +61,7 @@ class TimeForMetalReleaseEntityConverterTest extends Specification {
     result[2].state == OK
 
     and:
-    2 * underTest.xmlSlurper.parseText(*_)
+    2 * underTest.timeForMetalXmlSlurper.parseText(*_)
   }
 
   @Unroll

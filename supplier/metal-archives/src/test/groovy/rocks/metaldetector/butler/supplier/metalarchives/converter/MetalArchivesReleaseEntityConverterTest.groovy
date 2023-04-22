@@ -12,7 +12,7 @@ import static rocks.metaldetector.butler.persistence.domain.release.ReleaseType.
 
 class MetalArchivesReleaseEntityConverterTest extends Specification {
 
-  MetalArchivesReleaseEntityConverter underTest = new MetalArchivesReleaseEntityConverter(xmlSlurper: Spy(XmlSlurper))
+  MetalArchivesReleaseEntityConverter underTest = new MetalArchivesReleaseEntityConverter(metalArchivesXmlSlurper: Spy(XmlSlurper))
 
   def "Should convert raw data into ReleaseEntity"() {
     given:
@@ -42,7 +42,7 @@ class MetalArchivesReleaseEntityConverterTest extends Specification {
     conversionResult[0].estimatedReleaseDate == null
 
     and:
-    4 * underTest.xmlSlurper.parseText(*_)
+    4 * underTest.metalArchivesXmlSlurper.parseText(*_)
   }
 
   def "Should use FULL_LENGTH as default release type"() {
