@@ -36,6 +36,7 @@ class ImportJobService {
   @Async
   @Scheduled(cron = "0 0 2 * * *")
   void importFromExternalSources() {
+    log.info("Start import of new releases...")
     releaseImporters.each { releaseImporter ->
       ImportJobEntity job = createImportJob(releaseImporter.releaseSource)
       try {
@@ -52,6 +53,7 @@ class ImportJobService {
   @Async
   @Scheduled(cron = "0 0 3 * * *")
   void retryCoverDownload() {
+    log.info("Start cover download retry...")
     releaseImporters.each { releaseImporter ->
       try {
         releaseImporter.retryCoverDownload()

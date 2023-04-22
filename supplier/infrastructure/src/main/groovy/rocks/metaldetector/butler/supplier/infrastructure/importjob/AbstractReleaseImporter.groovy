@@ -24,9 +24,11 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
     List<Future> futures = []
     def releaseEntitiesToUpdate = releaseRepository.findAll()
         .findAll { releaseEntity ->
+          log.info("Fetched release from ${releaseEntity.source} and cover url ${releaseEntity.coverUrl}")
           releaseEntity.source == getReleaseSource() && !releaseEntity.coverUrl
         }
         .each { releaseEntity ->
+          log.info("Reload cover for artist ${releaseEntity.artist} and album ${releaseEntity.albumTitle}")
           futures << threadPoolTaskExecutor.submit(createCoverTransferTask(releaseEntity))
         }
         .collect()
