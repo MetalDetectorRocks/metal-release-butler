@@ -1,9 +1,9 @@
 [versions]
-awsS3Sdk = "2.20.55"
+awsS3Sdk = "2.20.56"
 commonsIo = "2.11.0"
 groovy = "4.0.11"
 jsonwebtoken = "0.11.5"
-jsoup = "1.15.4"
+jsoup = "1.16.1"
 junit = "5.9.3"
 lokiLogbackAppender = "1.4.0"
 postgres = "42.6.0"
@@ -48,3 +48,8 @@ groovyApp = ["groovy", "groovyXml", "groovyDatetime"]
 jjwt = ["jjwtApi", "jjwtImpl", "jjwtJackson"]
 testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest"]
 springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2ResourceServer", "springBootStarterSecurity", "springBootStarterValidation", "springBootStarterWeb"]
+
+[plugins]
+dockerPublishPlugin = { id = "de.europace.docker-publish", version = "1.4.3" }
+springBootPlugin = { id = "org.springframework.boot", version = "3.0.6" }
+springDependencyManagementPlugin = { id = "io.spring.dependency-management", version = "1.1.0" }
