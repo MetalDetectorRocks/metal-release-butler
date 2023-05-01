@@ -53,8 +53,12 @@ LABEL org.label-schema.vcs-ref=$VCS_REF
 LABEL org.label-schema.version=$BUILD_DATE
 
 COPY --from=builder app/dependencies/ ./
+RUN true # Bug in older docker versions, see https://stackoverflow.com/questions/51115856/docker-failed-to-export-image-failed-to-create-image-failed-to-get-layer
 COPY --from=builder app/spring-boot-loader/ ./
+RUN true
 COPY --from=builder app/snapshot-dependencies/ ./
+RUN true
 COPY --from=builder app/application/ ./
+RUN true
 
 ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
