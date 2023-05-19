@@ -28,11 +28,9 @@ class SecurityConfig {
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf().disable()
-        .sessionManagement().sessionCreationPolicy(STATELESS)
-        .and()
-        .exceptionHandling()
-        .and()
+    http.csrf { it.disable() }
+        .sessionManagement { it.sessionCreationPolicy(STATELESS) }
+        .exceptionHandling {}
         .authorizeHttpRequests { registry ->
           registry
               .requestMatchers(ACTUATOR_ENDPOINTS).permitAll()
@@ -43,8 +41,11 @@ class SecurityConfig {
               .requestMatchers(IMPORT_JOB, COVER_JOB).hasAuthority("SCOPE_import")
               .anyRequest().denyAll()
         }
-        .oauth2ResourceServer().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-        .jwt()
+        .oauth2ResourceServer {
+          it
+              .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+              .jwt {}
+        }
     return http.build()
   }
 }
