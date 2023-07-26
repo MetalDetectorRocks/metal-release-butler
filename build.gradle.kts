@@ -4,8 +4,8 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
 val javaVersion: JavaVersion = JavaVersion.VERSION_17
 
 val dependencyVersions = listOf(
-    "commons-logging:commons-logging:1.2",
-    libs.junitBom.get().toString()
+    libs.junitBom,
+    "org.opentest4j:opentest4j:1.3.0"
 )
 
 val dependencyGroupVersions = mapOf(
