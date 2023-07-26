@@ -1,10 +1,11 @@
 [versions]
-awsS3Sdk = "2.20.108"
+awsS3Sdk = "2.20.111"
 commonsIo = "2.13.0"
 groovy = "4.0.13"
 jsonwebtoken = "0.11.5"
 jsoup = "1.16.1"
-junit = "5.9.3"
+junit = "5.10.0"
+jupiter = "5.9.3"
 lokiLogbackAppender = "1.4.1"
 postgres = "42.6.0"
 spock = "2.3-groovy-4.0"
@@ -20,7 +21,7 @@ groovyTest = { module = "org.apache.groovy:groovy-test", version.ref = "groovy" 
 h2 = { module = "com.h2database:h2" }
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5" }
 junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
-jupiterApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+jupiterApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 jjwtApi = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
 jjwtImpl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
