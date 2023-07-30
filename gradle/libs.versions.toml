@@ -6,6 +6,7 @@ jsonwebtoken = "0.11.5"
 jsoup = "1.16.1"
 junit = "5.10.0"
 jupiter = "5.10.0"
+jupiterEngine = "1.10.0"
 lokiLogbackAppender = "1.4.1"
 postgres = "42.6.0"
 spock = "2.3-groovy-4.0"
@@ -22,6 +23,7 @@ h2 = { module = "com.h2database:h2" }
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5" }
 junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
 jupiterApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
+jupiterEngine = { module = "org.junit.platform:junit-platform-engine", version.ref = "jupiterEngine" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 jjwtApi = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
 jjwtImpl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
@@ -47,7 +49,7 @@ tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
 [bundles]
 groovyApp = ["groovy", "groovyXml", "groovyDatetime"]
 jjwt = ["jjwtApi", "jjwtImpl", "jjwtJackson"]
-testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest"]
+testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest", "jupiterEngine"]
 springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2ResourceServer", "springBootStarterSecurity", "springBootStarterValidation", "springBootStarterWeb"]
 
 [plugins]
