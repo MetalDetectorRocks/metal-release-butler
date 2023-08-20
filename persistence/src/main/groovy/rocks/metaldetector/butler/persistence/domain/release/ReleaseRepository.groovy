@@ -35,6 +35,13 @@ interface ReleaseRepository extends JpaRepository<ReleaseEntity, Long> {
 
   Optional<ReleaseEntity> findById(long id)
 
+  @Query(value = "select extract(YEAR from r.release_date) as releaseYear, extract(MONTH from r.release_date) as releaseMonth, count(*) as releases from releases r where r.state not like 'DEMO' group by releaseYear, releaseMonth order by releaseMonth, releaseYear", nativeQuery = true)
+  List<ReleasePerMonth> groupReleasesByYearAndMonth()
+
+  Long countByReleaseDateAfterAndStateNot(LocalDate releaseDate, ReleaseEntityState state)
+
+  Long countByState(ReleaseEntityState state)
+
   boolean existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(String artist, String albumTitle, LocalDate releaseDate)
 
   void deleteByReleaseDetailsUrl(String releaseDetailsUrl)

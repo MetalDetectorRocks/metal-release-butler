@@ -8,6 +8,7 @@ class Endpoints {
   public static final String COVER_JOB            = "/rest/v1/releases/cover-reload"
   public static final String RELEASE_IMAGES       = "/rest/v1/releases/images"
   public static final String IMPORT_JOB           = "/rest/v1/releases/import"
+  public static final String STATISTICS           = "/rest/v1/releases/statistics"
 
   static class AntPattern {
 
