@@ -13,6 +13,8 @@ import spock.lang.Unroll
 import java.time.LocalDate
 
 import static rocks.metaldetector.butler.persistence.DtoFactory.ReleaseEntityFactory
+import static rocks.metaldetector.butler.persistence.domain.release.ReleaseEntityState.DEMO
+import static rocks.metaldetector.butler.persistence.domain.release.ReleaseEntityState.DUPLICATE
 
 @DataJpaTest
 @ContextConfiguration(classes = [PersistenceConfig])
@@ -316,5 +318,61 @@ class ReleaseRepositoryIntegrationTest extends Specification implements WithInte
 
     then:
     underTest.findAll().isEmpty()
+  }
+
+  def "should group non-demo releases per year and month"() {
+    given:
+    def release4 = ReleaseEntityFactory.createReleaseEntity(4L, "A4", LocalDate.of(2020, 3, 1))
+    def demoRelease = ReleaseEntityFactory.createReleaseEntity(5L, "A5", LocalDate.of(2020, 3, 1))
+    demoRelease.state = DEMO
+    underTest.saveAll([release4, demoRelease])
+
+    when:
+    def result = underTest.groupReleasesByYearAndMonth()
+
+    then:
+    result.size() == 3
+
+    and:
+    result[0].getReleaseYear() == release1.releaseDate.year
+    result[1].getReleaseYear() == release2.releaseDate.year
+    result[2].getReleaseYear() == release3.releaseDate.year
+
+    and:
+    result[0].getReleaseMonth() == release1.releaseDate.month.value
+    result[1].getReleaseMonth() == release2.releaseDate.month.value
+    result[2].getReleaseMonth() == release3.releaseDate.month.value
+
+    and:
+    result[0].getReleases() == 1
+    result[1].getReleases() == 1
+    result[2].getReleases() == 2
+  }
+
+  def "should count all non-demo releases after given date"() {
+    given:
+    def releaseDate = LocalDate.of(2020, 1, 31)
+    def demoRelease = ReleaseEntityFactory.createReleaseEntity(4L, "A4", LocalDate.of(2020, 3, 1))
+    demoRelease.state = DEMO
+    underTest.save(demoRelease)
+
+    when:
+    def result = underTest.countByReleaseDateAfterAndStateNot(releaseDate, DEMO)
+
+    then:
+    result == 2
+  }
+
+  def "counts all releases by given state"() {
+    given:
+    def demoRelease = ReleaseEntityFactory.createReleaseEntity(4L, "A4", LocalDate.of(2020, 3, 1))
+    demoRelease.state = DUPLICATE
+    underTest.save(demoRelease)
+
+    when:
+    def result = underTest.countByState(DUPLICATE)
+
+    then:
+    result == 1
   }
 }

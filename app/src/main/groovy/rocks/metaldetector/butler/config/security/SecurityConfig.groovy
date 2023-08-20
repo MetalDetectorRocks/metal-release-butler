@@ -16,6 +16,7 @@ import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.IMPOR
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEASES
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEASES_UNPAGINATED
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEASE_IMAGES
+import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.STATISTICS
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.UPDATE_RELEASE
 
 @Configuration
@@ -39,6 +40,7 @@ class SecurityConfig {
               .requestMatchers(UPDATE_RELEASE).hasAuthority("SCOPE_releases-write")
               .requestMatchers(RELEASES_UNPAGINATED).hasAuthority("SCOPE_releases-read-all")
               .requestMatchers(IMPORT_JOB, COVER_JOB).hasAuthority("SCOPE_import")
+              .requestMatchers(STATISTICS).hasAuthority("SCOPE_statistics")
               .anyRequest().denyAll()
         }
         .oauth2ResourceServer {
