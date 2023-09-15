@@ -6,5 +6,5 @@ import groovy.transform.Canonical
 class StatisticsResponse {
 
   ReleaseInfo releaseInfo
-
+  List<ImportInfo> importInfo
 }

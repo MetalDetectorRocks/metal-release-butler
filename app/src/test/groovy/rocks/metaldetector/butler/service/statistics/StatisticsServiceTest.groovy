@@ -1,18 +1,24 @@
 package rocks.metaldetector.butler.service.statistics
 
+import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobRepository
 import rocks.metaldetector.butler.persistence.domain.release.ReleasePerMonth
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseRepository
 import spock.lang.Specification
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.YearMonth
 
+import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.SUCCESSFUL
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseEntityState.DEMO
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseEntityState.DUPLICATE
+import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.METAL_ARCHIVES
+import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.TIME_FOR_METAL
 
 class StatisticsServiceTest extends Specification {
 
-  StatisticsService underTest = new StatisticsService(releaseRepository: Mock(ReleaseRepository))
+  StatisticsService underTest = new StatisticsService(releaseRepository: Mock(ReleaseRepository),
+                                                      importJobRepository: Mock(ImportJobRepository))
 
   def "releaseRepository is called for grouped releases"() {
     given:
@@ -142,5 +148,58 @@ class StatisticsServiceTest extends Specification {
 
     then:
     result.duplicates == 6
+  }
+
+  def "successRate is calculated for all sources"() {
+    when:
+    def result = underTest.getImportInfo()
+
+    then:
+    1 * underTest.importJobRepository.countBySource(METAL_ARCHIVES) >> 10
+    1 * underTest.importJobRepository.countBySourceAndState(METAL_ARCHIVES, SUCCESSFUL) >> 9
+    result.find { it.source == METAL_ARCHIVES.name() }.successRate == 90
+
+    and:
+    1 * underTest.importJobRepository.countBySource(TIME_FOR_METAL) >> 10
+    1 * underTest.importJobRepository.countBySourceAndState(TIME_FOR_METAL, SUCCESSFUL) >> 5
+    result.find { it.source == TIME_FOR_METAL.name() }.successRate == 50
+  }
+
+  def "lastImport is fetched for all sources"() {
+    given:
+    underTest.importJobRepository.countBySource(*_) >> 10
+    underTest.importJobRepository.countBySourceAndState(*_) >> 10
+    def expectedTime1 = LocalDateTime.of(2020, 1, 1, 1, 1)
+    def expectedTime2 = LocalDateTime.of(2020, 1, 2, 1, 1)
+
+    when:
+    def result = underTest.getImportInfo()
+
+    then:
+    1 * underTest.importJobRepository.findLastStartTime(METAL_ARCHIVES) >> expectedTime1
+    1 * underTest.importJobRepository.findLastStartTime(TIME_FOR_METAL) >> expectedTime2
+
+    and:
+    result.find { it.source == METAL_ARCHIVES.name() }.lastImport == expectedTime1
+    result.find { it.source == TIME_FOR_METAL.name() }.lastImport == expectedTime2
+  }
+
+  def "lastSuccessfulImport is fetched for all sources"() {
+    given:
+    underTest.importJobRepository.countBySource(*_) >> 10
+    underTest.importJobRepository.countBySourceAndState(*_) >> 10
+    def expectedTime1 = LocalDateTime.of(2020, 1, 1, 1, 1)
+    def expectedTime2 = LocalDateTime.of(2020, 1, 2, 1, 1)
+
+    when:
+    def result = underTest.getImportInfo()
+
+    then:
+    1 * underTest.importJobRepository.findLastStartTimeByState(METAL_ARCHIVES, SUCCESSFUL) >> expectedTime1
+    1 * underTest.importJobRepository.findLastStartTimeByState(TIME_FOR_METAL, SUCCESSFUL) >> expectedTime2
+
+    and:
+    result.find { it.source == METAL_ARCHIVES.name() }.lastSuccessfulImport == expectedTime1
+    result.find { it.source == TIME_FOR_METAL.name() }.lastSuccessfulImport == expectedTime2
   }
 }

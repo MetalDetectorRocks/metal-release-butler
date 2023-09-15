@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 import rocks.metaldetector.butler.service.statistics.StatisticsService
+import rocks.metaldetector.butler.web.api.ImportInfo
 import rocks.metaldetector.butler.web.api.ReleaseInfo
 import rocks.metaldetector.butler.web.api.StatisticsResponse
 
@@ -20,7 +21,9 @@ class StatisticsRestController {
   @GetMapping(path = STATISTICS, produces = APPLICATION_JSON_VALUE)
   ResponseEntity<StatisticsResponse> getStatistics() {
     ReleaseInfo releaseInfo = statisticsService.getReleaseInfo()
-    StatisticsResponse response = new StatisticsResponse(releaseInfo: releaseInfo)
+    List<ImportInfo> importInfo = statisticsService.getImportInfo()
+    StatisticsResponse response = new StatisticsResponse(releaseInfo: releaseInfo,
+                                                         importInfo: importInfo)
     return ResponseEntity.ok(response)
   }
 }
