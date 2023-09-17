@@ -34,10 +34,10 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
   @Enumerated(EnumType.STRING)
   ReleaseType type
 
-  @Column(name = "artist_details_url", length = 500)
+  @Column(name = "artist_details_url", length = 1000)
   String artistDetailsUrl
 
-  @Column(name = "release_details_url", length = 500)
+  @Column(name = "release_details_url", length = 1000)
   String releaseDetailsUrl
 
   @Column(name = "source")
@@ -51,7 +51,7 @@ class ReleaseEntity extends BaseEntity implements Comparable<ReleaseEntity> {
   @Enumerated(EnumType.STRING)
   ReleaseEntityState state
 
-  @Column(name = "cover_url")
+  @Column(name = "cover_url", length = 1000)
   String coverUrl
 
   @Column(name = "reissue")
