@@ -10,12 +10,11 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import rocks.metaldetector.butler.supplier.infrastructure.ReleaseEntityDeleteRequestEvent
 import rocks.metaldetector.butler.supplier.infrastructure.cover.CoverFetcher
-
-import java.util.concurrent.TimeUnit
+import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesReleaseImportUtils
 
 @Slf4j
 @Service
-class MetalArchivesCoverFetcher implements CoverFetcher {
+class MetalArchivesCoverFetcher implements CoverFetcher, MetalArchivesReleaseImportUtils {
 
   static final String RELEASE_PAGE_NOT_FOUND_ERROR_MESSAGE = "status code: 404"
   static final String ALBUM_COVER_HTML_ID = "cover"
@@ -37,6 +36,7 @@ class MetalArchivesCoverFetcher implements CoverFetcher {
   }
 
   private Document fetchReleasePage(String sourceUrl) {
+    throttle()
     try {
       currentAttempt++
       return Jsoup.connect(sourceUrl).get()
@@ -54,8 +54,8 @@ class MetalArchivesCoverFetcher implements CoverFetcher {
     }
     else if (currentAttempt < MAX_ATTEMPTS) {
       log.info("The release page '${sourceUrl}' could not be fetched. Reason: $exception.message. " +
-               "I will wait 1 second and try again ($currentAttempt/$MAX_ATTEMPTS).")
-      TimeUnit.SECONDS.sleep(1)
+               "Will wait some time and try again ($currentAttempt/$MAX_ATTEMPTS).")
+      throttle()
       return fetchReleasePage(sourceUrl)
     }
     else {

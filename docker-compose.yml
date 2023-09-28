@@ -47,14 +47,14 @@ services:
 
   auth-app:
     container_name: butler-auth-app
-    image: metaldetector/metal-detector-auth:20230226T085029
+    image: metaldetectorrocks/metal-detector-auth:20230925T173111
     environment:
       SERVER_PORT: 9000
       DATASOURCE_URL: jdbc:postgresql://auth-db:5432/metal-detector-auth
       DATASOURCE_USERNAME: postgres
       DATASOURCE_PASSWORD: secret
-      AUTHORIZATION_SERVER_PRIVATE_KEY:
-      AUTHORIZATION_SERVER_PUBLIC_KEY:
+      AUTHORIZATION_SERVER_PRIVATE_KEY: ''
+      AUTHORIZATION_SERVER_PUBLIC_KEY: ''
       METAL_DETECTOR_USER_CLIENT_ID: metal-detector-user
       METAL_DETECTOR_USER_CLIENT_SECRET: userSecret
       METAL_DETECTOR_ADMIN_CLIENT_ID: metal-detector-admin
