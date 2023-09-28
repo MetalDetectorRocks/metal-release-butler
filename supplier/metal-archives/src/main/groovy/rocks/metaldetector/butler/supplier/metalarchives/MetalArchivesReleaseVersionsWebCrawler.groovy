@@ -7,13 +7,14 @@ import org.springframework.stereotype.Component
 
 @Slf4j
 @Component
-class MetalArchivesReleaseVersionsWebCrawler {
+class MetalArchivesReleaseVersionsWebCrawler implements MetalArchivesReleaseImportUtils {
 
   static final String REST_ENDPOINT = "https://www.metal-archives.com/release/ajax-versions/current/releaseId/parent/releaseId"
 
   Document requestOtherReleases(String releaseId) {
     def url = REST_ENDPOINT.replaceAll("releaseId", releaseId)
     try {
+      throttle()
       return Jsoup.connect(url).get()
     }
     catch (Exception e) {
