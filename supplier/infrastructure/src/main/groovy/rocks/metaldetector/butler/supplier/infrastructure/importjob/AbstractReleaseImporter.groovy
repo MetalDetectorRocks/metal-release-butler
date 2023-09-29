@@ -12,8 +12,16 @@ import java.util.concurrent.Future
 @Slf4j
 abstract class AbstractReleaseImporter implements ReleaseImporter {
 
+  static final int BATCH_SIZE = 25
+  private static final Comparator<ReleaseEntity> RELEASE_ENTITY_COMPARATOR = { release1, release2 ->
+    release1.artist.toLowerCase() <=> release2.artist.toLowerCase()
+  }
+
   @Autowired
   ReleaseRepository releaseRepository
+
+  @Autowired
+  ParallelCoverDownloader coverDownloader
 
   @Autowired
   ThreadPoolTaskExecutor threadPoolTaskExecutor
@@ -27,7 +35,7 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
           releaseEntity.source == getReleaseSource() && !releaseEntity.coverUrl
         }
         .each { releaseEntity ->
-          futures << threadPoolTaskExecutor.submit(createCoverTransferTask(releaseEntity))
+          futures << threadPoolTaskExecutor.submit(createCoverDownloadTask(releaseEntity))
         }
         .collect()
 
@@ -36,23 +44,28 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
     releaseRepository.saveAll(releaseEntitiesToUpdate)
   }
 
-  @Transactional
   List<ReleaseEntity> saveNewReleasesWithCover(List<ReleaseEntity> releaseEntities) {
-    List<Future> futures = []
-    Comparator<ReleaseEntity> releaseEntityComparator = { release1, release2 ->
-      release1.artist.toLowerCase() <=> release2.artist.toLowerCase()
+    def newReleases = preFilter(releaseEntities)
+    log.info("Out of ${releaseEntities.size()} requested releases, ${newReleases.size()} new releases are imported")
+
+    int batch = 0
+    List<ReleaseEntity> savedReleaseEntities = []
+    List<List<ReleaseEntity>> releaseBatches = newReleases.collate(BATCH_SIZE)
+    for (List<ReleaseEntity> releaseBatch : releaseBatches) {
+      log.info("Transfer covers for batch ${++batch}/${releaseBatches.size()}")
+      savedReleaseEntities += coverDownloader.downloadAndSave(releaseBatch, releaseEntity -> createCoverDownloadTask(releaseEntity))
+      log.info("Releases for batch ${batch}/${releaseBatches.size()} successfully saved.")
     }
-    def releaseEntitiesToSave = releaseEntities.unique(false, releaseEntityComparator)
+
+    return savedReleaseEntities
+  }
+
+  private List<ReleaseEntity> preFilter(List<ReleaseEntity> releaseEntities) {
+    return releaseEntities.unique(false, RELEASE_ENTITY_COMPARATOR)
         .findAll { releaseEntity ->
           !releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)
         }
-        .each { releaseEntity ->
-          futures << threadPoolTaskExecutor.submit(createCoverTransferTask(releaseEntity))
-        }
         .collect()
-
-    futures*.get()
-    return releaseRepository.saveAll(releaseEntitiesToSave)
   }
 
   protected ImportResult finalizeImport(int totalCountRequested, int totalCountImported) {
@@ -64,8 +77,8 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
     )
   }
 
-  protected CoverTransferTask createCoverTransferTask(ReleaseEntity releaseEntity) {
-    return new CoverTransferTask(
+  protected CoverDownloadTask createCoverDownloadTask(ReleaseEntity releaseEntity) {
+    return new CoverDownloadTask(
         releaseEntity: releaseEntity,
         coverService: getCoverService()
     )

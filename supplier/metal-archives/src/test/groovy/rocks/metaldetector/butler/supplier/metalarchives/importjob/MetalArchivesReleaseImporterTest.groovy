@@ -3,22 +3,25 @@ package rocks.metaldetector.butler.supplier.metalarchives.importjob
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseRepository
 import rocks.metaldetector.butler.supplier.infrastructure.cover.CoverService
+import rocks.metaldetector.butler.supplier.infrastructure.importjob.ParallelCoverDownloader
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 import rocks.metaldetector.butler.supplier.metalarchives.converter.MetalArchivesReleaseEntityConverter
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.METAL_ARCHIVES
-import static rocks.metaldetector.butler.supplier.metalarchives.DtoFactory.ReleaseEntityFactory
+import static rocks.metaldetector.butler.supplier.metalarchives.DtoFactory.ReleaseEntityFactory.*
 
 class MetalArchivesReleaseImporterTest extends Specification {
 
   MetalArchivesReleaseImporter underTest = new MetalArchivesReleaseImporter(
       restClient: Mock(MetalArchivesRestClient),
-      releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
       metalArchivesCoverService: Mock(CoverService),
+      releaseEntityConverter: Mock(MetalArchivesReleaseEntityConverter),
       releaseRepository: Mock(ReleaseRepository),
-      threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor)
+      threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor),
+      reissueHintEnhancer: Mock(ReissueHintEnhancer),
+      coverDownloader: Mock(ParallelCoverDownloader)
   )
 
   def "rest client is called once on import"() {
@@ -51,36 +54,19 @@ class MetalArchivesReleaseImporterTest extends Specification {
     ]
   }
 
-  def "a reissue task is created for every new release"() {
+  def "should call release hint enhancer"() {
     given:
-    def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A"), ReleaseEntityFactory.createReleaseEntity("B")]
     underTest.restClient.requestReleases() >> [new String[0]]
+    def releaseEntities = [createReleaseEntity("A"), createReleaseEntity("B")]
     underTest.releaseEntityConverter.convert(*_) >> releaseEntities
     underTest.releaseRepository.saveAll(*_) >> releaseEntities
+    underTest.coverDownloader.downloadAndSave(*_) >> releaseEntities
 
     when:
     underTest.importReleases()
 
     then:
-    2 * underTest.threadPoolTaskExecutor.submit({ args -> args instanceof MetalArchivesReissueTask })
-  }
-
-  def "new releases are saved after reissue task"() {
-    given:
-    def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("A"), ReleaseEntityFactory.createReleaseEntity("B")]
-    def newReleaseEntity = [ReleaseEntityFactory.createReleaseEntity("A")]
-    underTest.restClient.requestReleases() >> [new String[0]]
-    underTest.releaseEntityConverter.convert(*_) >> releaseEntities
-    underTest.releaseRepository.saveAll(*_) >> newReleaseEntity
-
-    when:
-    underTest.importReleases()
-
-    then:
-    1 * underTest.threadPoolTaskExecutor.submit({ args -> args instanceof MetalArchivesReissueTask })
-
-    then:
-    underTest.releaseRepository.saveAll(newReleaseEntity)
+    1 * underTest.reissueHintEnhancer.enhance(*_)
   }
 
   def "should return METAL_ARCHIVES as release source"() {

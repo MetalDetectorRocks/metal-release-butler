@@ -6,9 +6,9 @@ import spock.lang.Specification
 
 import java.time.LocalDate
 
-class CoverTransferTaskTest extends Specification {
+class CoverDownloadTaskTest extends Specification {
 
-  CoverTransferTask underTest = new CoverTransferTask(
+  CoverDownloadTask underTest = new CoverDownloadTask(
       coverService: Mock(CoverService),
       releaseEntity: Mock(ReleaseEntity)
   )

@@ -3,7 +3,7 @@ package rocks.metaldetector.butler.supplier.infrastructure.importjob
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseEntity
 import rocks.metaldetector.butler.supplier.infrastructure.cover.CoverService
 
-class CoverTransferTask implements Runnable {
+class CoverDownloadTask implements Runnable {
 
   ReleaseEntity releaseEntity
   CoverService coverService
