@@ -3,20 +3,18 @@ package rocks.metaldetector.butler.supplier.metalarchives.importjob
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseEntity
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseSource
 import rocks.metaldetector.butler.supplier.infrastructure.converter.Converter
 import rocks.metaldetector.butler.supplier.infrastructure.cover.CoverService
 import rocks.metaldetector.butler.supplier.infrastructure.importjob.AbstractReleaseImporter
 import rocks.metaldetector.butler.supplier.infrastructure.importjob.ImportResult
-import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesReleaseVersionsWebCrawler
 import rocks.metaldetector.butler.supplier.metalarchives.MetalArchivesRestClient
 
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.METAL_ARCHIVES
 
-@Service
 @Slf4j
+@Service
 class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
 
   @Autowired
@@ -29,21 +27,14 @@ class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
   Converter<String[], List<ReleaseEntity>> releaseEntityConverter
 
   @Autowired
-  MetalArchivesReleaseVersionsWebCrawler webCrawler
+  ReissueHintEnhancer reissueHintEnhancer
 
   @Override
-  @Transactional
   ImportResult importReleases() {
     def upcomingReleasesRawData = restClient.requestReleases()
     List<ReleaseEntity> releaseEntities = upcomingReleasesRawData.collectMany { releaseEntityConverter.convert(it) }
     List<ReleaseEntity> newReleaseEntities = saveNewReleasesWithCover(releaseEntities)
-
-    def futures = newReleaseEntities.collect {
-      threadPoolTaskExecutor.submit(createReissueTask(it))
-    }
-
-    futures*.get()
-    releaseRepository.saveAll(newReleaseEntities)
+    reissueHintEnhancer.enhance(newReleaseEntities)
 
     return finalizeImport(releaseEntities.size(), newReleaseEntities.size())
   }
@@ -56,12 +47,5 @@ class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
   @Override
   CoverService getCoverService() {
     return metalArchivesCoverService
-  }
-
-  private MetalArchivesReissueTask createReissueTask(ReleaseEntity releaseEntity) {
-    return new MetalArchivesReissueTask(
-        releaseEntity: releaseEntity,
-        webCrawler: webCrawler
-    )
   }
 }

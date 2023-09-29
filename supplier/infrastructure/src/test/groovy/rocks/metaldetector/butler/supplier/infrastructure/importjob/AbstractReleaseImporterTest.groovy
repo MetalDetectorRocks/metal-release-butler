@@ -12,11 +12,15 @@ import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSourc
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.TEST
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.TIME_FOR_METAL
 import static rocks.metaldetector.butler.supplier.infrastructure.DtoFactory.ReleaseEntityFactory
+import static rocks.metaldetector.butler.supplier.infrastructure.importjob.AbstractReleaseImporter.BATCH_SIZE
 
 class AbstractReleaseImporterTest extends Specification {
 
-  AbstractReleaseImporter underTest = new TestReleaseImporter(releaseRepository: Mock(ReleaseRepository),
-                                                              threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor))
+  AbstractReleaseImporter underTest = new TestReleaseImporter(
+      releaseRepository: Mock(ReleaseRepository),
+      threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor),
+      coverDownloader: Mock(ParallelCoverDownloader)
+  )
 
   def "saveNewReleasesWithCover: Duplicates are filtered out before the database query checks whether the release already exists"() {
     given:
@@ -33,29 +37,6 @@ class AbstractReleaseImporterTest extends Specification {
     1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
   }
 
-  def "saveNewReleasesWithCover: ReleaseEntity and CoverService is passed to each created CoverTransferTask"() {
-    given:
-    def releaseEntities = [
-        ReleaseEntityFactory.createReleaseEntity("a"),
-        ReleaseEntityFactory.createReleaseEntity("b")
-    ]
-
-    when:
-    underTest.saveNewReleasesWithCover(releaseEntities)
-
-    then:
-    1 * underTest.threadPoolTaskExecutor.submit({ args ->
-      args.releaseEntity == releaseEntities[0] &&
-      args.coverService == underTest.getCoverService()
-    })
-
-    and:
-    1 * underTest.threadPoolTaskExecutor.submit({ args ->
-      args.releaseEntity == releaseEntities[1] &&
-      args.coverService == underTest.getCoverService()
-    })
-  }
-
   def "saveNewReleasesWithCover: existing releases are not submitted to persistence thread pool"() {
     given:
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("a")]
@@ -68,29 +49,6 @@ class AbstractReleaseImporterTest extends Specification {
 
     and:
     0 * underTest.threadPoolTaskExecutor.submit(_)
-  }
-
-  def "saveNewReleasesWithCover: should call release repository to save all new releases"() {
-    given:
-    underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [false, false]
-    def releaseEntities = [
-        ReleaseEntityFactory.createReleaseEntity("a"),
-        ReleaseEntityFactory.createReleaseEntity("b")
-    ]
-
-    when:
-    underTest.saveNewReleasesWithCover(releaseEntities)
-
-    then:
-    1 * underTest.releaseRepository.saveAll(releaseEntities)
-  }
-
-  def "finalizeImport: should return ImportResult with correct values for 'totalCountRequested' and 'totalCountImported'"() {
-    when:
-    def importResult = underTest.finalizeImport(2, 1)
-
-    then:
-    importResult == new ImportResult(totalCountRequested: 2, totalCountImported: 1)
   }
 
   def "saveNewReleasesWithCover: should not modify original list when calling unique()"() {
@@ -106,9 +64,48 @@ class AbstractReleaseImporterTest extends Specification {
     underTest.saveNewReleasesWithCover(releaseEntities)
 
     then:
-    1 * underTest.releaseRepository.saveAll({ args ->
+    1 * underTest.coverDownloader.downloadAndSave({ args ->
       args.size() < releaseEntities.size()
-    })
+    }, _)
+  }
+
+  def "saveNewReleasesWithCover: should call cover downloader per each releases batch"() {
+    given:
+    def releaseEntities = []
+    1.upto(BATCH_SIZE + 1, { num -> releaseEntities += ReleaseEntityFactory.createReleaseEntity("artist $num")})
+
+    when:
+    underTest.saveNewReleasesWithCover(releaseEntities)
+
+    then:
+    2 * underTest.coverDownloader.downloadAndSave(*_)
+  }
+
+  def "saveNewReleasesWithCover: should return all releases from cover downloader"() {
+    given:
+    def releaseEntities = []
+    1.upto(BATCH_SIZE + 1, { num -> releaseEntities += ReleaseEntityFactory.createReleaseEntity("artist $num")})
+
+    def release1 = ReleaseEntityFactory.createReleaseEntity("Sample 1")
+    def release2 = ReleaseEntityFactory.createReleaseEntity("Sample 2")
+    underTest.coverDownloader.downloadAndSave(*_) >>> [
+        [release1],
+        [release2]
+    ]
+
+    when:
+    def result = underTest.saveNewReleasesWithCover(releaseEntities)
+
+    then:
+    result == [release1, release2]
+  }
+
+  def "finalizeImport: should return ImportResult with correct values for 'totalCountRequested' and 'totalCountImported'"() {
+    when:
+    def importResult = underTest.finalizeImport(2, 1)
+
+    then:
+    importResult == new ImportResult(totalCountRequested: 2, totalCountImported: 1)
   }
 
   def "retryCoverDownload: should call releaseRepository on retryCoverDownload"() {

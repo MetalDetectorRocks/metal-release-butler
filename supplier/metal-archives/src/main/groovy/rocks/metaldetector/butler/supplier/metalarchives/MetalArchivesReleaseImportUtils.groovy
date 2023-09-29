@@ -1,10 +1,10 @@
 package rocks.metaldetector.butler.supplier.metalarchives
 
-import java.util.concurrent.TimeUnit
+import static java.util.concurrent.TimeUnit.SECONDS
 
 trait MetalArchivesReleaseImportUtils {
 
-  void throttle() {
-    TimeUnit.SECONDS.sleep(5)
+  void throttle(long throttlingInSeconds) {
+    SECONDS.sleep(throttlingInSeconds)
   }
 }
