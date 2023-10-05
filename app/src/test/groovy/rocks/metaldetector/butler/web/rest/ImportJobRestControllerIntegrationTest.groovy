@@ -17,6 +17,7 @@ import static org.springframework.http.HttpStatus.OK
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.COVER_JOB
+import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.FETCH_IMPORT_JOB
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.IMPORT_JOB
 
 @SpringBootTest
@@ -52,6 +53,32 @@ class ImportJobRestControllerIntegrationTest extends Specification implements Wi
     given:
     jwtDecoder.decode(*_) >> OTHER_SCOPE_JWT
     def request = get(IMPORT_JOB).header("Authorization", "Bearer $OTHER_SCOPE_JWT.tokenValue")
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == FORBIDDEN.value()
+  }
+
+  def "Scope 'import' can GET on single import endpoint"() {
+    given:
+    jwtDecoder.decode(*_) >> IMPORT_JWT
+    def request = get(FETCH_IMPORT_JOB.replace("{jobId}", "123"))
+        .header("Authorization", "Bearer $IMPORT_JWT.tokenValue")
+
+    when:
+    def result = mockMvc.perform(request).andReturn()
+
+    then:
+    result.response.status == OK.value()
+  }
+
+  def "Other scopes cannot GET on single import endpoint"() {
+    given:
+    jwtDecoder.decode(*_) >> OTHER_SCOPE_JWT
+    def request = get(FETCH_IMPORT_JOB.replace("{jobId}", "123"))
+        .header("Authorization", "Bearer $OTHER_SCOPE_JWT.tokenValue")
 
     when:
     def result = mockMvc.perform(request).andReturn()

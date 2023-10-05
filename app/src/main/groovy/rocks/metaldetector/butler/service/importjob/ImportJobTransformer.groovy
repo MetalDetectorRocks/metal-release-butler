@@ -10,7 +10,7 @@ class ImportJobTransformer {
   ImportJobDto transform(ImportJobEntity importJobEntity) {
     if (importJobEntity) {
       return new ImportJobDto(
-              jobId: importJobEntity.jobId,
+              jobId: importJobEntity.jobId.toString(),
               totalCountRequested: importJobEntity.totalCountRequested,
               totalCountImported: importJobEntity.totalCountImported,
               startTime: importJobEntity.startTime,

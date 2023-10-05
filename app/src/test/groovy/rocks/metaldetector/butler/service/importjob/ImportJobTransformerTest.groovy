@@ -26,7 +26,7 @@ class ImportJobTransformerTest extends Specification {
     def result = underTest.transform(importJobEntity)
 
     then:
-    result.jobId == jobId
+    result.jobId == jobId.toString()
   }
 
   def "should transform 'totalCountRequested'"() {

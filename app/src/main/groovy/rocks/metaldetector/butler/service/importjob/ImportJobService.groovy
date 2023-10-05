@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Async
 import org.springframework.scheduling.annotation.Scheduled
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobEntity
@@ -16,7 +17,7 @@ import rocks.metaldetector.butler.web.dto.ImportJobDto
 
 import java.time.LocalDateTime
 
-import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.ERROR
+import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.INITIALIZED
 import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.RUNNING
 import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.SUCCESSFUL
 
@@ -33,20 +34,18 @@ class ImportJobService {
   @Autowired
   List<ReleaseImporter> releaseImporters
 
-  @Async
+  @Autowired
+  ThreadPoolTaskExecutor releaseImportTaskExecutor
+
   @Scheduled(cron = "0 0 2 * * *")
-  void importFromExternalSources() {
+  List<String> createImportJobs() {
     log.info("Start import of new releases...")
-    releaseImporters.each { releaseImporter ->
+    return releaseImporters.collect { releaseImporter ->
       ImportJobEntity job = createImportJob(releaseImporter.releaseSource)
-      try {
-        ImportResult importResult = releaseImporter.importReleases()
-        updateImportJob(job, importResult, SUCCESSFUL)
-      }
-      catch (Exception e) {
-        log.error("Error during import of releases from '${releaseImporter.getReleaseSource().displayName}'", e)
-        updateImportJob(job, new ImportResult(), ERROR)
-      }
+      releaseImportTaskExecutor.submit(new ImportJobTask(releaseImporter: releaseImporter,
+                                                         importJobService: this,
+                                                         importJob: job))
+      return job.jobId.toString()
     }
   }
 
@@ -64,19 +63,31 @@ class ImportJobService {
     }
   }
 
-  @Transactional
-  List<ImportJobDto> findAllImportJobResults() {
+  @Transactional(readOnly = true)
+  List<ImportJobDto> findAllImportJobs() {
     return importJobRepository.findAll().collect {
       importJobTransformer.transform(it)
     }
   }
 
+  @Transactional(readOnly = true)
+  ImportJobDto findImportJobById(String jobId) {
+    ImportJobEntity importJob = importJobRepository.findByJobId(UUID.fromString(jobId))
+    return importJobTransformer.transform(importJob)
+  }
+
   @Transactional
-  void updateImportJob(ImportJobEntity importJobEntity, ImportResult importResult, JobState jobState) {
-    importJobEntity.totalCountRequested = importResult.totalCountRequested
-    importJobEntity.totalCountImported = importResult.totalCountImported
+  void updateImportJob(ImportJobEntity importJobEntity, JobState jobState, ImportResult importResult = null) {
+    if (jobState == SUCCESSFUL) {
+      importJobEntity.totalCountRequested = importResult?.totalCountRequested
+      importJobEntity.totalCountImported = importResult?.totalCountImported
+      importJobEntity.endTime = LocalDateTime.now()
+    }
+    else if (jobState == RUNNING) {
+      importJobEntity.startTime = LocalDateTime.now()
+    }
+
     importJobEntity.state = jobState
-    importJobEntity.endTime = LocalDateTime.now()
     importJobRepository.save(importJobEntity)
   }
 
@@ -84,8 +95,7 @@ class ImportJobService {
   ImportJobEntity createImportJob(ReleaseSource source) {
     ImportJobEntity importJobEntity = new ImportJobEntity(
         jobId: UUID.randomUUID(),
-        startTime: LocalDateTime.now(),
-        state: RUNNING,
+        state: INITIALIZED,
         source: source
     )
     importJobEntity = importJobRepository.save(importJobEntity)

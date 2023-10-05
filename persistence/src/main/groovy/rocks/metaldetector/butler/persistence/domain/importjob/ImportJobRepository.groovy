@@ -20,4 +20,6 @@ interface ImportJobRepository extends JpaRepository<ImportJobEntity, Long> {
 
   @Query("select i.startTime from import_jobs i where i.source = :source and i.state = :state order by i.startTime desc limit 1")
   LocalDateTime findLastStartTimeByState(@Param("source") ReleaseSource source, @Param("state") JobState state)
+
+  ImportJobEntity findByJobId(UUID jobId)
 }
