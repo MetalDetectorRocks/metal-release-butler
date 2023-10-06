@@ -107,6 +107,9 @@ class ImportJobRepositoryIntegrationTest extends Specification implements WithIn
     def result = underTest.findByJobId(IMPORT_3.jobId)
 
     then:
-    result == IMPORT_3
+    result.isPresent()
+
+    and:
+    result.get() == IMPORT_3
   }
 }

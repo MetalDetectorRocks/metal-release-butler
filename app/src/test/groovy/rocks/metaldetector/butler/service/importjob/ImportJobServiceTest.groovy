@@ -1,6 +1,7 @@
 package rocks.metaldetector.butler.service.importjob
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+import rocks.metaldetector.butler.config.web.ResourceNotFoundException
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobEntity
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobRepository
 import rocks.metaldetector.butler.persistence.domain.importjob.JobState
@@ -74,14 +75,14 @@ class ImportJobServiceTest extends Specification {
     underTest.findImportJobById(jobId.toString())
 
     then:
-    1 * underTest.importJobRepository.findByJobId(jobId)
+    1 * underTest.importJobRepository.findByJobId(jobId) >> Optional.of(new ImportJobEntity())
   }
 
   def "findImportJobById: transformer is called with job"() {
     given:
     def jobId = UUID.randomUUID()
-    def job = new ImportJobEntity(jobId:  jobId)
-    underTest.importJobRepository.findByJobId(*_) >> job
+    def job = new ImportJobEntity(jobId: jobId)
+    underTest.importJobRepository.findByJobId(*_) >> Optional.of(job)
 
     when:
     underTest.findImportJobById(jobId.toString())
@@ -90,10 +91,24 @@ class ImportJobServiceTest extends Specification {
     1 * underTest.importJobTransformer.transform(job)
   }
 
+  def "findImportJobById: exception is thrown if job does not exist"() {
+    given:
+    def jobId = UUID.randomUUID().toString()
+    underTest.importJobRepository.findByJobId(*_) >> Optional.empty()
+
+    when:
+    underTest.findImportJobById(jobId)
+
+    then:
+    def thrown = thrown(ResourceNotFoundException)
+    thrown.message == "Job $jobId not present"
+  }
+
   def "findImportJobById: dto is returned"() {
     given:
     def jobId = UUID.randomUUID().toString()
     def jobDto = new ImportJobDto(jobId: jobId)
+    underTest.importJobRepository.findByJobId(*_) >> Optional.of(new ImportJobEntity())
     underTest.importJobTransformer.transform(*_) >> jobDto
 
     when:

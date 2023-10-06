@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import rocks.metaldetector.butler.config.web.ResourceNotFoundException
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobEntity
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobRepository
 import rocks.metaldetector.butler.persistence.domain.importjob.JobState
@@ -73,6 +74,7 @@ class ImportJobService {
   @Transactional(readOnly = true)
   ImportJobDto findImportJobById(String jobId) {
     ImportJobEntity importJob = importJobRepository.findByJobId(UUID.fromString(jobId))
+        .orElseThrow(() -> new ResourceNotFoundException("Job ${jobId} not present"))
     return importJobTransformer.transform(importJob)
   }
 
