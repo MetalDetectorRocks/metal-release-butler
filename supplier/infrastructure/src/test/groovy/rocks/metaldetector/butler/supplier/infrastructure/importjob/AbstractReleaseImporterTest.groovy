@@ -8,6 +8,8 @@ import rocks.metaldetector.butler.supplier.infrastructure.cover.CoverService
 import rocks.metaldetector.butler.supplier.infrastructure.cover.NoOpCoverService
 import spock.lang.Specification
 
+import java.util.concurrent.locks.ReentrantReadWriteLock
+
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.METAL_ARCHIVES
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.TEST
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.TIME_FOR_METAL
@@ -19,11 +21,14 @@ class AbstractReleaseImporterTest extends Specification {
   AbstractReleaseImporter underTest = new TestReleaseImporter(
       releaseRepository: Mock(ReleaseRepository),
       threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor),
-      coverDownloader: Mock(ParallelCoverDownloader)
+      coverDownloader: Mock(ParallelCoverDownloader),
+      reentrantReadWriteLock: Mock(ReentrantReadWriteLock)
   )
 
-  def "saveNewReleasesWithCover: Duplicates are filtered out before the database query checks whether the release already exists"() {
+  def "saveNewReleasesWithCover: Duplicates are filtered out before the database query checks whether the release already exists in a read lock"() {
     given:
+    def readLock = Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     def releaseEntities = [
         ReleaseEntityFactory.createReleaseEntity("a"),
         ReleaseEntityFactory.createReleaseEntity("a"),
@@ -34,11 +39,25 @@ class AbstractReleaseImporterTest extends Specification {
     underTest.saveNewReleasesWithCover(releaseEntities)
 
     then:
-    1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
+    1 * underTest.reentrantReadWriteLock.readLock() >> readLock
+
+    then:
+    1 * readLock.lock()
+
+    then:
+    1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >> true
+
+    then:
+    1 * underTest.reentrantReadWriteLock.readLock() >> readLock
+
+    then:
+    1 * readLock.unlock()
   }
 
   def "saveNewReleasesWithCover: existing releases are not submitted to persistence thread pool"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("a")]
 
     when:
@@ -53,6 +72,8 @@ class AbstractReleaseImporterTest extends Specification {
 
   def "saveNewReleasesWithCover: should not modify original list when calling unique()"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_) >>> [false, false]
     def releaseEntities = [
         ReleaseEntityFactory.createReleaseEntity("a"),
@@ -64,40 +85,84 @@ class AbstractReleaseImporterTest extends Specification {
     underTest.saveNewReleasesWithCover(releaseEntities)
 
     then:
-    1 * underTest.coverDownloader.downloadAndSave({ args ->
+    1 * underTest.coverDownloader.download({ args ->
       args.size() < releaseEntities.size()
-    }, _)
+                                           }, _)
   }
 
   def "saveNewReleasesWithCover: should call cover downloader per each releases batch"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     def releaseEntities = []
-    1.upto(BATCH_SIZE + 1, { num -> releaseEntities += ReleaseEntityFactory.createReleaseEntity("artist $num")})
+    1.upto(BATCH_SIZE + 1, { num -> releaseEntities += ReleaseEntityFactory.createReleaseEntity("artist $num") })
 
     when:
     underTest.saveNewReleasesWithCover(releaseEntities)
 
     then:
-    2 * underTest.coverDownloader.downloadAndSave(*_)
+    2 * underTest.coverDownloader.download(*_)
   }
 
-  def "saveNewReleasesWithCover: should return all releases from cover downloader"() {
+  def "saveNewReleasesWithCover: should save each releases batch"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     def releaseEntities = []
-    1.upto(BATCH_SIZE + 1, { num -> releaseEntities += ReleaseEntityFactory.createReleaseEntity("artist $num")})
-
-    def release1 = ReleaseEntityFactory.createReleaseEntity("Sample 1")
-    def release2 = ReleaseEntityFactory.createReleaseEntity("Sample 2")
-    underTest.coverDownloader.downloadAndSave(*_) >>> [
-        [release1],
-        [release2]
-    ]
+    1.upto(BATCH_SIZE + 1, { num -> releaseEntities += ReleaseEntityFactory.createReleaseEntity("artist $num") })
 
     when:
-    def result = underTest.saveNewReleasesWithCover(releaseEntities)
+    underTest.saveNewReleasesWithCover(releaseEntities)
 
     then:
-    result == [release1, release2]
+    2 * underTest.releaseRepository.saveAll(*_)
+  }
+
+  def "saveNewReleasesWithCover: before saving releases are checked for existence again"() {
+    given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
+    def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("a")]
+
+    when:
+    underTest.saveNewReleasesWithCover(releaseEntities)
+
+    then:
+    1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
+
+    then:
+    1 * underTest.coverDownloader.download(*_)
+
+    then:
+    1 * underTest.releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(*_)
+
+    then:
+    1 * underTest.releaseRepository.saveAll(*_)
+  }
+
+  def "saveNewReleasesWithCover: writing of releases is done in write lock"() {
+    given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    def writeLock = Mock(ReentrantReadWriteLock.WriteLock)
+    def releaseEntities = [ReleaseEntityFactory.createReleaseEntity("a")]
+
+    when:
+    underTest.saveNewReleasesWithCover(releaseEntities)
+
+    then:
+    1 * underTest.reentrantReadWriteLock.writeLock() >> writeLock
+
+    then:
+    1 * writeLock.lock()
+
+    then:
+    1 * underTest.releaseRepository.saveAll(*_)
+
+    then:
+    1 * underTest.reentrantReadWriteLock.writeLock() >> writeLock
+
+    then:
+    1 * writeLock.unlock()
   }
 
   def "finalizeImport: should return ImportResult with correct values for 'totalCountRequested' and 'totalCountImported'"() {

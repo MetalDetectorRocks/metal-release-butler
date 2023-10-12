@@ -9,8 +9,10 @@ import rocks.metaldetector.butler.supplier.metalarchives.converter.MetalArchives
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.util.concurrent.locks.ReentrantReadWriteLock
+
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.METAL_ARCHIVES
-import static rocks.metaldetector.butler.supplier.metalarchives.DtoFactory.ReleaseEntityFactory.*
+import static rocks.metaldetector.butler.supplier.metalarchives.DtoFactory.ReleaseEntityFactory.createReleaseEntity
 
 class MetalArchivesReleaseImporterTest extends Specification {
 
@@ -21,11 +23,14 @@ class MetalArchivesReleaseImporterTest extends Specification {
       releaseRepository: Mock(ReleaseRepository),
       threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor),
       reissueHintEnhancer: Mock(ReissueHintEnhancer),
-      coverDownloader: Mock(ParallelCoverDownloader)
+      coverDownloader: Mock(ParallelCoverDownloader),
+      reentrantReadWriteLock: Mock(ReentrantReadWriteLock)
   )
 
   def "rest client is called once on import"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     underTest.releaseRepository.saveAll(*_) >> []
 
     when:
@@ -38,6 +43,8 @@ class MetalArchivesReleaseImporterTest extends Specification {
   @Unroll
   "release converter is called for every response from rest template"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     underTest.restClient.requestReleases() >> releases
     underTest.releaseRepository.saveAll(*_) >> []
 
@@ -56,11 +63,12 @@ class MetalArchivesReleaseImporterTest extends Specification {
 
   def "should call release hint enhancer"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     underTest.restClient.requestReleases() >> [new String[0]]
     def releaseEntities = [createReleaseEntity("A"), createReleaseEntity("B")]
     underTest.releaseEntityConverter.convert(*_) >> releaseEntities
     underTest.releaseRepository.saveAll(*_) >> releaseEntities
-    underTest.coverDownloader.downloadAndSave(*_) >> releaseEntities
 
     when:
     underTest.importReleases()

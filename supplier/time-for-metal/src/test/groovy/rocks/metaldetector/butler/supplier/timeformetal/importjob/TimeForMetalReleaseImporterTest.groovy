@@ -6,6 +6,8 @@ import rocks.metaldetector.butler.supplier.infrastructure.cover.CoverService
 import rocks.metaldetector.butler.supplier.timeformetal.TimeForMetalWebCrawler
 import spock.lang.Specification
 
+import java.util.concurrent.locks.ReentrantReadWriteLock
+
 import static rocks.metaldetector.butler.supplier.timeformetal.DtoFactory.ReleaseEntityFactory
 
 class TimeForMetalReleaseImporterTest extends Specification {
@@ -14,11 +16,14 @@ class TimeForMetalReleaseImporterTest extends Specification {
       webCrawler: Mock(TimeForMetalWebCrawler),
       timeForMetalReleaseEntityConverter: Mock(Converter),
       timeForMetalCoverService: Mock(CoverService),
-      releaseRepository: Mock(ReleaseRepository)
+      releaseRepository: Mock(ReleaseRepository),
+      reentrantReadWriteLock: Mock(ReentrantReadWriteLock)
   )
 
   def "webCrawler is called with initial page"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     underTest.timeForMetalReleaseEntityConverter.convert(*_) >> []
     underTest.releaseRepository.saveAll(*_) >> []
 
@@ -31,6 +36,8 @@ class TimeForMetalReleaseImporterTest extends Specification {
 
   def "entityConverter is called with raw release page"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     def rawPage = "releasePage"
     underTest.webCrawler.requestReleases(*_) >> rawPage
     underTest.releaseRepository.saveAll(*_) >> []
@@ -44,6 +51,8 @@ class TimeForMetalReleaseImporterTest extends Specification {
 
   def "if entityConverter returns new releases webCrawler is called with next page"() {
     given:
+    underTest.reentrantReadWriteLock.readLock() >> Mock(ReentrantReadWriteLock.ReadLock)
+    underTest.reentrantReadWriteLock.writeLock() >> Mock(ReentrantReadWriteLock.WriteLock)
     def firstReleasePage = "releasePage"
     underTest.timeForMetalReleaseEntityConverter.convert(firstReleasePage) >> [ReleaseEntityFactory.createReleaseEntity("a")]
     underTest.timeForMetalReleaseEntityConverter.convert(null) >> []
