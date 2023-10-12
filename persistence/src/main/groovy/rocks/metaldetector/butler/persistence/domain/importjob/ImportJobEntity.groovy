@@ -25,7 +25,7 @@ class ImportJobEntity extends BaseEntity {
   @Column(name = "total_count_imported", nullable = true)
   Integer totalCountImported
 
-  @Column(name = "start_time", nullable = false, columnDefinition = "timestamp")
+  @Column(name = "start_time", nullable = true, columnDefinition = "timestamp")
   LocalDateTime startTime
 
   @Column(name = "end_time", nullable = true, columnDefinition = "timestamp")

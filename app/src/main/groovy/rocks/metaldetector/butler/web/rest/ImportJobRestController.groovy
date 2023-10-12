@@ -25,7 +25,7 @@ class ImportJobRestController {
   @GetMapping(path = IMPORT_JOB, produces = APPLICATION_JSON_VALUE)
   ResponseEntity<ImportJobResponse> getAllImportJobs() {
     List<ImportJobDto> importJobs = importJobService.findAllImportJobs()
-    ImportJobResponse response = new ImportJobResponse(importJobs:  importJobs)
+    ImportJobResponse response = new ImportJobResponse(importJobs: importJobs)
     return ResponseEntity.ok(response)
   }
 
