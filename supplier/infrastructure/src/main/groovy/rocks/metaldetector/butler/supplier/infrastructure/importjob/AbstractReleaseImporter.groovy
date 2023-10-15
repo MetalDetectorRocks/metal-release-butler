@@ -67,9 +67,10 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
   }
 
   private List<ReleaseEntity> preFilter(List<ReleaseEntity> releaseEntities) {
+    def uniqueReleases = releaseEntities.unique(false, RELEASE_ENTITY_COMPARATOR)
     reentrantReadWriteLock.readLock().lock()
     try {
-      return releaseEntities.unique(false, RELEASE_ENTITY_COMPARATOR)
+      return uniqueReleases
           .findAll { releaseEntity ->
             !releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)
           }
