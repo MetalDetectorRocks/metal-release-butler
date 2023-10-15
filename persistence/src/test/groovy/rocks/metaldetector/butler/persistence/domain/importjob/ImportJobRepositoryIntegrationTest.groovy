@@ -22,17 +22,17 @@ import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSourc
 @ContextConfiguration(classes = [PersistenceConfig])
 class ImportJobRepositoryIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
+  static ImportJobEntity IMPORT_1 = createImportJobEntity(METAL_ARCHIVES, SUCCESSFUL, LocalDateTime.of(2020, 1, 1, 1, 1), LocalDateTime.of(2020, 1, 1, 1, 3))
+  static ImportJobEntity IMPORT_2 = createImportJobEntity(METAL_ARCHIVES, SUCCESSFUL, LocalDateTime.of(2020, 1, 2, 1, 1), LocalDateTime.of(2020, 1, 2, 1, 3))
+  static ImportJobEntity IMPORT_3 = createImportJobEntity(METAL_ARCHIVES, ERROR, LocalDateTime.of(2020, 1, 3, 1, 1), LocalDateTime.of(2020, 1, 3, 1, 3))
+  static ImportJobEntity IMPORT_4 = createImportJobEntity(TIME_FOR_METAL, SUCCESSFUL, LocalDateTime.of(2020, 1, 1, 2, 1), LocalDateTime.of(2020, 1, 1, 2, 3))
+  static ImportJobEntity IMPORT_5 = createImportJobEntity(TIME_FOR_METAL, RUNNING, LocalDateTime.of(2020, 1, 2, 2, 1), LocalDateTime.of(2020, 1, 2, 2, 3))
+
   @Autowired
   ImportJobRepository underTest
 
-  static ImportJobEntity import1 = createImportJobEntity(METAL_ARCHIVES, SUCCESSFUL, LocalDateTime.of(2020, 1, 1, 1, 1), LocalDateTime.of(2020, 1, 1, 1, 3))
-  static ImportJobEntity import2 = createImportJobEntity(METAL_ARCHIVES, SUCCESSFUL, LocalDateTime.of(2020, 1, 2, 1, 1), LocalDateTime.of(2020, 1, 2, 1, 3))
-  static ImportJobEntity import3 = createImportJobEntity(METAL_ARCHIVES, ERROR, LocalDateTime.of(2020, 1, 3, 1, 1), LocalDateTime.of(2020, 1, 3, 1, 3))
-  static ImportJobEntity import4 = createImportJobEntity(TIME_FOR_METAL, SUCCESSFUL, LocalDateTime.of(2020, 1, 1, 2, 1), LocalDateTime.of(2020, 1, 1, 2, 3))
-  static ImportJobEntity import5 = createImportJobEntity(TIME_FOR_METAL, RUNNING, LocalDateTime.of(2020, 1, 2, 2, 1), LocalDateTime.of(2020, 1, 2, 2, 3))
-
   void setup() {
-    def imports = [import1, import2, import3, import4, import5]
+    def imports = [IMPORT_1, IMPORT_2, IMPORT_3, IMPORT_4, IMPORT_5]
     underTest.saveAll(imports)
   }
 
@@ -100,5 +100,16 @@ class ImportJobRepositoryIntegrationTest extends Specification implements WithIn
     TIME_FOR_METAL | SUCCESSFUL | LocalDateTime.of(2020, 1, 1, 2, 1)
     TIME_FOR_METAL | ERROR      | null
     TIME_FOR_METAL | RUNNING    | LocalDateTime.of(2020, 1, 2, 2, 1)
+  }
+
+  def "findByJobId: should return correct job"() {
+    when:
+    def result = underTest.findByJobId(IMPORT_3.jobId)
+
+    then:
+    result.isPresent()
+
+    and:
+    result.get() == IMPORT_3
   }
 }

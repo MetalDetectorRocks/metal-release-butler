@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+import rocks.metaldetector.butler.persistence.domain.release.ReleaseSource
 
 import java.time.Duration
 
+import static java.time.temporal.ChronoUnit.MINUTES
 import static java.time.temporal.ChronoUnit.SECONDS
+import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.TEST
 
 @Configuration
 class InfrastructureConfig {
@@ -31,5 +34,12 @@ class InfrastructureConfig {
     return new ThreadPoolTaskExecutor(corePoolSize: releaseImportPoolSize,
                                       waitForTasksToCompleteOnShutdown: awaitTermination,
                                       awaitTerminationSeconds: awaitTerminationPeriod.get(SECONDS))
+  }
+
+  @Bean
+  ThreadPoolTaskExecutor releaseImportTaskExecutor() {
+    return new ThreadPoolTaskExecutor(corePoolSize: [ReleaseSource.values() - TEST].size(),
+                                      waitForTasksToCompleteOnShutdown: true,
+                                      awaitTerminationSeconds: Duration.of(10, MINUTES).getSeconds())
   }
 }

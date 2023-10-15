@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 @Canonical
 class ImportJobDto {
 
-  UUID jobId
+  String jobId
   Integer totalCountRequested
   Integer totalCountImported
   LocalDateTime startTime

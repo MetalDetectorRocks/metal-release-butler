@@ -1,12 +1,17 @@
 package rocks.metaldetector.butler.service.importjob
 
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
+import rocks.metaldetector.butler.config.web.ResourceNotFoundException
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobEntity
 import rocks.metaldetector.butler.persistence.domain.importjob.ImportJobRepository
+import rocks.metaldetector.butler.persistence.domain.importjob.JobState
 import rocks.metaldetector.butler.supplier.infrastructure.importjob.ImportResult
 import rocks.metaldetector.butler.supplier.infrastructure.importjob.ReleaseImporter
+import rocks.metaldetector.butler.web.dto.ImportJobDto
 import spock.lang.Specification
+import spock.lang.Unroll
 
-import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.ERROR
+import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.INITIALIZED
 import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.RUNNING
 import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.SUCCESSFUL
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.METAL_ARCHIVES
@@ -17,18 +22,19 @@ class ImportJobServiceTest extends Specification {
 
   ImportJobService underTest = new ImportJobService(
       importJobRepository: Mock(ImportJobRepository),
-      importJobTransformer: Mock(ImportJobTransformer)
+      importJobTransformer: Mock(ImportJobTransformer),
+      releaseImportTaskExecutor: Mock(ThreadPoolTaskExecutor)
   )
 
-  def "findAllImportJobResults: should call import job repository"() {
+  def "findAllImportJobs: should call import job repository"() {
     when:
-    underTest.findAllImportJobResults()
+    underTest.findAllImportJobs()
 
     then:
     1 * underTest.importJobRepository.findAll()
   }
 
-  def "findAllImportJobResults: should transform each job entity with job transformer"() {
+  def "findAllImportJobs: should transform each job entity with job transformer"() {
     given:
     def jobEntities = [
         ImportJobEntityFactory.createImportJobEntity(),
@@ -37,7 +43,7 @@ class ImportJobServiceTest extends Specification {
     underTest.importJobRepository.findAll() >> jobEntities
 
     when:
-    underTest.findAllImportJobResults()
+    underTest.findAllImportJobs()
 
     then:
     1 * underTest.importJobTransformer.transform(jobEntities[0])
@@ -46,7 +52,7 @@ class ImportJobServiceTest extends Specification {
     1 * underTest.importJobTransformer.transform(jobEntities[1])
   }
 
-  def "findAllImportJobResults: should return list of transformed import jobs"() {
+  def "findAllImportJobs: should return list of transformed import jobs"() {
     given:
     def jobEntities = [
         ImportJobEntityFactory.createImportJobEntity(),
@@ -55,69 +61,92 @@ class ImportJobServiceTest extends Specification {
     underTest.importJobRepository.findAll() >> jobEntities
 
     when:
-    def results = underTest.findAllImportJobResults()
+    def results = underTest.findAllImportJobs()
 
     then:
     results.size() == jobEntities.size()
   }
 
-  def "importFromExternalSources: should create a new import job, invoking 'importReleases()' and update the import job in this order"() {
+  def "findImportJobById: repository is called with given id"() {
+    given:
+    def jobId = UUID.randomUUID()
+
+    when:
+    underTest.findImportJobById(jobId.toString())
+
+    then:
+    1 * underTest.importJobRepository.findByJobId(jobId) >> Optional.of(new ImportJobEntity())
+  }
+
+  def "findImportJobById: transformer is called with job"() {
+    given:
+    def jobId = UUID.randomUUID()
+    def job = new ImportJobEntity(jobId: jobId)
+    underTest.importJobRepository.findByJobId(*_) >> Optional.of(job)
+
+    when:
+    underTest.findImportJobById(jobId.toString())
+
+    then:
+    1 * underTest.importJobTransformer.transform(job)
+  }
+
+  def "findImportJobById: exception is thrown if job does not exist"() {
+    given:
+    def jobId = UUID.randomUUID().toString()
+    underTest.importJobRepository.findByJobId(*_) >> Optional.empty()
+
+    when:
+    underTest.findImportJobById(jobId)
+
+    then:
+    def thrown = thrown(ResourceNotFoundException)
+    thrown.message == "Job $jobId not present"
+  }
+
+  def "findImportJobById: dto is returned"() {
+    given:
+    def jobId = UUID.randomUUID().toString()
+    def jobDto = new ImportJobDto(jobId: jobId)
+    underTest.importJobRepository.findByJobId(*_) >> Optional.of(new ImportJobEntity())
+    underTest.importJobTransformer.transform(*_) >> jobDto
+
+    when:
+    def result = underTest.findImportJobById(jobId)
+
+    then:
+    result == jobDto
+  }
+
+  def "createImportJobs: should create a new import job, schedule a task and return the jobId in this order"() {
     given:
     def releaseImporterMock = Mock(ReleaseImporter)
     underTest.releaseImporters = [releaseImporterMock]
     releaseImporterMock.releaseSource >> METAL_ARCHIVES
-    ImportResult importResult = new ImportResult(totalCountRequested: 10, totalCountImported: 5)
     ImportJobEntity metalArchivesImportJob = new ImportJobEntity(jobId: UUID.randomUUID())
 
     when:
-    underTest.importFromExternalSources()
+    def result = underTest.createImportJobs()
 
     then:
     1 * underTest.importJobRepository.save({
       it.jobId != null
-      it.startTime != null
+      it.state == INITIALIZED
       it.source == METAL_ARCHIVES
     }) >> metalArchivesImportJob
 
     then:
-    1 * releaseImporterMock.importReleases() >> importResult
-
-    then:
-    1 * underTest.importJobRepository.save({ args ->
-      args.jobId == metalArchivesImportJob.jobId
-      args.totalCountRequested == importResult.totalCountRequested
-      args.totalCountImported == importResult.totalCountImported
-      args.state == SUCCESSFUL
-      args.endTime
-    })
-  }
-
-  def "importFromExternalSources: should handle any exception and update the import job with state ERROR"() {
-    given:
-    def releaseImporterMock = Mock(ReleaseImporter)
-    underTest.releaseImporters = [releaseImporterMock]
-    releaseImporterMock.releaseSource >> METAL_ARCHIVES
-    ImportJobEntity metalArchivesImportJob = new ImportJobEntity(jobId: UUID.randomUUID())
-    underTest.importJobRepository.save(*_) >> metalArchivesImportJob
-    releaseImporterMock.importReleases() >> { throw new RuntimeException("boom") }
-
-    when:
-    underTest.importFromExternalSources()
-
-    then:
-    1 * underTest.importJobRepository.save({ args ->
-      args.jobId == metalArchivesImportJob.jobId
-      args.totalCountRequested == null
-      args.totalCountImported == null
-      args.state == ERROR
-      args.endTime
+    1 * underTest.releaseImportTaskExecutor.submit({
+      it.releaseImporter == releaseImporterMock
+      it.importJobService == underTest
+      it.importJob == metalArchivesImportJob
     })
 
     and:
-    noExceptionThrown()
+    result == [metalArchivesImportJob.jobId.toString()]
   }
 
-  def "importFromExternalSources: should process the release importers according to the specified order"() {
+  def "createImportJobs: should process every release importer"() {
     given:
     def releaseImporterMock1 = Mock(ReleaseImporter)
     def releaseImporterMock2 = Mock(ReleaseImporter)
@@ -127,26 +156,43 @@ class ImportJobServiceTest extends Specification {
     underTest.importJobRepository.save(*_) >> new ImportJobEntity()
 
     when:
-    underTest.importFromExternalSources()
+    underTest.createImportJobs()
 
     then:
-    1 * releaseImporterMock1.importReleases() >> new ImportResult()
+    1 * underTest.releaseImportTaskExecutor.submit({ it.releaseImporter == releaseImporterMock1 })
 
-    then:
-    1 * releaseImporterMock2.importReleases() >> new ImportResult()
+    and:
+    1 * underTest.releaseImportTaskExecutor.submit({ it.releaseImporter == releaseImporterMock2 })
   }
 
-  def "updateImportJob: should update the corresponding import job"() {
+  @Unroll
+  "updateImportJob: should update the corresponding import job's state to '#jobState'"() {
     given:
     def importJobEntity = new ImportJobEntity(jobId: UUID.randomUUID())
-    def jobState = SUCCESSFUL
+
+    when:
+    underTest.updateImportJob(importJobEntity, jobState)
+
+    then:
+    1 * underTest.importJobRepository.save({ args ->
+      args.jobId == importJobEntity.jobId
+      args.state == jobState
+    })
+
+    where:
+    jobState << JobState.values()
+  }
+
+  def "updateImportJob: if state is 'SUCCESSFUL', import result info is set"() {
+    given:
+    def importJobEntity = new ImportJobEntity(jobId: UUID.randomUUID())
     def importResult = new ImportResult(
         totalCountRequested: 10,
         totalCountImported: 5
     )
 
     when:
-    underTest.updateImportJob(importJobEntity, importResult, jobState)
+    underTest.updateImportJob(importJobEntity, SUCCESSFUL, importResult)
 
     then:
     1 * underTest.importJobRepository.save({ args ->
@@ -154,6 +200,20 @@ class ImportJobServiceTest extends Specification {
       args.totalCountRequested == importResult.totalCountRequested
       args.totalCountImported == importResult.totalCountImported
       args.endTime
+    })
+  }
+
+  def "updateImportJob: if state is 'RUNNING', startTime is set"() {
+    given:
+    def importJobEntity = new ImportJobEntity(jobId: UUID.randomUUID())
+
+    when:
+    underTest.updateImportJob(importJobEntity, RUNNING)
+
+    then:
+    1 * underTest.importJobRepository.save({ args ->
+      args.jobId == importJobEntity.jobId
+      args.startTime
     })
   }
 
@@ -167,8 +227,7 @@ class ImportJobServiceTest extends Specification {
     then:
     1 * underTest.importJobRepository.save({ args ->
       args.jobId
-      args.startTime
-      args.state == RUNNING
+      args.state == INITIALIZED
       args.source == givenReleaseSource
     })
   }

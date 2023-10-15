@@ -1,5 +1,6 @@
 package rocks.metaldetector.butler.supplier.infrastructure.importjob
 
+import groovy.transform.Synchronized
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
@@ -44,6 +45,7 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
     releaseRepository.saveAll(releaseEntitiesToUpdate)
   }
 
+  @Synchronized
   List<ReleaseEntity> saveNewReleasesWithCover(List<ReleaseEntity> releaseEntities) {
     def newReleases = preFilter(releaseEntities)
     log.info("Out of ${releaseEntities.size()} requested releases, ${newReleases.size()} new releases are imported")

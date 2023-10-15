@@ -12,6 +12,7 @@ import static org.springframework.http.HttpMethod.GET
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.AntPattern.ACTUATOR_ENDPOINTS
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.COVER_JOB
+import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.FETCH_IMPORT_JOB
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.IMPORT_JOB
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEASES
 import static rocks.metaldetector.butler.supplier.infrastructure.Endpoints.RELEASES_UNPAGINATED
@@ -39,7 +40,7 @@ class SecurityConfig {
               .requestMatchers(RELEASES).hasAuthority("SCOPE_releases-read")
               .requestMatchers(UPDATE_RELEASE).hasAuthority("SCOPE_releases-write")
               .requestMatchers(RELEASES_UNPAGINATED).hasAuthority("SCOPE_releases-read-all")
-              .requestMatchers(IMPORT_JOB, COVER_JOB).hasAuthority("SCOPE_import")
+              .requestMatchers(FETCH_IMPORT_JOB, IMPORT_JOB, COVER_JOB).hasAuthority("SCOPE_import")
               .requestMatchers(STATISTICS).hasAuthority("SCOPE_statistics")
               .anyRequest().denyAll()
         }
