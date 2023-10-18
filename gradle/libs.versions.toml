@@ -1,5 +1,5 @@
 [versions]
-awsS3Sdk = "2.21.0"
+awsS3Sdk = "2.21.2"
 commonsIo = "2.14.0"
 groovy = "4.0.15"
 jsonwebtoken = "0.12.2"
