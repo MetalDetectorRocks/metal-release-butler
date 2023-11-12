@@ -85,9 +85,9 @@ class AbstractReleaseImporterTest extends Specification {
     underTest.saveNewReleasesWithCover(releaseEntities)
 
     then:
-    1 * underTest.coverDownloader.download({ args ->
-      args.size() < releaseEntities.size()
-                                           }, _)
+    1 * underTest.coverDownloader.download(
+        { args -> args.size() < releaseEntities.size() }, _
+    )
   }
 
   def "saveNewReleasesWithCover: should call cover downloader per each releases batch"() {
