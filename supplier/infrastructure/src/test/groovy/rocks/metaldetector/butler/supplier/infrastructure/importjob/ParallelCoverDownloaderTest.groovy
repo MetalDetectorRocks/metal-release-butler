@@ -1,7 +1,6 @@
 package rocks.metaldetector.butler.supplier.infrastructure.importjob
 
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
-import rocks.metaldetector.butler.persistence.domain.release.ReleaseRepository
 import spock.lang.Specification
 
 import static rocks.metaldetector.butler.supplier.infrastructure.DtoFactory.ReleaseEntityFactory.createReleaseEntity
@@ -9,8 +8,7 @@ import static rocks.metaldetector.butler.supplier.infrastructure.DtoFactory.Rele
 class ParallelCoverDownloaderTest extends Specification {
 
   ParallelCoverDownloader underTest = new ParallelCoverDownloader(
-      threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor),
-      releaseRepository: Mock(ReleaseRepository)
+      threadPoolTaskExecutor: Mock(ThreadPoolTaskExecutor)
   )
 
   def "should submit CoverDownloadTask for each release"() {
@@ -20,7 +18,7 @@ class ParallelCoverDownloaderTest extends Specification {
     def releaseEntities = [release1, release2]
 
     when:
-    underTest.downloadAndSave(releaseEntities, release -> new CoverDownloadTask(releaseEntity: release))
+    underTest.download(releaseEntities, release -> new CoverDownloadTask(releaseEntity: release))
 
     then:
     1 * underTest.threadPoolTaskExecutor.submit({
@@ -31,19 +29,5 @@ class ParallelCoverDownloaderTest extends Specification {
     1 * underTest.threadPoolTaskExecutor.submit({
       args -> args instanceof CoverDownloadTask && args.releaseEntity == release2
     })
-  }
-
-  def "should call release repository to save all new releases"() {
-    given:
-    def releaseEntities = [
-        createReleaseEntity("a"),
-        createReleaseEntity("b")
-    ]
-
-    when:
-    underTest.downloadAndSave(releaseEntities, release -> () -> {})
-
-    then:
-    1 * underTest.releaseRepository.saveAll(releaseEntities)
   }
 }

@@ -8,10 +8,7 @@ val dependencyVersions = listOf(
     "org.opentest4j:opentest4j:1.3.0"
 )
 
-val dependencyGroupVersions = mapOf(
-    libs.groovy.get().group to libs.groovy.get().version,
-    libs.jupiterApi.get().group to libs.jupiterApi.get().version
-)
+val dependencyGroupVersions = mapOf<String, String>()
 
 plugins {
   alias(libs.plugins.springBoot) apply false

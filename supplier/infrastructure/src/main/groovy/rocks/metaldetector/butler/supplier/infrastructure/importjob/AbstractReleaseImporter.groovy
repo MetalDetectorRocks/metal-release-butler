@@ -1,6 +1,5 @@
 package rocks.metaldetector.butler.supplier.infrastructure.importjob
 
-import groovy.transform.Synchronized
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor
@@ -9,6 +8,7 @@ import rocks.metaldetector.butler.persistence.domain.release.ReleaseEntity
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseRepository
 
 import java.util.concurrent.Future
+import java.util.concurrent.locks.ReentrantReadWriteLock
 
 @Slf4j
 abstract class AbstractReleaseImporter implements ReleaseImporter {
@@ -26,6 +26,9 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
 
   @Autowired
   ThreadPoolTaskExecutor threadPoolTaskExecutor
+
+  @Autowired
+  ReentrantReadWriteLock reentrantReadWriteLock
 
   @Override
   @Transactional
@@ -45,34 +48,53 @@ abstract class AbstractReleaseImporter implements ReleaseImporter {
     releaseRepository.saveAll(releaseEntitiesToUpdate)
   }
 
-  @Synchronized
+  @Transactional
   List<ReleaseEntity> saveNewReleasesWithCover(List<ReleaseEntity> releaseEntities) {
     def newReleases = preFilter(releaseEntities)
-    log.info("Out of ${releaseEntities.size()} requested releases, ${newReleases.size()} new releases are imported")
-
     int batch = 0
     List<ReleaseEntity> savedReleaseEntities = []
     List<List<ReleaseEntity>> releaseBatches = newReleases.collate(BATCH_SIZE)
     for (List<ReleaseEntity> releaseBatch : releaseBatches) {
       log.info("Transfer covers for batch ${++batch}/${releaseBatches.size()}")
-      savedReleaseEntities += coverDownloader.downloadAndSave(releaseBatch, releaseEntity -> createCoverDownloadTask(releaseEntity))
+      coverDownloader.download(releaseBatch, releaseEntity -> createCoverDownloadTask(releaseEntity))
+      savedReleaseEntities += save(releaseBatch)
       log.info("Releases for batch ${batch}/${releaseBatches.size()} successfully saved.")
     }
+
+    log.info("Out of ${releaseEntities.size()} requested releases, ${savedReleaseEntities.size()} new releases are imported")
 
     return savedReleaseEntities
   }
 
   private List<ReleaseEntity> preFilter(List<ReleaseEntity> releaseEntities) {
-    return releaseEntities.unique(false, RELEASE_ENTITY_COMPARATOR)
-        .findAll { releaseEntity ->
-          !releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)
-        }
-        .collect()
+    def uniqueReleases = releaseEntities.unique(false, RELEASE_ENTITY_COMPARATOR)
+    reentrantReadWriteLock.readLock().lock()
+    try {
+      return uniqueReleases
+          .findAll { releaseEntity ->
+            !releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)
+          }
+    }
+    finally {
+      reentrantReadWriteLock.readLock().unlock()
+    }
+  }
+
+  private List<ReleaseEntity> save(List<ReleaseEntity> releases) {
+    reentrantReadWriteLock.writeLock().lock()
+    try {
+      releases = releases.findAll { releaseEntity ->
+        !releaseRepository.existsByArtistIgnoreCaseAndAlbumTitleIgnoreCaseAndReleaseDate(releaseEntity.artist, releaseEntity.albumTitle, releaseEntity.releaseDate)
+      }
+      return releaseRepository.saveAll(releases)
+    }
+    finally {
+      reentrantReadWriteLock.writeLock().unlock()
+    }
   }
 
   protected ImportResult finalizeImport(int totalCountRequested, int totalCountImported) {
-    log.info("Import of new releases completed for ${getReleaseSource().displayName}. " +
-            "${totalCountImported} out of ${totalCountRequested} requested releases were imported.")
+    log.info("Import of new releases completed for ${getReleaseSource().displayName}. ${totalCountImported} out of ${totalCountRequested} requested releases were imported.")
     return new ImportResult(
         totalCountRequested: totalCountRequested,
         totalCountImported: totalCountImported
