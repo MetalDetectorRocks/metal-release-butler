@@ -51,7 +51,7 @@ class ReleasesRestController {
   }
 
   @PutMapping(path = UPDATE_RELEASE, consumes = APPLICATION_JSON_VALUE)
-  ResponseEntity<Void> updateReleaseState(@Valid @RequestBody ReleaseUpdateRequest request, @PathVariable long releaseId) {
+  ResponseEntity<Void> updateReleaseState(@Valid @RequestBody ReleaseUpdateRequest request, @PathVariable("releaseId") long releaseId) {
     releaseService.updateReleaseState(releaseId, request.state)
     return ResponseEntity.ok().build()
   }

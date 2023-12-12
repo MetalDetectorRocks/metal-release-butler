@@ -26,7 +26,7 @@ class ReleaseCoverRestController {
   ImageResourceFinder imageResourceFinder
 
   @GetMapping(produces = [IMAGE_JPEG_VALUE, IMAGE_GIF_VALUE, IMAGE_PNG_VALUE])
-  ResponseEntity<Resource> getReleaseCover(@RequestParam String id) {
+  ResponseEntity<Resource> getReleaseCover(@RequestParam("id") String id) {
     Resource coverResource = imageResourceFinder.findImage(Paths.get("images", id))
     return ResponseEntity.ok(coverResource)
   }
