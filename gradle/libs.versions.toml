@@ -8,7 +8,7 @@ junit = "5.10.2"
 jupiter = "5.10.2"
 jupiterEngine = "1.10.2"
 lokiLogbackAppender = "1.5.1"
-postgres = "42.7.2"
+postgres = "42.7.3"
 spock = "2.3-groovy-4.0"
 tagsoup = "1.2.1"
 
