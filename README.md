@@ -71,3 +71,9 @@ via gradle
 via your IDE
 - Execute the task `check` from folder `verification`
 - Please note: You might get the message "Test events were not received" if you do this via IntelliJ. This is intentional behaviour of gradle. If nothing changes in the tests themselves, they will not be executed repeatedly. If you still want to run the tests, you have to execute `clean` before.
+
+-----------------------------
+
+Supported by [JetBrains](https://jb.gg/OpenSourceSupport)
+
+<img src="https://resources.jetbrains.com/storage/products/company/brand/logos/IntelliJ_IDEA.svg" height="35" alt="Logo of Jetbrains IntelliJ IDEA IDE">
