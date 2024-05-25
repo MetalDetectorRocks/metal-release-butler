@@ -1,5 +1,5 @@
 [versions]
-awsS3Sdk = "2.25.57"
+awsS3Sdk = "2.25.59"
 commonsIo = "2.16.1"
 groovy = "4.0.21"
 jsonwebtoken = "0.12.5"
@@ -15,6 +15,7 @@ tagsoup = "1.2.1"
 [libraries]
 commonsIo = { module = "commons-io:commons-io", version.ref = "commonsIo" }
 flyway = { module = "org.flywaydb:flyway-core" }
+flywayPostgres = { module = "org.flywaydb:flyway-database-postgresql" }
 groovy = { module = "org.apache.groovy:groovy", version.ref = "groovy" }
 groovyXml = { module = "org.apache.groovy:groovy-xml", version.ref = "groovy" }
 groovyDatetime = { module = "org.apache.groovy:groovy-datetime", version.ref = "groovy" }
@@ -47,6 +48,7 @@ springSecurityTest = { module = "org.springframework.security:spring-security-te
 tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
 
 [bundles]
+flyway = ["flyway", "flywayPostgres"]
 groovyApp = ["groovy", "groovyXml", "groovyDatetime"]
 jjwt = ["jjwtApi", "jjwtImpl", "jjwtJackson"]
 testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest", "jupiterEngine"]
@@ -54,5 +56,5 @@ springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2Res
 
 [plugins]
 dockerPublish = { id = "de.europace.docker-publish", version = "2.0.6" }
-springBoot = { id = "org.springframework.boot", version = "3.2.5" }
+springBoot = { id = "org.springframework.boot", version = "3.3.0" }
 springDependencyManagement = { id = "io.spring.dependency-management", version = "1.1.5" }
