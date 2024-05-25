@@ -34,7 +34,7 @@ dependencies {
 
   implementation(libs.httpClient)
   implementation(libs.micrometerRegistryPrometheus)
-  implementation(libs.flyway)
+  implementation(libs.bundles.flyway)
   implementation(libs.bundles.jjwt)
 
   implementation(libs.bundles.groovyApp)
