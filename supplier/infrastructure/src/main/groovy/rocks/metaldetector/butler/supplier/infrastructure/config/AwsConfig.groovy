@@ -10,7 +10,7 @@ import software.amazon.awssdk.services.s3.S3Client
 import static software.amazon.awssdk.regions.Region.EU_CENTRAL_1
 
 @Configuration
-@Profile(["dev", "preview", "prod"])
+@Profile(["dev", "preview", "prod", "local-preview", "local-prod"])
 class AwsConfig {
 
   @Bean
