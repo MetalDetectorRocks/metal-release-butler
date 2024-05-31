@@ -2,6 +2,7 @@ package rocks.metaldetector.butler.supplier.metalarchives.importjob
 
 import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseEntity
 import rocks.metaldetector.butler.persistence.domain.release.ReleaseSource
@@ -15,6 +16,7 @@ import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSourc
 
 @Slf4j
 @Service
+@Profile(["default", "dev", "local-preview", "local-prod"])
 class MetalArchivesReleaseImporter extends AbstractReleaseImporter {
 
   @Autowired
