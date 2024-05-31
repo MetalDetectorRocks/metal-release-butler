@@ -17,7 +17,7 @@ import static software.amazon.awssdk.services.s3.model.ObjectCannedACL.PUBLIC_RE
 
 @Slf4j
 @Service
-@Profile(["dev", "preview", "prod"])
+@Profile(["dev", "preview", "prod", "local-preview", "local-prod"])
 class S3PersistenceService implements CoverPersistenceService {
 
   public static final String PATH = "images/"
