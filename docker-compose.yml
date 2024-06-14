@@ -1,9 +1,7 @@
-version: '3.7'
-
 services:
   butler-db:
     container_name: butler-db
-    image: postgres:13.1-alpine
+    image: postgres:16.2-alpine
     environment:
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: metal-release-butler
@@ -25,7 +23,7 @@ services:
 
   auth-db:
     container_name: butler-auth-db
-    image: postgres:13.1-alpine
+    image: postgres:16.2-alpine
     environment:
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: metal-detector-auth
@@ -47,7 +45,7 @@ services:
 
   auth-app:
     container_name: butler-auth-app
-    image: metaldetectorrocks/metal-detector-auth:20230925T173111
+    image: metaldetectorrocks/metal-detector-auth:20240606T152535
     environment:
       SERVER_PORT: 9000
       DATASOURCE_URL: jdbc:postgresql://auth-db:5432/metal-detector-auth

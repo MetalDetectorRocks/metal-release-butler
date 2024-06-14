@@ -1,5 +1,4 @@
 [versions]
-awsS3Sdk = "2.26.1"
 commonsIo = "2.16.1"
 groovy = "4.0.21"
 jsonwebtoken = "0.12.5"
@@ -10,6 +9,7 @@ jupiterEngine = "1.10.2"
 lokiLogbackAppender = "1.5.1"
 postgres = "42.7.3"
 spock = "2.3-groovy-4.0"
+springCloudStarter = "3.1.1"
 tagsoup = "1.2.1"
 
 [libraries]
@@ -32,7 +32,6 @@ jjwtJackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jsonwebt
 lokiLogbackAppender = { module = "com.github.loki4j:loki-logback-appender", version.ref = "lokiLogbackAppender" }
 micrometerRegistryPrometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
 postgres = { module = "org.postgresql:postgresql", version.ref = "postgres" }
-s3 = { module = "software.amazon.awssdk:s3", version.ref = "awsS3Sdk" }
 spockCore = { module = "org.spockframework:spock-core", version.ref = "spock" }
 spockSpring = { module = "org.spockframework:spock-spring", version.ref = "spock" }
 springBootConfigurationProcessor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
@@ -44,6 +43,8 @@ springBootStarterSecurity = { module = "org.springframework.boot:spring-boot-sta
 springBootStarterTest = { module = "org.springframework.boot:spring-boot-starter-test" }
 springBootStarterValidation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 springBootStarterWeb = { module = "org.springframework.boot:spring-boot-starter-web" }
+springCloudStarterAws = { module = "io.awspring.cloud:spring-cloud-aws-starter", version.ref = "springCloudStarter" }
+springCloudStarterAwsS3 = { module = "io.awspring.cloud:spring-cloud-aws-starter-s3", version.ref = "springCloudStarter" }
 springSecurityTest = { module = "org.springframework.security:spring-security-test" }
 tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
 
@@ -53,6 +54,7 @@ groovyApp = ["groovy", "groovyXml", "groovyDatetime"]
 jjwt = ["jjwtApi", "jjwtImpl", "jjwtJackson"]
 testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest", "jupiterEngine"]
 springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2ResourceServer", "springBootStarterSecurity", "springBootStarterValidation", "springBootStarterWeb"]
+springCloudStarter = ["springCloudStarterAws", "springCloudStarterAwsS3"]
 
 [plugins]
 dockerPublish = { id = "de.europace.docker-publish", version = "2.0.6" }

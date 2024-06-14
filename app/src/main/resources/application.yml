@@ -50,6 +50,12 @@ spring:
   cache:
     jcache:
       config: classpath:config/cache/ehcache.xml
+  cloud:
+    aws:
+      region.static: eu-central-1
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
   security:
     oauth2:
       resourceserver:
@@ -80,8 +86,6 @@ concurrency:
   throttling-in-seconds: 5
 
 aws:
-  access-key: ${AWS_ACCESS_KEY}
-  secret-key: ${AWS_SECRET_KEY}
   s3-host: https://s3.eu-central-1.amazonaws.com
   bucket-name:
 
