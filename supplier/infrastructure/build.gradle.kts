@@ -7,7 +7,7 @@ dependencies {
   implementation(libs.commonsIo)
   implementation(libs.groovy)
   implementation(libs.groovyXml)
-  implementation(libs.s3)
+  implementation(libs.bundles.springCloudStarter)
 
   implementation(projects.persistence)
 
