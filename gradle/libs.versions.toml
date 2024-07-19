@@ -57,6 +57,6 @@ springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2Res
 springCloudStarter = ["springCloudStarterAws", "springCloudStarterAwsS3"]
 
 [plugins]
-dockerPublish = { id = "de.europace.docker-publish", version = "2.0.9" }
-springBoot = { id = "org.springframework.boot", version = "3.3.1" }
+dockerPublish = { id = "de.europace.docker-publish", version = "2.0.10" }
+springBoot = { id = "org.springframework.boot", version = "3.3.2" }
 springDependencyManagement = { id = "io.spring.dependency-management", version = "1.1.6" }
