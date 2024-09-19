@@ -1,5 +1,5 @@
 [versions]
-commonsIo = "2.16.1"
+commonsIo = "2.17.0"
 groovy = "4.0.23"
 jsonwebtoken = "0.12.6"
 jsoup = "1.18.1"
@@ -9,7 +9,7 @@ jupiterEngine = "1.11.0"
 lokiLogbackAppender = "1.5.2"
 postgres = "42.7.4"
 spock = "2.3-groovy-4.0"
-springCloudStarter = "3.1.1"
+springCloudStarter = "3.2.0"
 tagsoup = "1.2.1"
 
 [libraries]
@@ -57,6 +57,6 @@ springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2Res
 springCloudStarter = ["springCloudStarterAws", "springCloudStarterAwsS3"]
 
 [plugins]
-dockerPublish = { id = "de.europace.docker-publish", version = "2.0.12" }
+dockerPublish = { id = "de.europace.docker-publish", version = "2.0.13" }
 springBoot = { id = "org.springframework.boot", version = "3.3.3" }
 springDependencyManagement = { id = "io.spring.dependency-management", version = "1.1.6" }
