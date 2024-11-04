@@ -9,7 +9,7 @@ jupiterEngine = "1.11.3"
 lokiLogbackAppender = "1.5.2"
 postgres = "42.7.4"
 spock = "2.3-groovy-4.0"
-springCloudStarter = "3.2.0"
+springCloudStarter = "3.2.1"
 tagsoup = "1.2.1"
 
 [libraries]
