@@ -15,3 +15,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "friday"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
