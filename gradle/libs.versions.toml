@@ -4,7 +4,6 @@ groovy = "4.0.24"
 jsonwebtoken = "0.12.6"
 jsoup = "1.18.1"
 junit = "5.11.3"
-jupiter = "5.11.3"
 jupiterEngine = "1.11.3"
 lokiLogbackAppender = "1.5.2"
 postgres = "42.7.4"
@@ -23,7 +22,6 @@ groovyTest = { module = "org.apache.groovy:groovy-test", version.ref = "groovy" 
 h2 = { module = "com.h2database:h2" }
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5" }
 junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
-jupiterApi = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jupiter" }
 jupiterEngine = { module = "org.junit.platform:junit-platform-engine", version.ref = "jupiterEngine" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 jjwtApi = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
@@ -47,6 +45,9 @@ springCloudStarterAws = { module = "io.awspring.cloud:spring-cloud-aws-starter",
 springCloudStarterAwsS3 = { module = "io.awspring.cloud:spring-cloud-aws-starter-s3", version.ref = "springCloudStarter" }
 springSecurityTest = { module = "org.springframework.security:spring-security-test" }
 tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
+
+# for dependency enforcement
+nettyCommon = { module = "io.netty:netty-common", version = "4.1.115.Final" }
 
 [bundles]
 flyway = ["flyway", "flywayPostgres"]
