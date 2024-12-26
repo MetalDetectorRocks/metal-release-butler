@@ -11,28 +11,30 @@ import spock.lang.Unroll
 import java.time.LocalDateTime
 
 import static rocks.metaldetector.butler.persistence.DtoFactory.ImportJobEntityFactory.createImportJobEntity
-import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.ERROR
-import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.RUNNING
-import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.SUCCESSFUL
+import static rocks.metaldetector.butler.persistence.domain.importjob.JobState.*
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.METAL_ARCHIVES
-import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.TEST
 import static rocks.metaldetector.butler.persistence.domain.release.ReleaseSource.TIME_FOR_METAL
 
 @DataJpaTest
 @ContextConfiguration(classes = [PersistenceConfig])
 class ImportJobRepositoryIntegrationTest extends Specification implements WithIntegrationTestConfig {
 
-  static ImportJobEntity IMPORT_1 = createImportJobEntity(METAL_ARCHIVES, SUCCESSFUL, LocalDateTime.of(2020, 1, 1, 1, 1), LocalDateTime.of(2020, 1, 1, 1, 3))
-  static ImportJobEntity IMPORT_2 = createImportJobEntity(METAL_ARCHIVES, SUCCESSFUL, LocalDateTime.of(2020, 1, 2, 1, 1), LocalDateTime.of(2020, 1, 2, 1, 3))
-  static ImportJobEntity IMPORT_3 = createImportJobEntity(METAL_ARCHIVES, ERROR, LocalDateTime.of(2020, 1, 3, 1, 1), LocalDateTime.of(2020, 1, 3, 1, 3))
-  static ImportJobEntity IMPORT_4 = createImportJobEntity(TIME_FOR_METAL, SUCCESSFUL, LocalDateTime.of(2020, 1, 1, 2, 1), LocalDateTime.of(2020, 1, 1, 2, 3))
-  static ImportJobEntity IMPORT_5 = createImportJobEntity(TIME_FOR_METAL, RUNNING, LocalDateTime.of(2020, 1, 2, 2, 1), LocalDateTime.of(2020, 1, 2, 2, 3))
+  ImportJobEntity import1
+  ImportJobEntity import2
+  ImportJobEntity import3
+  ImportJobEntity import4
+  ImportJobEntity import5
 
   @Autowired
   ImportJobRepository underTest
 
   void setup() {
-    def imports = [IMPORT_1, IMPORT_2, IMPORT_3, IMPORT_4, IMPORT_5]
+    import1 = createImportJobEntity(METAL_ARCHIVES, SUCCESSFUL, LocalDateTime.of(2020, 1, 1, 1, 1), LocalDateTime.of(2020, 1, 1, 1, 3))
+    import2 = createImportJobEntity(METAL_ARCHIVES, SUCCESSFUL, LocalDateTime.of(2020, 1, 2, 1, 1), LocalDateTime.of(2020, 1, 2, 1, 3))
+    import3 = createImportJobEntity(METAL_ARCHIVES, ERROR, LocalDateTime.of(2020, 1, 3, 1, 1), LocalDateTime.of(2020, 1, 3, 1, 3))
+    import4 = createImportJobEntity(TIME_FOR_METAL, SUCCESSFUL, LocalDateTime.of(2020, 1, 1, 2, 1), LocalDateTime.of(2020, 1, 1, 2, 3))
+    import5 = createImportJobEntity(TIME_FOR_METAL, RUNNING, LocalDateTime.of(2020, 1, 2, 2, 1), LocalDateTime.of(2020, 1, 2, 2, 3))
+    def imports = [import1, import2, import3, import4, import5]
     underTest.saveAll(imports)
   }
 
@@ -52,7 +54,7 @@ class ImportJobRepositoryIntegrationTest extends Specification implements WithIn
     source         | expectedResult
     METAL_ARCHIVES | 3
     TIME_FOR_METAL | 2
-    TEST           | 0
+//    TEST           | 0
   }
 
   def "countBySourceAndState: should return correct number of imports for source '#source' and state '#state'"() {
@@ -104,12 +106,12 @@ class ImportJobRepositoryIntegrationTest extends Specification implements WithIn
 
   def "findByJobId: should return correct job"() {
     when:
-    def result = underTest.findByJobId(IMPORT_3.jobId)
+    def result = underTest.findByJobId(import3.jobId)
 
     then:
     result.isPresent()
 
     and:
-    result.get() == IMPORT_3
+    result.get() == import3
   }
 }

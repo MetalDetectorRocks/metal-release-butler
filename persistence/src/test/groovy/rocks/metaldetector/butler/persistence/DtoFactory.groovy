@@ -16,9 +16,8 @@ class DtoFactory {
 
   static class ReleaseEntityFactory {
 
-    static ReleaseEntity createReleaseEntity(Long id, String artist, LocalDate releaseDate) {
+    static ReleaseEntity createReleaseEntity(String artist, LocalDate releaseDate) {
       return new ReleaseEntity(
-          id: id,
           artist: artist,
           albumTitle: "T",
           releaseDate: releaseDate,
