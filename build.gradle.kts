@@ -8,7 +8,7 @@ val dependencyVersions = listOf(
 )
 
 val dependencyGroupVersions = mapOf(
-  libs.logbackClassic.get().group to libs.logbackClassic.get().version,
+  libs.logbackCore.get().group to libs.logbackCore.get().version,
   libs.nettyCommon.get().group to libs.nettyCommon.get().version
 )
 
