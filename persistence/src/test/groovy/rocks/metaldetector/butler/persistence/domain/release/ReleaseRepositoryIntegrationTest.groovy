@@ -7,6 +7,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.test.context.ContextConfiguration
 import rocks.metaldetector.butler.persistence.WithIntegrationTestConfig
 import rocks.metaldetector.butler.persistence.config.PersistenceConfig
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -25,12 +26,18 @@ class ReleaseRepositoryIntegrationTest extends Specification implements WithInte
 
   static String RELEASE_DETAILS_URL = "release-details-url"
   static String RELEASE_DETAILS_ALBUM_TITLE = "T"
-  static ReleaseEntity release1 = ReleaseEntityFactory.createReleaseEntity(1L, "A1", LocalDate.of(2020, 1, 1))
-  static ReleaseEntity release2 = ReleaseEntityFactory.createReleaseEntity(2L, "A2", LocalDate.of(2020, 2, 1))
-  static ReleaseEntity release3 = ReleaseEntityFactory.createReleaseEntity(3L, "A3", LocalDate.of(2020, 3, 1))
   static Sort sorting = Sort.by(Sort.Direction.ASC, "releaseDate")
+  @Shared
+  ReleaseEntity release1
+  @Shared
+  ReleaseEntity release2
+  @Shared
+  ReleaseEntity release3
 
   void setup() {
+    release1 = ReleaseEntityFactory.createReleaseEntity("A1", LocalDate.of(2020, 1, 1))
+    release2 = ReleaseEntityFactory.createReleaseEntity("A2", LocalDate.of(2020, 2, 1))
+    release3 = ReleaseEntityFactory.createReleaseEntity("A3", LocalDate.of(2020, 3, 1))
     def releases = [release1, release2, release3]
     releases*.setReleaseDetailsUrl(RELEASE_DETAILS_URL)
     releases*.setAlbumTitle(RELEASE_DETAILS_ALBUM_TITLE)
@@ -322,8 +329,8 @@ class ReleaseRepositoryIntegrationTest extends Specification implements WithInte
 
   def "should group non-demo releases per year and month"() {
     given:
-    def release4 = ReleaseEntityFactory.createReleaseEntity(4L, "A4", LocalDate.of(2020, 3, 1))
-    def demoRelease = ReleaseEntityFactory.createReleaseEntity(5L, "A5", LocalDate.of(2020, 3, 1))
+    def release4 = ReleaseEntityFactory.createReleaseEntity("A4", LocalDate.of(2020, 3, 1))
+    def demoRelease = ReleaseEntityFactory.createReleaseEntity("A5", LocalDate.of(2020, 3, 1))
     demoRelease.state = DEMO
     underTest.saveAll([release4, demoRelease])
 
@@ -352,7 +359,7 @@ class ReleaseRepositoryIntegrationTest extends Specification implements WithInte
   def "should count all non-demo releases after given date"() {
     given:
     def releaseDate = LocalDate.of(2020, 1, 31)
-    def demoRelease = ReleaseEntityFactory.createReleaseEntity(4L, "A4", LocalDate.of(2020, 3, 1))
+    def demoRelease = ReleaseEntityFactory.createReleaseEntity("A4", LocalDate.of(2020, 3, 1))
     demoRelease.state = DEMO
     underTest.save(demoRelease)
 
@@ -365,7 +372,7 @@ class ReleaseRepositoryIntegrationTest extends Specification implements WithInte
 
   def "counts all releases by given state"() {
     given:
-    def demoRelease = ReleaseEntityFactory.createReleaseEntity(4L, "A4", LocalDate.of(2020, 3, 1))
+    def demoRelease = ReleaseEntityFactory.createReleaseEntity("A4", LocalDate.of(2020, 3, 1))
     demoRelease.state = DUPLICATE
     underTest.save(demoRelease)
 
