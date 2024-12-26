@@ -47,6 +47,7 @@ springSecurityTest = { module = "org.springframework.security:spring-security-te
 tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
 
 # for dependency enforcement
+logbackClassic = { module = "ch.qos.logback:logback-classic", version = "1.5.15" }
 nettyCommon = { module = "io.netty:netty-common", version = "4.1.116.Final" }
 
 [bundles]
