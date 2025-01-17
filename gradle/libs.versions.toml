@@ -6,7 +6,7 @@ jsoup = "1.18.3"
 junit = "5.11.4"
 jupiterEngine = "1.11.4"
 lokiLogbackAppender = "1.6.0"
-postgres = "42.7.4"
+postgres = "42.7.5"
 spock = "2.3-groovy-4.0"
 springCloudStarter = "3.2.1"
 tagsoup = "1.2.1"
@@ -48,7 +48,7 @@ tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
 
 # for dependency enforcement
 logbackCore = { module = "ch.qos.logback:logback-core", version = "1.5.16" }
-nettyCommon = { module = "io.netty:netty-common", version = "4.1.116.Final" }
+nettyCommon = { module = "io.netty:netty-common", version = "4.1.117.Final" }
 
 [bundles]
 flyway = ["flyway", "flywayPostgres"]
