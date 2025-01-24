@@ -8,7 +8,7 @@ jupiterEngine = "1.11.4"
 lokiLogbackAppender = "1.6.0"
 postgres = "42.7.5"
 spock = "2.3-groovy-4.0"
-springCloudStarter = "3.2.1"
+springCloudStarter = "3.3.0"
 tagsoup = "1.2.1"
 
 [libraries]
@@ -59,6 +59,6 @@ springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2Res
 springCloudStarter = ["springCloudStarterAws", "springCloudStarterAwsS3"]
 
 [plugins]
-dockerPublish = { id = "de.europace.docker-publish", version = "2.0.13" }
-springBoot = { id = "org.springframework.boot", version = "3.4.1" }
+dockerPublish = { id = "de.europace.docker-publish", version = "2.0.14" }
+springBoot = { id = "org.springframework.boot", version = "3.4.2" }
 springDependencyManagement = { id = "io.spring.dependency-management", version = "1.1.7" }
