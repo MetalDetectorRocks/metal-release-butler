@@ -46,10 +46,6 @@ springCloudStarterAwsS3 = { module = "io.awspring.cloud:spring-cloud-aws-starter
 springSecurityTest = { module = "org.springframework.security:spring-security-test" }
 tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
 
-# for dependency enforcement
-logbackCore = { module = "ch.qos.logback:logback-core", version = "1.5.18" }
-nettyCommon = { module = "io.netty:netty-common", version = "4.1.119.Final" }
-
 [bundles]
 flyway = ["flyway", "flywayPostgres"]
 groovyApp = ["groovy", "groovyXml", "groovyDatetime"]
