@@ -1,10 +1,10 @@
 [versions]
 commonsIo = "2.18.0"
-groovy = "4.0.25"
+groovy = "4.0.26"
 jsonwebtoken = "0.12.6"
 jsoup = "1.18.3"
-junit = "5.12.0"
-jupiterEngine = "1.12.0"
+junit = "5.12.1"
+jupiterEngine = "1.12.1"
 lokiLogbackAppender = "1.6.0"
 postgres = "42.7.5"
 spock = "2.3-groovy-4.0"
@@ -45,10 +45,6 @@ springCloudStarterAws = { module = "io.awspring.cloud:spring-cloud-aws-starter",
 springCloudStarterAwsS3 = { module = "io.awspring.cloud:spring-cloud-aws-starter-s3", version.ref = "springCloudStarter" }
 springSecurityTest = { module = "org.springframework.security:spring-security-test" }
 tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
-
-# for dependency enforcement
-logbackCore = { module = "ch.qos.logback:logback-core", version = "1.5.17" }
-nettyCommon = { module = "io.netty:netty-common", version = "4.1.119.Final" }
 
 [bundles]
 flyway = ["flyway", "flywayPostgres"]

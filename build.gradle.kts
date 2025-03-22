@@ -7,10 +7,7 @@ val dependencyVersions = listOf(
   libs.junitBom
 )
 
-val dependencyGroupVersions = mapOf(
-  libs.logbackCore.get().group to libs.logbackCore.get().version,
-  libs.nettyCommon.get().group to libs.nettyCommon.get().version
-)
+val dependencyGroupVersions = mapOf<String, String>()
 
 plugins {
   alias(libs.plugins.springBoot) apply false
