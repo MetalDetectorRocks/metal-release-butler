@@ -23,6 +23,7 @@ h2 = { module = "com.h2database:h2" }
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5" }
 junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
 jupiterEngine = { module = "org.junit.platform:junit-platform-engine", version.ref = "jupiterEngine" }
+jupiterLauncher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "jupiterEngine" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 jjwtApi = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
 jjwtImpl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
@@ -50,7 +51,7 @@ tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
 flyway = ["flyway", "flywayPostgres"]
 groovyApp = ["groovy", "groovyXml", "groovyDatetime"]
 jjwt = ["jjwtApi", "jjwtImpl", "jjwtJackson"]
-testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest", "jupiterEngine"]
+testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest", "jupiterEngine", "jupiterLauncher"]
 springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2ResourceServer", "springBootStarterSecurity", "springBootStarterValidation", "springBootStarterWeb"]
 springCloudStarter = ["springCloudStarterAws", "springCloudStarterAwsS3"]
 
