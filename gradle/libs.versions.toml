@@ -1,14 +1,14 @@
 [versions]
-commonsIo = "2.18.0"
+commonsIo = "2.19.0"
 groovy = "4.0.26"
 jsonwebtoken = "0.12.6"
-jsoup = "1.18.3"
-junit = "5.12.1"
-jupiterEngine = "1.12.1"
+jsoup = "1.20.1"
+junit = "5.12.2"
+jupiterEngine = "1.12.2"
 lokiLogbackAppender = "1.6.0"
 postgres = "42.7.5"
 spock = "2.3-groovy-4.0"
-springCloudStarter = "3.3.0"
+springCloudStarter = "3.3.1"
 tagsoup = "1.2.1"
 
 [libraries]
@@ -23,6 +23,7 @@ h2 = { module = "com.h2database:h2" }
 httpClient = { module = "org.apache.httpcomponents.client5:httpclient5" }
 junitBom = { module = "org.junit:junit-bom", version.ref = "junit" }
 jupiterEngine = { module = "org.junit.platform:junit-platform-engine", version.ref = "jupiterEngine" }
+jupiterLauncher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "jupiterEngine" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 jjwtApi = { module = "io.jsonwebtoken:jjwt-api", version.ref = "jsonwebtoken" }
 jjwtImpl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jsonwebtoken" }
@@ -50,11 +51,11 @@ tagsoup = { module = "org.ccil.cowan.tagsoup:tagsoup", version.ref = "tagsoup" }
 flyway = ["flyway", "flywayPostgres"]
 groovyApp = ["groovy", "groovyXml", "groovyDatetime"]
 jjwt = ["jjwtApi", "jjwtImpl", "jjwtJackson"]
-testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest", "jupiterEngine"]
+testing = ["groovyTest", "spockCore", "spockSpring", "springBootStarterTest", "jupiterEngine", "jupiterLauncher"]
 springBootStarterApp = ["springBootStarterActuator", "springBootStarterOauth2ResourceServer", "springBootStarterSecurity", "springBootStarterValidation", "springBootStarterWeb"]
 springCloudStarter = ["springCloudStarterAws", "springCloudStarterAwsS3"]
 
 [plugins]
-dockerPublish = { id = "de.europace.docker-publish", version = "2.0.14" }
-springBoot = { id = "org.springframework.boot", version = "3.4.4" }
+dockerPublish = { id = "de.europace.docker-publish", version = "2.0.15" }
+springBoot = { id = "org.springframework.boot", version = "3.5.0" }
 springDependencyManagement = { id = "io.spring.dependency-management", version = "1.1.7" }
